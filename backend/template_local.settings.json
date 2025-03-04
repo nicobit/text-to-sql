@@ -1,0 +1,10 @@
+{
+    "IsEncrypted": false,
+    "Values": {
+      "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+      "AZURE_OPENAI_ENDPOINT": "https://your-openai-instance.openai.azure.com",
+      "AZURE_OPENAI_KEY": "your-secret-key",
+      "AZURE_OPENAI_DEPLOYMENT": "gpt-35-turbo",
+      "DB_CONNECTION": "Driver={ODBC Driver 17 for SQL Server};Server=tcp:your-db.database.windows.net,1433;Database=yourdb;Uid=youruser;Pwd=yourpassword;Encrypt=yes;TrustServerCertificate=no;"
+    }
+  }

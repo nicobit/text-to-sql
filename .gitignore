@@ -37,7 +37,7 @@ obj/
 .env.production.local
 
 # IDEs and editors
-.vscode/
+
 .idea/
 *.suo
 *.ntvs*

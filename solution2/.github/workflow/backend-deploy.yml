@@ -1,0 +1,35 @@
+name: Deploy Backend (Azure Function)
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt
+
+      # (Optional) Run tests or lint here
+
+      - name: Package Azure Function
+        run: |
+          cd backend
+          zip -r function_app.zip * .[^.]* -x '*.venv/*'
+          cd ..
+      - name: Deploy to Azure Function
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ secrets.AZURE_FUNCTIONAPP_NAME }}           # e.g., "texttosql-func-app"
+          slot-name: 'production'
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+          package: backend/function_app.zip

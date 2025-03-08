@@ -1,0 +1,7 @@
+fastapi
+azure-functions
+pyodbc
+openai
+uvicorn
+starlette
+openai

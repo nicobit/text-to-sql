@@ -3,15 +3,19 @@
 import { useMsal } from "@azure/msal-react";
 import { loginRequest } from "./authConfig";
 
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, Typography } from '@mui/material';
 
 export const Login = () => {
+
+  const [userInfo, setUserInfo] = useState(null);
   const { instance } = useMsal();
   const handleLogin = () => {
-    instance.loginPopup(loginRequest).catch((e) => {
+    console.error("Handle Login");
+    console.info("Handle Login");
+     instance.loginPopup(loginRequest).then( (authResponse)=>{ console.error("set user info"); setUserInfo(authResponse.account); }).catch((e) => {
       console.error(e);
     });
   };

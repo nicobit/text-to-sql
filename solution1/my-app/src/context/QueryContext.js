@@ -10,6 +10,8 @@ export function QueryProvider({ children }) {
   const [selectedIndex, setSelectedIndex] = useState(null);
   // Access auth context (for example, to ensure user is authenticated)
   const { user, login, logout, isAuthenticated } = useAuth();
+  const { instance } = useMsal();
+
   //const isAuthenticated = useIsAuthenticated();
 
   const runQuery = async (queryText) => {
@@ -18,7 +20,7 @@ export function QueryProvider({ children }) {
       return;
     }
     try {
-      const resultData = await submitQuery(queryText);
+      const resultData = await submitQuery(instance,queryText);
       // Add new query result to history
       setQueries(prev => {
         const newEntry = { query: queryText, result: resultData.results, error: null };

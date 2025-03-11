@@ -5,3 +5,7 @@ openai
 uvicorn
 starlette
 openai
+msal
+requests
+langgraph
+pyjwt

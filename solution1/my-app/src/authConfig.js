@@ -8,6 +8,10 @@ export const msalConfig = {
     authority: "https://login.microsoftonline.com/2bc68803-f1aa-44bb-b6b4-1831a4bd8d58",
     redirectUri: "http://localhost:3000",
   },
+  cache: {
+      cacheLocation: "sessionStorage",
+      storeAuthStateInCookie: false
+  }
 };
 
 export const loginRequest = {

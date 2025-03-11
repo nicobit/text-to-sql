@@ -1,10 +1,19 @@
 {
-    "IsEncrypted": false,
-    "Values": {
-      "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-      "AZURE_OPENAI_ENDPOINT": "https://your-openai-instance.openai.azure.com",
-      "AZURE_OPENAI_KEY": "your-secret-key",
-      "AZURE_OPENAI_DEPLOYMENT": "gpt-35-turbo",
-      "DB_CONNECTION": "Driver={ODBC Driver 17 for SQL Server};Server=tcp:your-db.database.windows.net,1433;Database=yourdb;Uid=youruser;Pwd=yourpassword;Encrypt=yes;TrustServerCertificate=no;"
-    }
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "AZURE_OPENAI_ENDPOINT": "https://YYYY.openai.azure.com",
+    "AZURE_OPENAI_KEY": "",
+    "AZURE_OPENAI_DEPLOYMENT": "gpt-35-turbo",
+    "DB_CONNECTION": "Driver={ODBC Driver 18 for SQL Server};Server=tcp:[SERVER],1433;Database=[DATABASE];Uid=[USER];Pwd=[USER];Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "CORS_ALLOWED_ORIGINS": "http://localhost:3000",
+    "AZURE_AD_TENANT_ID": "[TENANTID]",
+    "AZURE_AD_CLIENT_ID": "[AZURE_AD_CLIENT_ID]"
+  },
+  "ConnectionStrings": {},
+  "Host": {
+    "CORS": "http://localhost:3000",
+    "CORSCredentials": true
   }
+}

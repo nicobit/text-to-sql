@@ -22,7 +22,7 @@ app = FastAPI()
 # Enable CORS (Allow only frontend domain)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://mywebsite.com", "http://localhost:3000"],  # Replace with your front-end URL
+    allow_origins=["http://mywebsite.com", "http://localhost:3000", "http://localhost:5173"],  # Replace with your front-end URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

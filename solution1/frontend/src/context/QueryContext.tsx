@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import { createContext, useState, ReactNode } from 'react';
 import { submitQuery } from '../api/api';
 import { useAuth } from './AuthContext';
 import { useMsal } from "@azure/msal-react";

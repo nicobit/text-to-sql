@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useEffect, useState } from 'react';
+import { useContext, useRef, useEffect, useState } from 'react';
 import { QueryContext } from '../context/QueryContext';
 import * as d3 from 'd3';
 

@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { PublicClientApplication, AccountInfo } from "@azure/msal-browser";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { PublicClientApplication } from "@azure/msal-browser";
 import { MsalProvider, useMsal, useIsAuthenticated } from "@azure/msal-react";
 import { msalConfig, loginRequest } from "../authConfig";
 

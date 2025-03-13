@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { PublicClientApplication } from '@azure/msal-browser';
 import { MsalProvider } from '@azure/msal-react';
-import { msalConfig, loginRequest } from '../authConfig'
+import { msalConfig } from '../authConfig'
 
 
 

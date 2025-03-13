@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 const Header: React.FC = () => {
   const { toggleTheme, mode } = useTheme();
   const { instance, accounts } = useMsal();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   const handleLogout = () => {
     instance.logoutPopup();

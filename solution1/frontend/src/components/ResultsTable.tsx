@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { QueryContext } from '../context/QueryContext';
 import { Table, TableHead, TableRow, TableCell, TableBody, Typography } from '@mui/material';
 

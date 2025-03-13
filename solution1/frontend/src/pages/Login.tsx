@@ -17,7 +17,8 @@ const Login: React.FC = () => {
  
     instance.loginPopup(loginRequest).then((authResponse: AuthResponse) => {
       
-      console.error("set user info");
+      console.info("set user info");
+      console.info(authResponse)
       const account = instance.getAllAccounts()[0];  // Get the first account
       instance.setActiveAccount(account);  // Set the active account
     }).catch((e) => {

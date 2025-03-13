@@ -1,4 +1,4 @@
-import React, { useState, useContext, FormEvent } from 'react';
+import  { useState, useContext, FormEvent } from 'react';
 import { QueryContext } from '../context/QueryContext';
 import { Box, TextField, Button, List, ListItem, Typography } from '@mui/material';
 

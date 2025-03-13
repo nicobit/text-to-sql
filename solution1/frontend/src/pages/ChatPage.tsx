@@ -10,6 +10,7 @@ const ChatPage: React.FC = () => {
     const [selectedTab, setSelectedTab] = useState<number>(0);
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+        console.info(event)
         setSelectedTab(newValue);
     };
 

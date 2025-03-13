@@ -9,3 +9,5 @@ msal
 requests
 langgraph
 pyjwt
+azure.identity
+azure.keyvault.secrets

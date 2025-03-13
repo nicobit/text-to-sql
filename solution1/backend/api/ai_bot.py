@@ -9,6 +9,9 @@ from langgraph.graph import StateGraph, END
 import logging
 from schema_cache import get_cached_schema
 from db_connector import execute_sql_query
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.secrets import SecretClient
+import azure.functions as func
 
 
 
@@ -28,11 +31,55 @@ from db_connector import execute_sql_query
 # from langgraph.graph.message import add_messages
 # import json
 
+connection_string_value = ""
+
+def get_connection_string() -> str:
+    """
+    RETRIEVE THE CONNECTION STRING
+    """
+    retval = connection_string_value
+    if retval == "":
+        USE_KEY_VAULT_TO_GET_CONNECTION_STRING = os.getenv("USE_KEY_VAULT_TO_GET_CONNECTION_STRING")
+        if USE_KEY_VAULT_TO_GET_CONNECTION_STRING == "FALSE":
+            KEY_VAULT_NAME = os.getenv("KEY_VAULT_NAME") 
+            DNS_SECRET_NAME = os.getenv("DNS_SECRET_NAME")
+            DATABASE_SECRET_NAME = os.getenv("DATABASE")
+            USERNAME_SECRET_NAME = os.getenv("USERNAME_SECRET_NAME")
+            PASSWORD_SECRET_NAME = os.getenv("PASSWORD_SECRET_NAME")
+
+            key_vault_url = f"https://{KEY_VAULT_NAME}.vault.azure.net/"
+            # Create a DefaultAzureCredential object
+            credential = DefaultAzureCredential()
+            # Create a SecretClient object
+            client = SecretClient(vault_url=key_vault_url, credential=credential)
+
+            DNS = retrieve_secret_value(client,DNS_SECRET_NAME)
+            DATABASE = retrieve_secret_value(client,DATABASE_SECRET_NAME)
+            USERNAME = retrieve_secret_value(client,USERNAME_SECRET_NAME)
+            PASSWORD = retrieve_secret_value(client,PASSWORD_SECRET_NAME)
+
+            connection_string_value = f"Driver={{ODBC Driver 18 for SQL Server}};Server=tcp:{DNS},1433;Database={DATABASE};Uid={USERNAME};Pwd={PASSWORD};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
+        else:
+            connection_string_value = os.getenv("CONNECTION_STRING")
+    return retval
+
+def retrieve_secret_value(client: SecretClient, secret_name:str) -> str:
+    """
+    RETRIEVE THE SECRET VALUE
+    """
+    secret_value = ""
+    
+    # Retrieve the secret
+    retrieved_secret = client.get_secret(secret_name)
+    secret_value = retrieved_secret.value
+    logging.info(f"Retrieved secret: {secret_value}")
+    return secret_value
+    
 
 OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
 OPEN_AI_KEY = os.getenv("AZURE_OPENAI_KEY")
 OPENAI_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT")
-CONNECTION_STRING = os.getenv("DB_CONNECTION")
+CONNECTION_STRING = get_connection_string()
 # In-memory storage for conversation contexts (could use persistent storage for long-term memory)
 user_sessions: Dict[str, "ConversationState"] = {}  
 
@@ -45,6 +92,8 @@ class ConversationState(TypedDict):
     chart_type: str
     schema: str
     user_session: str
+
+
 
 def initialize_conversation_state() -> ConversationState:
     return {

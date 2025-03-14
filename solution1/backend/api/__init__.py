@@ -69,7 +69,6 @@ async def nl_to_sql(request: QueryRequest, user=Depends(get_current_user)):
     Handle a natural language query, convert to SQL, execute it, and return results.
     """
     try:
-        
         result = await ai_bot.nl_to_sql(request.query, request.session_id, user["oid"])
 
         logging.info(f"RESULT: {result}")

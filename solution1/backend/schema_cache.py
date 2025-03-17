@@ -1,10 +1,26 @@
 import pyodbc
 import logging
+from opencensus.ext.azure.log_exporter import AzureLogHandler
+import os
+import db_helper
 
-def get_cached_schema(connection_string):
+# Set up your Application Insights Instrumentation Key
+APP_INSIGHT_CONNECTION_STRING = os.getenv("APP_INSIGHT_CONNECTION_STRING")
+
+# Create the logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+# Add Azure Log Handler to the logger
+handler = AzureLogHandler(connection_string=f'{APP_INSIGHT_CONNECTION_STRING}')
+logger.addHandler(handler)
+
+
+def get_cached_schema():
     """Retrieves and caches database schema (tables & columns)."""
     schema = {}
     try:
+        connection_string = db_helper.get_connection_string()
         conn = pyodbc.connect(connection_string)
         cursor = conn.cursor()
 

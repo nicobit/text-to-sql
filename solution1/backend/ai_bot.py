@@ -6,63 +6,27 @@ from typing import Dict
 from typing_extensions import TypedDict, List
 import json
 from langgraph.graph import StateGraph, END
-
 from schema_cache import get_cached_schema
 from db_connector import execute_sql_query
-from azure.identity import DefaultAzureCredential
-from azure.keyvault.secrets import SecretClient
-import azure.functions as func
+import logging 
+from opencensus.ext.azure.log_exporter import AzureLogHandler
 
+# Set up your Application Insights Instrumentation Key
+APP_INSIGHT_CONNECTION_STRING = os.getenv("APP_INSIGHT_CONNECTION_STRING")
 
+# Create the logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
-def get_connection_string() -> str:
-    """
-    RETRIEVE THE CONNECTION STRING
-    """
-  
-    USE_KEY_VAULT_TO_GET_CONNECTION_STRING = os.getenv("USE_KEY_VAULT_TO_GET_CONNECTION_STRING")
-    if USE_KEY_VAULT_TO_GET_CONNECTION_STRING == "FALSE":
-        KEY_VAULT_NAME = os.getenv("KEY_VAULT_NAME") 
-        DNS_SECRET_NAME = os.getenv("DNS_SECRET_NAME")
-        DATABASE_SECRET_NAME = os.getenv("DATABASE")
-        USERNAME_SECRET_NAME = os.getenv("USERNAME_SECRET_NAME")
-        PASSWORD_SECRET_NAME = os.getenv("PASSWORD_SECRET_NAME")
+# Add Azure Log Handler to the logger
+handler = AzureLogHandler(connection_string=f'{APP_INSIGHT_CONNECTION_STRING}')
+logger.addHandler(handler)
 
-        key_vault_url = f"https://{KEY_VAULT_NAME}.vault.azure.net/"
-        # Create a DefaultAzureCredential object
-        credential = DefaultAzureCredential()
-        # Create a SecretClient object
-        client = SecretClient(vault_url=key_vault_url, credential=credential)
-
-        DNS = retrieve_secret_value(client,DNS_SECRET_NAME)
-        DATABASE = retrieve_secret_value(client,DATABASE_SECRET_NAME)
-        USERNAME = retrieve_secret_value(client,USERNAME_SECRET_NAME)
-        PASSWORD = retrieve_secret_value(client,PASSWORD_SECRET_NAME)
-
-        retval = f"Driver={{ODBC Driver 18 for SQL Server}};Server=tcp:{DNS},1433;Database={DATABASE};Uid={USERNAME};Pwd={PASSWORD};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
-                    
-    else:
-        retval = os.getenv("CONNECTION_STRING")
-
-    return retval
-
-def retrieve_secret_value(client: SecretClient, secret_name:str) -> str:
-    """
-    RETRIEVE THE SECRET VALUE
-    """
-    secret_value = ""
-    
-    # Retrieve the secret
-    retrieved_secret = client.get_secret(secret_name)
-    secret_value = retrieved_secret.value
-    
-    return secret_value
-    
 
 OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
 OPEN_AI_KEY = os.getenv("AZURE_OPENAI_KEY")
 OPENAI_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT")
-CONNECTION_STRING = get_connection_string()
+
 # In-memory storage for conversation contexts (could use persistent storage for long-term memory)
 user_sessions: Dict[str, "ConversationState"] = {}  
 
@@ -98,7 +62,7 @@ def generate_sql(state: ConversationState) -> ConversationState:
 
     # Retrieve schema only if not sent before
     if not state["schema_sent"]:
-        schema = get_cached_schema(CONNECTION_STRING)
+        schema = get_cached_schema()
         schema_message = f"{json.dumps(schema, indent=2)}"
         state["schema"] = schema_message
         state["schema_sent"] = True
@@ -114,7 +78,7 @@ def generate_sql(state: ConversationState) -> ConversationState:
         User Questions: "{user_questions}"
         SQL Query:
         """
-
+    logger.info(f"Calling OpenAI with the following prompt:{prompt}")
     model = AzureOpenAI(
         api_key=OPEN_AI_KEY,
         azure_endpoint=OPENAI_ENDPOINT,
@@ -179,7 +143,7 @@ def execute_sql(state: ConversationState) -> ConversationState:
     sss = state["sql_query"]
     
     try:
-        result = execute_sql_query(state["sql_query"], CONNECTION_STRING)
+        result = execute_sql_query(state["sql_query"])
     except Exception as e:
         result = f"Error executing SQL: {str(e)}"
     

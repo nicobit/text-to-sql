@@ -9,6 +9,8 @@ from auth import verify_jwt
 from ai_bot import nl_to_sql
 import os
 
+import logging
+from opencensus.ext.azure.log_exporter import AzureLogHandler
 
 
 # Fetch CORS allowed origins from environment variable
@@ -16,7 +18,6 @@ CORS_ALLOWED_ORIGINS = os.getenv("CORSAllowedOrigins", "http://localhost:3000,ht
 
 # Split the string into a list of allowed origins
 allowed_origins = CORS_ALLOWED_ORIGINS.split(',')
-
 
 # Initialize FastAPI App
 fast_app = FastAPI() 
@@ -31,7 +32,15 @@ fast_app.add_middleware(
     allow_headers=["*"],
 )
 
+APP_INSIGHT_CONNECTION_STRING = os.getenv("APP_INSIGHT_CONNECTION_STRING")
 
+# Create the logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+# Add Azure Log Handler to the logger
+handler = AzureLogHandler(connection_string=f'{APP_INSIGHT_CONNECTION_STRING}')
+logger.addHandler(handler)
 
 @fast_app.get("/") 
 async def return_http_no_body(): 
@@ -70,13 +79,13 @@ class QueryResponse(BaseModel):
 @fast_app.post("/query")
 async def query(req: Request, body:  QueryRequest):
    
-    user = get_current_user(req)
+    user = await get_current_user(req)
    
     #body = req.get_json()
     query = body.query # body.get('query')
     session_id = body.session_id # body.get('session_id')
 
-  
+    logger.info(f"query called with the following paramenters:query={query};session_id={session_id}")
     result = await nl_to_sql(query, session_id, user["oid"])
     if result["chart_type"] == None:
         result["chart_type"] = "None"

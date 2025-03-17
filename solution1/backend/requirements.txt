@@ -16,3 +16,6 @@ azure.identity
 azure.keyvault.secrets
 pydantic
 typing-extensions
+opencensus-ext-azure
+opencensus
+sqlalchemy

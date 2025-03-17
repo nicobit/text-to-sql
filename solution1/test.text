@@ -1,0 +1,1 @@
+az functionapp function list --resource-group <ResourceGroupName> --name <FunctionAppName>

@@ -1,5 +1,4 @@
 import pyodbc
-import logging
 
 def execute_sql_query(sql_query, connection_string):
     """Executes a SQL query against Azure SQL Database and returns the results."""
@@ -15,5 +14,5 @@ def execute_sql_query(sql_query, connection_string):
         return results
 
     except Exception as e:
-        logging.error(f"Database query failed: {str(e)}")
+        
         raise

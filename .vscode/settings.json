@@ -1,6 +1,6 @@
 {
-    "azureFunctions.projectSubpath": "solution1\\backend",
-    "azureFunctions.deploySubpath": "solution1\\backend",
+    "azureFunctions.projectSubpath": "",
+    "azureFunctions.deploySubpath": "",
     "azureFunctions.scmDoBuildDuringDeployment": true,
     "azureFunctions.pythonVenv": ".venv",
     "azureFunctions.projectLanguage": "Python",

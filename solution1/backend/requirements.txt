@@ -1,4 +1,6 @@
 fastapi
+azurefunctions-extensions-http-fastapi
+starlette
 azure-functions
 pyodbc
 openai
@@ -12,3 +14,5 @@ langgraph
 pyjwt
 azure.identity
 azure.keyvault.secrets
+pydantic
+typing-extensions

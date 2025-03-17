@@ -1,11 +1,13 @@
 import { CLIENT_ID } from "./constants";
-import { TENANT_ID } from "./constants";
+import { TENANT_ID , REDIRECT_URI } from "./constants";
+
+
 
 export const msalConfig = {
   auth: {
     clientId: CLIENT_ID,
     authority: `https://login.microsoftonline.com/${TENANT_ID}`,
-    redirectUri: "http://localhost:5173/",
+    redirectUri: `${REDIRECT_URI}`,
   },
   cache: {
     cacheLocation: "sessionStorage" as const,

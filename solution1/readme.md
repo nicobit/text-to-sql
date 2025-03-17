@@ -199,3 +199,6 @@ https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-configure-a
 
 [MIT License](LICENSE)
 
+
+az functionapp deployment source config-zip --resource-group 'ai-poc-rg' --name 'nicbit-ai-func' --src 'function_app.zip' --build-remote true
+

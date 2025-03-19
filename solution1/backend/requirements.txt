@@ -19,3 +19,5 @@ typing-extensions
 opencensus-ext-azure
 opencensus
 sqlalchemy
+spacy
+fuzzywuzzy

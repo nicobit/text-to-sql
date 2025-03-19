@@ -10,6 +10,7 @@ from schema_cache import get_cached_schema
 from db_connector import execute_sql_query
 import logging 
 from opencensus.ext.azure.log_exporter import AzureLogHandler
+from fuzzywuzzy import fuzz
 
 # Set up your Application Insights Instrumentation Key
 APP_INSIGHT_CONNECTION_STRING = os.getenv("APP_INSIGHT_CONNECTION_STRING")
@@ -51,6 +52,25 @@ def initialize_conversation_state() -> ConversationState:
         "chart_type": "",
         "schema": ""
     }
+
+
+def fuzzy_match(query, schema):
+    matched_tables = {}
+    for table, columns in schema.items():
+        # Match query against the table name and column names
+        table_score = fuzz.partial_ratio(query.lower(), table.lower())
+        column_scores = [fuzz.partial_ratio(query.lower(), column.lower()) for column in columns]
+        
+        # Store the highest column score for each table
+        max_column_score = max(column_scores) if column_scores else 0
+        
+        # Calculate overall relevance score (you can tune this logic)
+        overall_score = (table_score + max_column_score) / 2
+        
+        if overall_score > 60:  # Only consider tables with a relevant score above a threshold
+            matched_tables[table] = overall_score
+    
+    return matched_tables
     
 # LangGraph nodes
 def generate_sql(state: ConversationState) -> ConversationState:
@@ -59,13 +79,17 @@ def generate_sql(state: ConversationState) -> ConversationState:
     """
     query = state["history"][-1].content
     schema_message = state["schema"]
+    schema = get_cached_schema()
+    fuzzySchema = fuzzy_match(query,schema)
+    schema_message = f"{json.dumps(schema, indent=2)}"
+    state["schema"] = schema_message
 
     # Retrieve schema only if not sent before
-    if not state["schema_sent"]:
-        schema = get_cached_schema()
-        schema_message = f"{json.dumps(schema, indent=2)}"
-        state["schema"] = schema_message
-        state["schema_sent"] = True
+    #if not state["schema_sent"]:
+    #    schema = get_cached_schema()
+    #    schema_message = f"{json.dumps(schema, indent=2)}"
+    #    state["schema"] = schema_message
+    #    state["schema_sent"] = True
 
     user_questions = "\n".join([message.content for message in state["history"]])
 

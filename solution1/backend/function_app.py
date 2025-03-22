@@ -44,7 +44,7 @@ logger.addHandler(handler)
 
 @fast_app.get("/") 
 async def return_http_no_body(): 
-    return Response(content="Text to SQL Is working", media_type="text/plain") 
+    return Response(content="Text to SQL Is working v.1.3", media_type="text/plain") 
 
 
 

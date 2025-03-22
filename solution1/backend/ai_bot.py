@@ -82,7 +82,7 @@ def generate_sql(state: ConversationState) -> ConversationState:
     schema = get_cached_schema()
     fuzzySchema = fuzzy_match(query,schema)
     schema_message = f"{json.dumps(schema, indent=2)}"
-    state["schema"] = schema_message
+    state["schema"] = fuzzySchema # schema_message
 
     # Retrieve schema only if not sent before
     #if not state["schema_sent"]:

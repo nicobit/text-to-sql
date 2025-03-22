@@ -11,3 +11,30 @@ az functionapp deployment source config-zip --resource-group 'ai-poc-rg' --name 
 
 To Test:
 Invoke-RestMethod -Uri "https://nicbit-ai-func.azurewebsites.net/query" -Method Post -Body (@{ query  = "value"; session_id = "test" } | ConvertTo-Json -Depth 10 ) -ContentType "application/json"
+
+
+
+fastapi
+azurefunctions-extensions-http-fastapi
+starlette
+azure-functions
+pyodbc
+openai
+uvicorn
+starlette
+openai
+msal
+requests
+langchain
+langgraph
+pyjwt
+azure.identity
+azure.keyvault.secrets
+pydantic
+typing-extensions
+opencensus-ext-azure
+opencensus
+sqlalchemy
+spacy
+python-levenshtein
+fuzzywuzzy

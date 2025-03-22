@@ -1,0 +1,19 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- UBS-style symmetrical lines (inspired element) -->
+  <g stroke="#B71C1C" stroke-width="2">
+    <line x1="30" y1="20" x2="60" y2="60"/>
+    <line x1="90" y1="20" x2="60" y2="60"/>
+    <line x1="60" y1="20" x2="60" y2="60"/>
+  </g>
+
+  <!-- Cloud -->
+  <path d="M38 80H82C89 80 94 75 94 68C94 62 90 57 85 55C83 47 76 42 69 42C65 42 61 44 58 46C55 41 49 38 43 38C34 38 28 46 28 54C21 56 16 61 16 68C16 75 22 80 30 80H38Z" fill="#F5F5F5" stroke="#212121" stroke-width="2"/>
+
+  <!-- Gear for Admin -->
+  <circle cx="60" cy="88" r="8" fill="#B71C1C"/>
+  <path d="M60 80V76M60 100V96M68 88H72M48 88H52M65.7 81.7L68.8 78.6M51.2 97.4L54.3 94.3M65.7 94.3L68.8 97.4M51.2 78.6L54.3 81.7" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- AI Chip -->
+  <rect x="82" y="82" width="16" height="16" rx="2" fill="#212121"/>
+  <path d="M90 82V78M90 98V102M98 90H102M78 90H74M87 87L93 93M87 93L93 87" stroke="#B71C1C" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

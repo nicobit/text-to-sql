@@ -20,4 +20,4 @@ opencensus-ext-azure
 opencensus
 sqlalchemy
 spacy
-fuzzywuzzy
+fuzzywuzzy[speedup]

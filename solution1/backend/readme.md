@@ -38,3 +38,6 @@ sqlalchemy
 spacy
 python-levenshtein
 fuzzywuzzy
+
+
+pip freeze | grep -E "^($(sed 's/[><=].*//g' requirements.txt | tr '\n' '|' | sed 's/|$//'))"

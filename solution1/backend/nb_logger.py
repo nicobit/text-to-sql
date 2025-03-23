@@ -2,14 +2,15 @@ import logging
 from opencensus.ext.azure.log_exporter import AzureLogHandler
 import os
 
+class NBLogger:
+    def __init__(self):
+        self.app_insight_connection_string = os.getenv("APP_INSIGHT_CONNECTION_STRING")
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.INFO)
+        handler = AzureLogHandler(connection_string=f'{self.app_insight_connection_string}')
+        self.logger.addHandler(handler)
 
-# Set up your Application Insights Instrumentation Key
-APP_INSIGHT_CONNECTION_STRING = os.getenv("APP_INSIGHT_CONNECTION_STRING")
+    def Log(self) -> any :
+        return self.logger
 
-# Create the logger
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-# Add Azure Log Handler to the logger
-handler = AzureLogHandler(connection_string=f'{APP_INSIGHT_CONNECTION_STRING}')
-logger.addHandler(handler)
+    

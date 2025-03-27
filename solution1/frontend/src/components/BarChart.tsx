@@ -102,7 +102,7 @@ function BarChart() {
   return (
     <Box sx={{ mt: 2, width: '100%' }}>
       <Typography variant="h6">Bar Chart</Typography>
-      <svg ref={chartRef} width="100%" height="600"></svg>
+      <svg ref={chartRef} width="100%" height="100%"></svg>
     </Box>
   );
 }

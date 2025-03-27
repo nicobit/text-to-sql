@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+openai
+pyodbc
+azure-search-documents
+numpy

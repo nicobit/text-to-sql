@@ -1,1 +1,2 @@
-export const API_BASE_URL = "https://nicbit-ai-func.azurewebsites.net"; // process.env.REACT_APP_API_BASE_URL || '/api';
+//export const API_BASE_URL = "https://nicbit-ai-func.azurewebsites.net"; // process.env.REACT_APP_API_BASE_URL || '/api';
+export const API_BASE_URL = "http://localhost:7071"; // process.env.REACT_APP_API_BASE_URL || '/api';

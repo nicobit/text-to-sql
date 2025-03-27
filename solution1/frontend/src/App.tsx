@@ -30,7 +30,7 @@ const App: React.FC = () => {
             <div style={{ display: 'flex', flexGrow: 1 }}>
             {/* Sidebar and Content */}
             <Sidebar />
-            <div style={{ flexGrow: 1 }}>
+            <div style={{ flexGrow: 1, height: '100%'}}>
               <Content />
             </div>
             </div>

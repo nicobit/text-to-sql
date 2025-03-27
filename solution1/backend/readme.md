@@ -4,6 +4,12 @@ Before you publish, run the following command to install the dependencies locall
 
  pip install  --target=".python_packages/lib/site-packages"  -r requirements.txt
 
+How to install poetry
+
+(Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
+
+initialize poetry:
+poetry init
 
 To deploy by commnand line :
 

@@ -1,5 +1,3 @@
-
-
 import azure.functions as func 
 from fastapi import FastAPI, Request, Response 
 from fastapi import FastAPI, Request, Response,Depends,HTTPException
@@ -8,20 +6,21 @@ from pydantic import BaseModel
 from auth import verify_jwt
 from ai_bot import nl_to_sql
 import os
+from nb_logger import NBLogger
 
-import logging
-from opencensus.ext.azure.log_exporter import AzureLogHandler
 
+logger = NBLogger().Log()
 
 # Fetch CORS allowed origins from environment variable
 CORS_ALLOWED_ORIGINS = os.getenv("CORSAllowedOrigins", "http://localhost:3000,http://localhost:5173,http://example.com")
+
+
 
 # Split the string into a list of allowed origins
 allowed_origins = CORS_ALLOWED_ORIGINS.split(',')
 
 # Initialize FastAPI App
 fast_app = FastAPI() 
-
 
 # Enable CORS (Allow only frontend domain)
 fast_app.add_middleware(
@@ -32,21 +31,9 @@ fast_app.add_middleware(
     allow_headers=["*"],
 )
 
-APP_INSIGHT_CONNECTION_STRING = os.getenv("APP_INSIGHT_CONNECTION_STRING")
-
-# Create the logger
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-# Add Azure Log Handler to the logger
-handler = AzureLogHandler(connection_string=f'{APP_INSIGHT_CONNECTION_STRING}')
-logger.addHandler(handler)
-
 @fast_app.get("/") 
 async def return_http_no_body(): 
     return Response(content="Text to SQL Is working v.1.3", media_type="text/plain") 
-
-
 
 
 async def get_current_user(request: func.HttpRequest):
@@ -99,23 +86,3 @@ app = func.AsgiFunctionApp(app=fast_app,
 async def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
        return await func.AsgiMiddleware(app).handle_async(req, context)
 
-
-#-----------------------------------------------------------
-
-#import azure.functions as func 
-#from fastapi import FastAPI, Request, Response 
-
-
-#fast_app = FastAPI() 
-
-#@fast_app.get("/return_http_no_body") 
-#async def return_http_no_body(): 
-#    return Response(content="Hello", media_type="text/plain") 
-
-#app = func.AsgiFunctionApp(app=fast_app, 
-#                           http_auth_level=func.AuthLevel.ANONYMOUS) 
-
-#async def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
-#    return await func.AsgiMiddleware(app).handle_async(req, context)
-
-#-----------------------------------------------------------

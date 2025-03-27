@@ -44,3 +44,7 @@ obj/
 *.njsproj
 *.sln
 *.sw?
+
+.venv
+.wheels
+wheels

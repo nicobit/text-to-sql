@@ -10,11 +10,11 @@ const Content: React.FC = () => {
     <main
       style={{
         marginTop: 64, // Header height
-       // marginLeft: 240, // Sidebar width (adjust if Sidebar is collapsed)
         padding: '20px',
         transition: 'margin-left 0.3s',
-      }}
-    >
+        height: 'calc(100% - 64px)'
+          }}
+        >
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/chat" element={<ChatPage />} />

@@ -19,9 +19,7 @@ const ChatSidebar: React.FC = () => {
     
 
     return (
-        <Box sx={{ width: 250, p: 2, borderRight: '1px solid #ddd', height: '100vh', boxSizing: 'border-box' }}>
-          
-          
+        <Box sx={{ width: 250, p: 2, borderRight: '1px solid #ddd', height: '100%', boxSizing: 'border-box', overflowY: 'auto' }}>
             <Divider />
             <Typography variant="subtitle1" sx={{ mt: 2 }}>Previous Queries:</Typography>
             <List>

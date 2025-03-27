@@ -60,7 +60,7 @@ const Sidebar: React.FC = () => {
           padding: '10px',
         }}
       >
-        <IconButton onClick={toggleSidebar}>
+        <IconButton onClick={toggleSidebar} sx={{ outline: 'none', '&:focus': { outline: 'none' } }}>
           {isOpen ? <ChevronLeft /> : <ChevronRight />}
         </IconButton>
       </div>

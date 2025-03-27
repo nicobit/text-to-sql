@@ -7,6 +7,8 @@ import { useMsal } from "@azure/msal-react";
 interface Query {
   query: string;
   result: any;
+  answer:string;
+  chartType:string;
   error: string | null;
 }
 
@@ -37,13 +39,13 @@ export function QueryProvider({ children }: QueryProviderProps) {
     try {
       const resultData = await submitQuery(instance, queryText);
       setQueries(prev => {
-        const newEntry: Query = { query: queryText, result: resultData.results, error: null };
+        const newEntry: Query = { query: queryText, result: resultData.results,answer:resultData.answer, chartType:resultData.chart_type, error: null };
         return [...prev, newEntry];
       });
       setSelectedIndex(queries.length);
     } catch (err: any) {
       setQueries(prev => {
-        const newEntry: Query = { query: queryText, result: null, error: err.message || 'Error' };
+        const newEntry: Query = { query: queryText, result: null, answer:"", chartType:"", error: err.message || 'Error' };
         return [...prev, newEntry];
       });
       setSelectedIndex(queries.length);

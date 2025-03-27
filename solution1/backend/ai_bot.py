@@ -8,29 +8,15 @@ import json
 from langgraph.graph import StateGraph, END
 from schema_cache import get_cached_schema
 from db_connector import execute_sql_query
-import logging 
-from opencensus.ext.azure.log_exporter import AzureLogHandler
 from fuzzywuzzy import fuzz
-
-# Set up your Application Insights Instrumentation Key
-APP_INSIGHT_CONNECTION_STRING = os.getenv("APP_INSIGHT_CONNECTION_STRING")
-
-# Create the logger
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-# Add Azure Log Handler to the logger
-handler = AzureLogHandler(connection_string=f'{APP_INSIGHT_CONNECTION_STRING}')
-logger.addHandler(handler)
+import settings
+from nb_logger import NBLogger
 
 
-OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
-OPEN_AI_KEY = os.getenv("AZURE_OPENAI_KEY")
-OPENAI_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT")
+logger = NBLogger().Log()
 
 # In-memory storage for conversation contexts (could use persistent storage for long-term memory)
 user_sessions: Dict[str, "ConversationState"] = {}  
-
 
 class ConversationState(TypedDict):
     history: List[HumanMessage]
@@ -41,8 +27,6 @@ class ConversationState(TypedDict):
     schema: str
     user_session: str
 
-
-
 def initialize_conversation_state() -> ConversationState:
     return {
         "history": [],
@@ -52,7 +36,6 @@ def initialize_conversation_state() -> ConversationState:
         "chart_type": "",
         "schema": ""
     }
-
 
 def fuzzy_match(query, schema):
     matched_tables = {}
@@ -104,12 +87,12 @@ def generate_sql(state: ConversationState) -> ConversationState:
         """
     logger.info(f"Calling OpenAI with the following prompt:{prompt}")
     model = AzureOpenAI(
-        api_key=OPEN_AI_KEY,
-        azure_endpoint=OPENAI_ENDPOINT,
+        api_key = settings.OPEN_AI_KEY,
+        azure_endpoint = settings.OPENAI_ENDPOINT,
         api_version="2025-01-01-preview",
     )
     response = model.chat.completions.create(
-        model="gpt-35-turbo",
+        model= settings.OPENAI_DEPLOYMENT,
         messages=[
             {
                 "role": "system",
@@ -164,8 +147,7 @@ def execute_sql(state: ConversationState) -> ConversationState:
     """
     Execute SQL query and return results.
     """
-    sss = state["sql_query"]
-    
+       
     try:
         result = execute_sql_query(state["sql_query"])
     except Exception as e:
@@ -174,10 +156,7 @@ def execute_sql(state: ConversationState) -> ConversationState:
     state["query_result"] = result
     return state
 
-
-
 graph = StateGraph(ConversationState)
-
 state = ConversationState()
 
 graph.add_node("generate_sql", generate_sql)
@@ -194,12 +173,10 @@ compiled_graph = graph.compile()
 
 
 # Define the state for LangGraph
-
 async def nl_to_sql(user_input: str, session_id: str, user_id: str):
 
-
     user_session = user_id + "-" + session_id
-    
+
     if user_session not in user_sessions:
         user_sessions[user_session] = initialize_conversation_state()
 

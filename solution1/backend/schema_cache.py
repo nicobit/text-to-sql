@@ -1,19 +1,9 @@
 import pyodbc
-import logging
-from opencensus.ext.azure.log_exporter import AzureLogHandler
-import os
 import db_helper
+from nb_logger import NBLogger
 
-# Set up your Application Insights Instrumentation Key
-APP_INSIGHT_CONNECTION_STRING = os.getenv("APP_INSIGHT_CONNECTION_STRING")
 
-# Create the logger
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-# Add Azure Log Handler to the logger
-handler = AzureLogHandler(connection_string=f'{APP_INSIGHT_CONNECTION_STRING}')
-logger.addHandler(handler)
+logger = NBLogger().Log()
 
 
 def get_cached_schema():
@@ -32,9 +22,9 @@ def get_cached_schema():
             schema[table].append(column)
 
         conn.close()
-        logging.info("Schema cached successfully.")
+        logger.info("Schema cached successfully.")
         return schema
 
     except Exception as e:
-        logging.error(f"Schema inference failed: {str(e)}")
+        logger.error(f"Schema inference failed: {str(e)}")
         return {}

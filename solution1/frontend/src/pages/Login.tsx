@@ -14,13 +14,13 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
 
   const handleLogin = () => {
- 
+    
     instance.loginPopup(loginRequest).then((authResponse: AuthResponse) => {
-      
       console.info("set user info");
-      console.info(authResponse)
+      console.info(authResponse);
       const account = instance.getAllAccounts()[0];  // Get the first account
       instance.setActiveAccount(account);  // Set the active account
+      navigate('/');  // Redirect to the main page after login
     }).catch((e) => {
       console.error(e);
     });

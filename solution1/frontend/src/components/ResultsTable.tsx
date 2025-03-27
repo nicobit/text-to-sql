@@ -30,26 +30,56 @@ function ResultsTable() {
   const columns = Object.keys(data[0]);
 
   return (
-    <Table sx={{ mt: 2 }} size="small">
+    <>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
+      <button
+        onClick={() => {
+        const text = data.map(row => columns.map(col => row[col]).join('\t')).join('\n');
+        navigator.clipboard.writeText(text);
+        }}
+        style={{ marginRight: '8px' }}
+      >
+        Copy to Clipboard
+      </button>
+      <button
+        onClick={() => {
+        const rows = [columns, ...data.map(row => columns.map(col => row[col]))];
+        const csvContent = rows.map(e => e.join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'table_data.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        }}
+      >
+        Download as Excel
+      </button>
+      </div>
+      <Table sx={{ mt: 2 }} size="small">
       <TableHead>
         <TableRow>
-          {columns.map(col => (
-            <TableCell key={col}><strong>{col}</strong></TableCell>
-          ))}
+        {columns.map(col => (
+          <TableCell key={col}><strong>{col}</strong></TableCell>
+        ))}
         </TableRow>
       </TableHead>
       <TableBody>
         {data.map((row, idx) => (
-          <TableRow key={idx}>
-            {columns.map(col => (
-              <TableCell key={col + idx}>
-                {row[col] !== undefined ? String(row[col]) : ''}
-              </TableCell>
-            ))}
-          </TableRow>
+        <TableRow key={idx}>
+          {columns.map(col => (
+          <TableCell key={col + idx}>
+            {row[col] !== undefined ? String(row[col]) : ''}
+          </TableCell>
+          ))}
+        </TableRow>
         ))}
       </TableBody>
-    </Table>
+      </Table>
+    </>
   );
 }
 

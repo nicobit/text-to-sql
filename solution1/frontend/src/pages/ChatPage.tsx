@@ -1,69 +1,84 @@
 import React, { useState } from 'react';
-
 import Chat from '../components/Chat';
 import ResultsTable from '../components/ResultsTable';
 import BarChart from '../components/BarChart';
 import { Box, Tabs, Tab, Collapse, IconButton } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
 import ChatSideBar from '../components/ChatSideBar';
 
-
 const ChatPage: React.FC = () => {
-    const [selectedTab, setSelectedTab] = useState<number>(0);
-    const [isCollapsed, setIsCollapsed] = useState<boolean>(true);
+  const [selectedTab, setSelectedTab] = useState<number>(0);
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(true);
 
-    const toggleCollapse = () => {
-        setIsCollapsed((prev) => !prev);
-    };
+  const toggleCollapse = () => {
+    setIsCollapsed(prev => !prev);
+  };
 
-    const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-        setSelectedTab(newValue);
-    };
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    setSelectedTab(newValue);
+  };
 
-    return (
-        <div style={{ height: '88vh', overflow: 'hidden' }}>
-        <h2 style={{ margin: 0, padding: '1rem' }}>Chat</h2>
-        {/* Adjust the remaining height by subtracting header height (e.g., 60px) */}
-        <Box sx={{ display: 'flex', height: 'calc(100% - 60px)' }}>
-          <ChatSideBar />
-          <Box
+  return (
+    <div style={{ height: '88vh', overflow: 'hidden' }}>
+      <h2 style={{ margin: 0, padding: '1rem' }}>Chat</h2>
+      {/* Adjust the remaining height by subtracting header height (e.g., 60px) */}
+      <Box sx={{ display: 'flex', height: 'calc(100% - 60px)' }}>
+        <ChatSideBar />
+        <Box
+          sx={{
+            flexGrow: 1,
+            p: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            width: isCollapsed ? '100%' : '0%',
+            visibility: isCollapsed ? 'visible' : 'hidden',
+            boxSizing: 'border-box',
+            overflow: 'hidden'
+          }}
+        >
+          <Chat />
+        </Box>
+        {/* Updated container for the Collapse */}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            width: isCollapsed ? 'auto' : '100%',
+            transition: 'width 1s ease',
+            boxSizing: 'border-box',
+            height: '100%'
+          }}
+        >
+          <IconButton
+            onClick={toggleCollapse}
             sx={{
-              flexGrow: 1,
-              p: 2,
-              display: 'flex',
-              flexDirection: 'column',
-              width: isCollapsed ? '100%' : '0%',
-              visibility: isCollapsed ? 'visible' : 'hidden',
-              boxSizing: 'border-box',
-              overflow: 'hidden'
+              alignSelf: 'flex-end',
+              outline: 'none',
+              '&:focus': { outline: 'none' }
             }}
           >
-            <Chat />
-          </Box>
-          <Box sx={{ width: isCollapsed ? 'auto' : '100%', transition: 'width 1s ease',  flexDirection: 'column',boxSizing: 'border-box' }}>
-            <IconButton
-              onClick={toggleCollapse}
-              sx={{ alignSelf: 'flex-end', outline: 'none', '&:focus': { outline: 'none' } }}
-            >
-              {isCollapsed ? (
-                <ExpandMoreIcon style={{ transform: 'rotate(90deg)' }} />
-              ) : (
-                <ExpandMoreIcon style={{ transform: 'rotate(-90deg)' }} />
-              )}
-            </IconButton>
-            <Collapse in={!isCollapsed} timeout="auto" unmountOnExit>
+            {isCollapsed ? (
+              <ExpandMoreIcon style={{ transform: 'rotate(90deg)' }} />
+            ) : (
+              <ExpandMoreIcon style={{ transform: 'rotate(-90deg)' }} />
+            )}
+          </IconButton>
+          <Collapse in={!isCollapsed} timeout="auto" unmountOnExit sx={{ flexGrow: 1 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
               <Tabs value={selectedTab} onChange={handleTabChange}>
                 <Tab label="Results Table" />
-                <Tab label="Bar Chart" />
+                <Tab label="Chart" />
               </Tabs>
-              {selectedTab === 0 && <ResultsTable />}
-              {selectedTab === 1 && <BarChart />}
-            </Collapse>
-          </Box>
+              <Box sx={{ flexGrow: 1, overflow: 'auto', minHeight : 700}}>
+                {selectedTab === 0 && <ResultsTable />}
+                {selectedTab === 1 && <BarChart />}
+              </Box>
+            </Box>
+          </Collapse>
         </Box>
-      </div>
-    );
+      </Box>
+    </div>
+  );
 };
 
 export default ChatPage;

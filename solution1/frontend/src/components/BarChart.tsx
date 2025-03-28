@@ -56,7 +56,7 @@ function BarChart() {
     const chartData = data.filter(d => typeof d[yField] === 'number');
 
     // Dimensions
-    const height = 600;
+    const height = 400;
     const margin = { top: 20, right: 20, bottom: 100, left: 40 }; // Increased bottom margin for x-axis labels
 
     // Scales
@@ -100,8 +100,8 @@ function BarChart() {
   }, [data, width]);
 
   return (
-    <Box sx={{ mt: 2, width: '100%' }}>
-      <Typography variant="h6">Bar Chart</Typography>
+    <Box sx={{ mt: 2, width: '100%' , height:500, position: 'relative' }}>
+      <Typography variant="h6">Chart</Typography>
       <svg ref={chartRef} width="100%" height="100%"></svg>
     </Box>
   );

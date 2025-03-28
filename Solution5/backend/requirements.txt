@@ -1,6 +1,6 @@
 ./wheels/fastapi-0.110.1-py3-none-any.whl
 ./wheels/uvicorn-0.29.0-py3-none-any.whl
-./wheels/openai-1.68.2-py3-none-any.whl
+./wheels/openai-1.69.0-py3-none-any.whl
 pyodbc
 ./wheels/azure_search_documents-11.5.2-py3-none-any.whl
 numpy
@@ -10,10 +10,12 @@ numpy
 ./wheels/msal-1.32.0-py3-none-any.whl
 ./wheels/requests-2.32.3-py3-none-any.whl
 ./wheels/langchain-0.2.17-py3-none-any.whl
-./wheels/langgraph-0.3.20-py3-none-any.whl
+./wheels/langgraph-0.3.21-py3-none-any.whl
 azure.identity
 azure.keyvault.secrets
 ./wheels/pydantic-2.7.1-py3-none-any.whl
 ./wheels/typing_extensions-4.13.0-py3-none-any.whl
 ./wheels/opencensus_ext_azure-1.1.14-py2.py3-none-any.whl
 ./wheels/opencensus-0.11.4-py2.py3-none-any.whl
+azure.storage
+azure.storage.blob

@@ -36,7 +36,7 @@ async def query(req: Request, body:  QueryRequest):
     if result["chart_type"] == None:
         result["chart_type"] = "None"
 
-    return {"results": result["response"],"chart_type":result["chart_type"],"answer":result["answer"]}
+    return {"results": result["response"],"chart_type":result["chart_type"],"answer":result["answer"],"sql_query":result["sql_query"]}
 
 
 app = func.AsgiFunctionApp(app=fast_app, 

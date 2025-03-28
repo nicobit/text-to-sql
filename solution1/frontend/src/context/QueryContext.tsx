@@ -10,6 +10,7 @@ interface Query {
   answer:string;
   chartType:string;
   error: string | null;
+  sql_query?: string;
 }
 
 interface QueryContextType {
@@ -39,7 +40,7 @@ export function QueryProvider({ children }: QueryProviderProps) {
     try {
       const resultData = await submitQuery(instance, queryText);
       setQueries(prev => {
-        const newEntry: Query = { query: queryText, result: resultData.results,answer:resultData.answer, chartType:resultData.chart_type, error: null };
+        const newEntry: Query = {sql_query:  resultData.sql_query, query: queryText, result: resultData.results,answer:resultData.answer, chartType:resultData.chart_type, error: null };
         return [...prev, newEntry];
       });
       setSelectedIndex(queries.length);

@@ -68,4 +68,4 @@ async def nl_to_sql(user_input: str, session_id: str, user_id: str):
     user_sessions[user_session] = state
 
 
-    return {"answer":state["answer"],"query": state["sql_query"], "response": state["query_result"], "chart_type": state["chart_type"]}
+    return {"answer":state["answer"],"sql_query": state["sql_query"], "response": state["query_result"], "chart_type": state["chart_type"]}

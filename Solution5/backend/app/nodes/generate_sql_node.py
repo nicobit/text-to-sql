@@ -1,5 +1,9 @@
 from app.data.conversation_state import ConversationState
 from app.services.openai_service import generate_sql_query
+from app.utils.nb_logger import NBLogger
+from app.settings import ROWS_LIMIT
+
+logger = NBLogger().Log()
 
 def build_prompt(user_question: str, examples: list, dynamic_schema: str) -> str:
     """
@@ -7,7 +11,7 @@ def build_prompt(user_question: str, examples: list, dynamic_schema: str) -> str
     """
     prompt_lines = []
     prompt_lines.append("You are an expert at providing facts from a SQL Database. "
-                        "Given the database schema , produce a Microsoft SQL SELECT query that answers the question."
+                        "Given the database schema , produce a Microsoft SQL SELECT query that answers the question. Add a TOP {ROWS_LIMIT} statement to limit the number of results to {ROWS_LIMIT}. "
                         "Do not return any explanations or queries for previous questions."
                         "Ensure the SQL syntax is correct for Microsoft SQL Server database and relevant to the given context, don't include 'Limit statement."
                         "Also suggest an ideal chart type (e.g., bar, line, pie) for visualizing the result, don't give any explanation and add after ChartType: \n")
@@ -20,6 +24,8 @@ def build_prompt(user_question: str, examples: list, dynamic_schema: str) -> str
         prompt_lines.append(f"SQL: {ex['sql']}\n")
     prompt_lines.append(f"User Questions: {user_question}")
     prompt_lines.append("SQL Query:")
+
+    
     return "\n".join(prompt_lines)
 
   
@@ -41,7 +47,7 @@ def generate_sql_node(state: ConversationState) -> ConversationState:
 
     state["sql_query"] = sql_query
     state["chart_type"] = chart_type
-
+    logger.info(f"Generated SQL query: {sql_query}")
     return state
 
 

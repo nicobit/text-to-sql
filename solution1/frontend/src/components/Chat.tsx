@@ -49,7 +49,7 @@ function Chat() {
         >
           <List>
             {queries.map((entry, index) => (
-              <ListItem key={index} sx={{ display: 'block' }}>
+              <ListItem key={index} sx={{ display: 'block' }} ref={index === queries.length - 1 ? (el) => el?.scrollIntoView({ behavior: 'smooth' }) : null}>
                 <Typography variant="body1" sx={{ color: 'darkgreen' }}>
                   <strong>User:</strong> {entry.query}
                 </Typography>
@@ -57,10 +57,12 @@ function Chat() {
                   <Typography variant="body2" color="error">
                     <strong>Error:</strong> {entry.error}
                   </Typography>
-                ) : entry.result ? (
+                ) : entry.answer ? (
                   <div>
                     <Typography variant="body1">
-                      <ReactMarkdown>{entry.answer}</ReactMarkdown>
+                      <ReactMarkdown>
+                        {entry.result === null ? entry.answer : entry.answer}
+                      </ReactMarkdown>
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'gray' }}>
                       <strong>System:</strong> Query executed. Returned{' '}

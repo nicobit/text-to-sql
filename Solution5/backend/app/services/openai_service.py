@@ -34,6 +34,7 @@ def generate_sql_query(prompt: str) -> str:
         temperature=0, # Deterministic output
     )
     sql_query = response.choices[0].message.content.strip()
+    
     return sql_query
 
 def retry_generate_sql_query(prompt: str) -> str:
@@ -59,7 +60,8 @@ def generate_answer(user_question: str, sql_results: list) -> str:
     response = client.chat.completions.create(
         model=COMPLETION_MODEL,
         messages=[{"role": "user", "content": followup_prompt}],
-        temperature=0.6
+        max_tokens=1000,
+        temperature=0.2
     )
     answer = response.choices[0].message.content.strip()
     return answer

@@ -2,6 +2,7 @@ import numpy as np
 from app.services import openai_service
 from app.services.db_service import DBHelper
 from app.utils.nb_logger import NBLogger
+import app.services.embedding_service as embedding_service
 
 logger = NBLogger().Log()
 
@@ -40,7 +41,7 @@ def initialize_schema_embeddings() -> dict:
             # Create a summary string for the table.
             # Since there's no description, we only list table name and columns.
             summary = f"Table: {table_name}. Columns: {', '.join(columns)}."
-            embedding = openai_service.get_embedding(summary)
+            embedding = embedding_service.get_or_generate_embedding(table_name,summary)
             retval[table_name] = {
                 "embedding": embedding,
                 "columns": columns  # store the columns list

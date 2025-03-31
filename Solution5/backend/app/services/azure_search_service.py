@@ -20,7 +20,7 @@ class AzureSearchService:
     @staticmethod
     def create_search_index(databaseName):
         try:
-            index_name = f"{SEARCH_INDEX_NAME}_{databaseName}".lower()
+            index_name = f"{SEARCH_INDEX_NAME}".lower()
             index_client = SearchIndexClient(
                 endpoint=SEARCH_SERVICE_ENDPOINT,
                 credential=AzureKeyCredential(SEARCH_API_KEY)
@@ -36,6 +36,7 @@ class AzureSearchService:
                 "name": index_name,
                 "fields": [
                     {"name": "doc_id", "type": "Edm.String", "key": True},
+                    {"name": "database", "type": "Edm.String", "searchable": True},
                     {"name": "question", "type": "Edm.String", "searchable": True},
                     {"name": "sql", "type": "Edm.String", "searchable": True},
                     {
@@ -83,7 +84,7 @@ class AzureSearchService:
         Retrieve the SearchClient for the specified database.
         If it doesn't exist, create it and store it in the class variable.
         """
-        index_name = f"{SEARCH_INDEX_NAME}_{databaseName}".lower()
+        index_name = f"{SEARCH_INDEX_NAME}".lower()
         if index_name not in AzureSearchService.searchClients:
             AzureSearchService.searchClients[index_name] = SearchClient(
                 endpoint=SEARCH_SERVICE_ENDPOINT,
@@ -104,16 +105,21 @@ class AzureSearchService:
                 "kind": "vector",  # Must be "vector" for pure vector queries.
                 "vector": question_embedding,  # Your embedding array
                 "fields": "question_vector",
-                "k": top_k
+                "k": top_k,
+                "filter": f"database eq '{databaseName}'"  # Include database in the query filter
             }
 
             results = search_client.search(
                 search_text=None,
                 vector_queries=[vector_query],
-                select=["doc_id","question", "sql", "sql_vector"]
+                select=["doc_id","database","question", "sql", "sql_vector"]
             )
+
+            
             examples = []
             for result in results:
+                if not result.get("database") or result.get("database") != databaseName:
+                    raise AzureSearchServiceError("Database field is null or empty in the search result", code=1007)
                 examples.append({
                     "doc_id": result["doc_id"],
                     "question": result["question"],
@@ -130,6 +136,9 @@ class AzureSearchService:
     @staticmethod
     def add_example_to_search(databaseName, question: str, sql: str, question_embedding: list, sql_embedding: list):
         try:
+
+            if not databaseName:
+                    raise AzureSearchServiceError("databaseName can't be empty", code=1007)
             search_client = AzureSearchService.getClient(databaseName)
 
             document = {
@@ -137,7 +146,8 @@ class AzureSearchService:
                 "question": question,
                 "sql": sql,
                 "question_vector": question_embedding,
-                "sql_vector": sql_embedding
+                "sql_vector": sql_embedding,
+                "database": databaseName  # Include the database name in the document
             }
             search_client.upload_documents(documents=[document])
         except Exception as e:
@@ -155,6 +165,10 @@ class AzureSearchService:
 
     @staticmethod
     def update_example_in_search(databaseName, doc_id: str, new_question: str, new_sql: str, new_question_embedding: list, new_sql_embedding: list):
+
+        if not databaseName:
+            raise AzureSearchServiceError("databaseName can't be empty", code=1007)
+
         try:
             search_client = AzureSearchService.getClient(databaseName)
 
@@ -163,7 +177,9 @@ class AzureSearchService:
                 "question": new_question,
                 "sql": new_sql,
                 "question_vector": new_question_embedding,
-                "sql_vector": new_sql_embedding
+                "sql_vector": new_sql_embedding,
+                "database": databaseName  # Include the database name in the document
+
             }
             search_client.merge_documents(documents=[updated_document])
         except Exception as e:
@@ -172,16 +188,20 @@ class AzureSearchService:
 
     @staticmethod
     def list_examples_in_search(databaseName) -> list:
+        if not databaseName:
+            raise AzureSearchServiceError("databaseName can't be empty", code=1007)
+
         try:
             search_client = AzureSearchService.getClient(databaseName)
-
-            results = search_client.search(search_text="*", select=["question", "sql","doc_id"], top=100)
+            filter_query = f"database eq '{databaseName}'"
+            results = search_client.search(search_text="*",filter=filter_query, select=["question", "sql","doc_id","database"], top=100)
             examples = []
             for result in results:
                 examples.append({
                     "doc_id": result["doc_id"],
                     "question": result["question"],
-                    "sql": result["sql"]
+                    "sql": result["sql"],
+                    "database": result["database"]
                 })
             return examples
         except Exception as e:

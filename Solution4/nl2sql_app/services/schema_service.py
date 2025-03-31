@@ -1,5 +1,8 @@
 import numpy as np
 from services import openai_service
+from utils.nb_logger import NBLogger
+
+logger = NBLogger().Log()
 
 # Define your schema as a list of table dictionaries.
 SCHEMA = [
@@ -24,6 +27,8 @@ def initialize_schema_embeddings():
     """Compute and cache embeddings for each table in the schema."""
     for table in SCHEMA:
         summary = f"Table: {table['table']}. Columns: {', '.join(table['columns'])}. Description: {table['description']}"
+        logger.info(f"Generating embedding for table: {table['table']}")
+        # Generate the embedding using OpenAI API.
         embedding = openai_service.get_embedding(summary)
         TABLE_EMBEDDINGS[table["table"]] = {
             "embedding": embedding,

@@ -9,9 +9,13 @@ def build_prompt(user_question: str, examples: list, dynamic_schema: str) -> str
     """
     Build the GPT-4 prompt with the dynamic schema snippet, few-shot examples, and user question.
     """
+    logger.info("Building prompt for SQL generation...")
+    logger.info(f"User question: {user_question}") 
+    logger.info(f"Dynamic schema: {dynamic_schema}")
+    logger.info(f"Few-shot examples: {examples}")   
     prompt_lines = []
     prompt_lines.append("You are an expert at providing facts from a SQL Database. "
-                        "Given the database schema , produce a Microsoft SQL SELECT query that answers the question. Add a TOP {ROWS_LIMIT} statement to limit the number of results to {ROWS_LIMIT}. "
+                        f"Given the database schema , produce a Microsoft SQL SELECT query that answers the question and return maximum {ROWS_LIMIT} rows. "
                         "Do not return any explanations or queries for previous questions."
                         "Ensure the SQL syntax is correct for Microsoft SQL Server database and relevant to the given context, don't include 'Limit statement."
                         "Also suggest an ideal chart type (e.g., bar, line, pie) for visualizing the result, don't give any explanation and add after ChartType: \n")
@@ -37,9 +41,9 @@ def generate_sql_node(state: ConversationState) -> ConversationState:
     history = state["history"]
     user_question = history[-1].content
     relevant_schema = state["relevant_schema"] 
-    prompt = build_prompt(user_question, "", relevant_schema)
+    examples = state["examples"]
+    prompt = build_prompt(user_question, examples, relevant_schema)
 
-    # Step 5: Generate SQL query using GPT-4.
     result = generate_sql_query(prompt)
     temp = ParseResult(result)
     sql_query = temp["sql"]

@@ -25,6 +25,7 @@ def get_key(name,text):
 
 def generate_embedding(text):
     """Generate embedding using OpenAI API."""
+    logger.info(f"Generating embedding for text: {text}")
     return openai_service.get_embedding(text)
     
 
@@ -58,6 +59,8 @@ def get_embedding_from_blob(name:str,text:str):
 
 def get_or_generate_embedding(name:str,text:str):
     """Retrieve from cache, then from blob, or generate a new embedding."""
+
+    logger.info(f"Retrieving or generating embedding for text: {text}")
     # Check in-memory cache first
     if text in embedding_cache:
         print("Embedding found in memory cache.")

@@ -10,6 +10,9 @@ from app.nodes.execute_sql_node import execute_sql_node
 from app.nodes.generate_final_answer_node import generate_final_answer_node
 from app.nodes.select_relevant_schema_node import select_relevant_schema_node
 from app.nodes.embed_user_question_node import embed_user_question_node
+from app.nodes.retrieve_examples_node import retrieve_examples_node
+
+from app.services.db_service import DBHelper
 
 
 logger = NBLogger().Log()
@@ -20,14 +23,15 @@ graph = StateGraph(ConversationState)
 state = ConversationState()
 
 graph.add_node("embed_user_question", embed_user_question_node)
+graph.add_node("retrieve_examples_node", retrieve_examples_node )
 graph.add_node("select_relevant_schema_node", select_relevant_schema_node)
 graph.add_node("generate_sql", generate_sql_node)
 graph.add_node("execute_sql", execute_sql_node)
 graph.add_node("generate_final_answer_node", generate_final_answer_node)
 
 # Edges
-graph.add_edge("embed_user_question", "select_relevant_schema_node")
-graph.add_edge("select_relevant_schema_node", "generate_sql")
+graph.add_edge("embed_user_question", "retrieve_examples_node")
+graph.add_edge("retrieve_examples_node", "select_relevant_schema_node")
 graph.add_edge("select_relevant_schema_node", "generate_sql")
 graph.add_edge("generate_sql", "execute_sql")
 graph.add_edge("execute_sql", "generate_final_answer_node")
@@ -40,7 +44,7 @@ compiled_graph = graph.compile()
 
 
 # Define the state for LangGraph
-async def nl_to_sql(user_input: str, session_id: str, user_id: str):
+async def nl_to_sql(user_input: str, session_id: str, user_id: str, database: str = "default") -> Dict[str, str]:
     """
     Orchestrate the entire NL-to-SQL workflow:
       1. Embed the user question.
@@ -61,6 +65,7 @@ async def nl_to_sql(user_input: str, session_id: str, user_id: str):
     index = len(state["history"])
     myContent = f"{index + 1}. {user_input}"
     
+    state["database"] = DBHelper.getDBName(database)
     state["history"].append(HumanMessage(content= myContent ))
     state["user_session"] = user_session
     state = compiled_graph.invoke(state)

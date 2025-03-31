@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar';
 import Content from './components/Content';
 import { useIsAuthenticated } from "@azure/msal-react";
 import Login from './pages/Login';
+import { SnackbarProvider} from 'notistack';
 
 const App: React.FC = () => {
   const isAuthenticated = useIsAuthenticated();
@@ -23,7 +24,7 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider>
-      
+      <SnackbarProvider>
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw' }}>
           {/* Header at the top */}
           <Header />
@@ -35,7 +36,7 @@ const App: React.FC = () => {
             </div>
             </div>
         </div>
-      
+        </SnackbarProvider>
     </ThemeProvider>
   );
 };

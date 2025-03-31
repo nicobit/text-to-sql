@@ -18,3 +18,4 @@ typing-extensions
 opencensus-ext-azure
 opencensus
 azure.storage.blob
+dsnparse

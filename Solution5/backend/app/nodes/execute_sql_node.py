@@ -11,7 +11,11 @@ def execute_sql_node(state: ConversationState) -> ConversationState:
     """
     
     try:
-        results = DBHelper().executeSQLQuery(state["sql_query"])
+        database = state["database"] 
+        sql_query = state["sql_query"]
+        logger.info(f"Executing SQL query on database {database}: {sql_query}")
+        results = DBHelper().executeSQLQuery(database= database, sql_query=sql_query)
+        
     except Exception as e:
         state["output"] = "error"
         state["error"] = f"Error executing SQL: {str(e)}"

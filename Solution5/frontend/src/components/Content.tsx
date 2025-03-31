@@ -4,6 +4,7 @@ import Dashboard from '../pages/Dashboard';
 import Profile from '../pages/Profile';
 import Settings from '../pages/Settings';
 import ChatPage from '../pages/ChatPage';
+import QuestionQueryExamplePage from '../pages/QuestionQueryExamplePage';
 
 const Content: React.FC = () => {
   return (
@@ -20,8 +21,10 @@ const Content: React.FC = () => {
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/settings" element={<h2>Profile Settings</h2>} />
+        
         <Route path="/profile/stats" element={<h2>Profile Stats</h2>} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/settings/Examples" element={<QuestionQueryExamplePage/>} />
       </Routes>
     </main>
   );

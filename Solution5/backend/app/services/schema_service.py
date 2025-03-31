@@ -27,7 +27,7 @@ logger = NBLogger().Log()
 
 SCHEMA = {}
 
-def initialize_schema_embeddings() -> dict:
+def initialize_schema_embeddings(database:str) -> dict:
     """
     Compute and cache embeddings for each table in the schema.
     """
@@ -36,7 +36,7 @@ def initialize_schema_embeddings() -> dict:
     global SCHEMA
     if SCHEMA == {}:
         retval = {}
-        schema =  DBHelper().getDBSchema()
+        schema =  DBHelper.getDBSchema(database)
         for table_name, columns in schema.items():
             # Create a summary string for the table.
             # Since there's no description, we only list table name and columns.
@@ -66,11 +66,12 @@ def cosine_similarity(vec1: list, vec2: list) -> float:
         return 0.0
     return float(np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)))
 
-def get_relevant_schema(question_embedding: list, table_embedding:dict,top_k: int = 2) -> str:
+def get_relevant_schema(database:str,question_embedding: list, table_embedding:dict,top_k: int = 2) -> str:
     """
     Given the embedding for the user question, select the top_k most relevant tables
     from the schema and return a string description.
     """
+    # database can be useful in case we want to check with similarities in azure search
     similarities = []
     for table_name, data in table_embedding.items():
         sim = cosine_similarity(question_embedding, data["embedding"])

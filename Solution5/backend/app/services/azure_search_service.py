@@ -1,0 +1,189 @@
+import uuid
+from azure.search.documents import SearchClient
+from azure.core.credentials import AzureKeyCredential
+from app.settings import SEARCH_SERVICE_ENDPOINT, SEARCH_API_KEY, SEARCH_INDEX_NAME
+from app.utils.nb_logger import NBLogger
+from azure.search.documents.indexes import SearchIndexClient
+from azure.search.documents.indexes.models import SearchIndex, SimpleField, SearchableField, VectorSearch, VectorSearchAlgorithmConfiguration
+
+logger = NBLogger().Log()
+
+class AzureSearchServiceError(Exception):
+    def __init__(self, message, code):
+        super().__init__(message)
+        self.code = code
+
+
+class AzureSearchService:
+    searchClients = {}
+
+    @staticmethod
+    def create_search_index(databaseName):
+        try:
+            index_name = f"{SEARCH_INDEX_NAME}_{databaseName}".lower()
+            index_client = SearchIndexClient(
+                endpoint=SEARCH_SERVICE_ENDPOINT,
+                credential=AzureKeyCredential(SEARCH_API_KEY)
+            )
+
+            # Check if the index already exists
+            existing_indexes = index_client.list_indexes()
+            if any(index.name == index_name for index in existing_indexes):
+                logger.info(f"Search index '{index_name}' already exists.")
+                return
+
+            index_definition = {
+                "name": index_name,
+                "fields": [
+                    {"name": "doc_id", "type": "Edm.String", "key": True},
+                    {"name": "question", "type": "Edm.String", "searchable": True},
+                    {"name": "sql", "type": "Edm.String", "searchable": True},
+                    {
+                        "name": "question_vector",
+                        "type": "Collection(Edm.Single)",
+                        "searchable": True,
+                        "dimensions": 1536,
+                        "retrievable":True,
+                        
+                        "vectorSearchProfile": "myHnswProfile"
+                    },
+                    {
+                        "name": "sql_vector",
+                        "type": "Collection(Edm.Single)",
+                        "searchable": True,
+                        "dimensions": 1536,
+                        "retrievable":True,
+                        "vectorSearchProfile": "myHnswProfile"
+                    }
+                ],
+                "vectorSearch": {
+                    "algorithms": [{ "name": "myHnswAlgorithm", "kind": "hnsw" }],
+                    "profiles": [
+                        {
+                        "name": "myHnswProfile",
+                        "algorithm": "myHnswAlgorithm",
+                        },
+                    ],
+                }
+            }
+
+            index = SearchIndex.from_dict(index_definition)
+            index_client.create_index(index)
+            logger.info(f"Search index '{index_name}' created successfully.")
+        except Exception as e:
+            logger.error(f"Error creating search index in Azure Cognitive Search: {e}")
+            raise AzureSearchServiceError("Error creating search index", code=1006)
+
+
+
+
+    @staticmethod   
+    def getClient(databaseName):
+        """
+        Retrieve the SearchClient for the specified database.
+        If it doesn't exist, create it and store it in the class variable.
+        """
+        index_name = f"{SEARCH_INDEX_NAME}_{databaseName}".lower()
+        if index_name not in AzureSearchService.searchClients:
+            AzureSearchService.searchClients[index_name] = SearchClient(
+                endpoint=SEARCH_SERVICE_ENDPOINT,
+                index_name=index_name,
+                credential=AzureKeyCredential(SEARCH_API_KEY)
+            )
+        AzureSearchService.create_search_index(databaseName)  # Ensure the index is created before returning the client
+        return AzureSearchService.searchClients[index_name]
+   
+
+    @staticmethod
+    def find_relevant_examples(databaseName, question_embedding: list, top_k: int = 3) -> list:
+        try:
+            search_client = AzureSearchService.getClient(databaseName)
+
+            # Manually construct the vector query as a dict:
+            vector_query = {
+                "kind": "vector",  # Must be "vector" for pure vector queries.
+                "vector": question_embedding,  # Your embedding array
+                "fields": "question_vector",
+                "k": top_k
+            }
+
+            results = search_client.search(
+                search_text=None,
+                vector_queries=[vector_query],
+                select=["doc_id","question", "sql", "sql_vector"]
+            )
+            examples = []
+            for result in results:
+                examples.append({
+                    "doc_id": result["doc_id"],
+                    "question": result["question"],
+                    "sql": result["sql"],
+                    "sql_embedding": result["sql_vector"]
+                })
+            return examples
+        except Exception as e:
+            logger.error(f"Error retrieving examples from Azure Cognitive Search: {e}")
+            raise AzureSearchServiceError("Error retrieving examples", code=1001)
+
+
+
+    @staticmethod
+    def add_example_to_search(databaseName, question: str, sql: str, question_embedding: list, sql_embedding: list):
+        try:
+            search_client = AzureSearchService.getClient(databaseName)
+
+            document = {
+                "doc_id": str(uuid.uuid4()),
+                "question": question,
+                "sql": sql,
+                "question_vector": question_embedding,
+                "sql_vector": sql_embedding
+            }
+            search_client.upload_documents(documents=[document])
+        except Exception as e:
+            logger.error(f"Error adding example to Azure Cognitive Search: {e}")
+            raise AzureSearchServiceError("Error adding example", code=1002)
+
+    @staticmethod
+    def delete_example_from_search(databaseName, doc_id: str):
+        try:
+            search_client = AzureSearchService.getClient(databaseName)
+            search_client.delete_documents(documents=[{"doc_id": doc_id}])
+        except Exception as e:
+            logger.error(f"Error deleting example from Azure Cognitive Search: {e}")
+            raise AzureSearchServiceError("Error deleting example", code=1003)
+
+    @staticmethod
+    def update_example_in_search(databaseName, doc_id: str, new_question: str, new_sql: str, new_question_embedding: list, new_sql_embedding: list):
+        try:
+            search_client = AzureSearchService.getClient(databaseName)
+
+            updated_document = {
+                "doc_id": doc_id,
+                "question": new_question,
+                "sql": new_sql,
+                "question_vector": new_question_embedding,
+                "sql_vector": new_sql_embedding
+            }
+            search_client.merge_documents(documents=[updated_document])
+        except Exception as e:
+            logger.error(f"Error updating example in Azure Cognitive Search: {e}")
+            raise AzureSearchServiceError("Error updating example", code=1004)
+
+    @staticmethod
+    def list_examples_in_search(databaseName) -> list:
+        try:
+            search_client = AzureSearchService.getClient(databaseName)
+
+            results = search_client.search(search_text="*", select=["question", "sql","doc_id"], top=100)
+            examples = []
+            for result in results:
+                examples.append({
+                    "doc_id": result["doc_id"],
+                    "question": result["question"],
+                    "sql": result["sql"]
+                })
+            return examples
+        except Exception as e:
+            logger.error(f"Error listing examples from Azure Cognitive Search: {e}")
+            raise AzureSearchServiceError("Error listing examples", code=1005)

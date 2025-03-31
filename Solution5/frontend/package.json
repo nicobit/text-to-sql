@@ -18,8 +18,9 @@
     "@mui/material": "^6.4.7",
     "@types/d3": "^7.4.3",
     "d3": "^7.9.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "notistack": "^3.0.2",
+    "react": "^19.0.10",
+    "react-dom": "^19.0.10",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.3.0"
   },
@@ -39,7 +40,7 @@
   "overrides": {
     "@azure/msal-react": {
       "react": "^19.0.10",
-      "react-dom": "^19.0.4"
+      "react-dom": "^19.0.10"
     },
     "@azure/msal-browser": {
       "react": "^19.0.10"

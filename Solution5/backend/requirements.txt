@@ -17,5 +17,4 @@ azure.keyvault.secrets
 ./wheels/typing_extensions-4.13.0-py3-none-any.whl
 ./wheels/opencensus_ext_azure-1.1.14-py2.py3-none-any.whl
 ./wheels/opencensus-0.11.4-py2.py3-none-any.whl
-azure.storage
 azure.storage.blob

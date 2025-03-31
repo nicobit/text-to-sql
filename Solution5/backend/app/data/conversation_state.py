@@ -4,14 +4,16 @@ from langchain.schema import HumanMessage
 
 class ConversationState(TypedDict):
     schema: str
+    database:str
     user_session: str
     chart_type: str
     history: List[HumanMessage]
     sql_query: str
-    query_embedding: list
-    table_embedding: Dict[str, Dict[str, str]]
+    question_embedding: list
+    table_embedding: dict # Dict[str,Dict[str, Dict[str, str]]]  # database, trable , fields
     relevant_schema: str
     query_result: str
+    examples: List
     answer:str
 
 def initialize_conversation_state() -> ConversationState:
@@ -21,10 +23,12 @@ def initialize_conversation_state() -> ConversationState:
         "sql_query": "",
         "chart_type": "",
         "schema": "",
+        "database": "",
         "user_session": "",
         "table_embedding": {},
         "relevant_schema": "",
-        "query_embedding": [],
+        "question_embedding": [],
+        "examples":[],
         "answer": ""
 
     }

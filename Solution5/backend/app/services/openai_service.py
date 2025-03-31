@@ -20,6 +20,10 @@ client = AzureOpenAI(
 def get_embedding(text: str) -> list:
     """Get the embedding vector for the given text using OpenAI."""
     logger.info(f"Getting embedding for text: {text}")
+  
+    if '[' in text:
+        logger.warning("Text contains a dot. Skipping embedding generation.")
+        return []
     response = client.embeddings.create(input=text, model=EMBEDDING_MODEL)
     embedding = response.data[0].embedding
     return embedding

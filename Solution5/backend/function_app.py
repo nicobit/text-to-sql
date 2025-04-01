@@ -7,6 +7,7 @@ from app.context import get_current_user
 from app.utils.cors_helper import CORSHelper
 from app.services.db_service import DBHelper
 from app.services.search_service import SearchService
+from app.utils.connection_string_parser import ConnectionStringParser
 
 
 logger = NBLogger().Log()
@@ -15,6 +16,12 @@ CORSHelper.set_CORS(fast_app)
 
 @fast_app.get("/") 
 async def return_http_no_body(): 
+    
+     
+    connection_string = "Driver={ODBC Driver 17 for SQL Server};Server=tcp:your_server.database.windows.net,1433;Database=your_database;Uid=your_username;Pwd=your_password;Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
+    retval = ConnectionStringParser.setConnectionStringWithDatabase(connection_string, "new_database")
+    if "new_database" in retval:
+        print("Database updated successfully.")
     return Response(content="Text to SQL Is working v.1.3", media_type="text/plain") 
 
 # Pydantic model for request

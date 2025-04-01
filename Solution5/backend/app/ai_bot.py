@@ -11,6 +11,7 @@ from app.nodes.generate_final_answer_node import generate_final_answer_node
 from app.nodes.select_relevant_schema_node import select_relevant_schema_node
 from app.nodes.embed_user_question_node import embed_user_question_node
 from app.nodes.retrieve_examples_node import retrieve_examples_node
+from app.settings import DATABASE_NAME
 
 from app.services.db_service import DBHelper
 
@@ -65,7 +66,11 @@ async def nl_to_sql(user_input: str, session_id: str, user_id: str, database: st
     index = len(state["history"])
     myContent = f"{index + 1}. {user_input}"
     
-    state["database"] = DBHelper.getDBName(database)
+    databaseName = DBHelper.getDBName(database)
+    if( not databaseName or databaseName == "default"):
+        databaseName = DATABASE_NAME
+
+    state["database"] = databaseName      
     state["history"].append(HumanMessage(content= myContent ))
     state["user_session"] = user_session
     state = compiled_graph.invoke(state)

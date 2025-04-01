@@ -93,7 +93,7 @@ class DBHelper:
                     logger.error(f"Error fetching credentials from Key Vault: {str(e)}")
                     raise
 
-        if not database or database == "default":
+        if (not database or database == "default") or database == "":
             return base_connection_string
         else:
             return ConnectionStringParser.setConnectionStringWithDatabase(base_connection_string, database)

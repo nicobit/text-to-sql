@@ -112,7 +112,7 @@ class AzureSearchService:
             results = search_client.search(
                 search_text=None,
                 vector_queries=[vector_query],
-                select=["doc_id","database","question", "sql", "sql_vector"]
+                select=["doc_id","database","question", "sql", "sql_vector", "question_vector"]
             )
 
             
@@ -124,6 +124,7 @@ class AzureSearchService:
                     "doc_id": result["doc_id"],
                     "question": result["question"],
                     "sql": result["sql"],
+                    "question_embedding": result["question_vector"],
                     "sql_embedding": result["sql_vector"]
                 })
             return examples

@@ -20,10 +20,9 @@ import {
   TextField,
   Typography,
   Box,
-  SelectChangeEvent,
-  LinearProgress
+  SelectChangeEvent
 } from '@mui/material';
-import { enqueueSnackbar } from 'notistack';
+import {  enqueueSnackbar } from 'notistack';
 import {
   getDatabases,
   getExamples,
@@ -45,44 +44,47 @@ const QuestionQueryExample: React.FC<ExamplesManagerProps> = ({ msalInstance }) 
   const [createDialogOpen, setCreateDialogOpen] = useState<boolean>(false);
   const [currentExample, setCurrentExample] = useState<IExample>({
     doc_id: '',
+    
     question: '',
     sql: '',
     sql_embedding: []
   });
   const [newExample, setNewExample] = useState<IExample>({
     doc_id: '',
+    
     question: '',
     sql: '',
     sql_embedding: []
   });
-  const [loading, setLoading] = useState<boolean>(false); // Loading state
+  
 
   useEffect(() => {
-    setLoading(true); // Start loading
     getDatabases(msalInstance)
-      .then((dbs: string[]) => {
-        setDatabases(dbs);
-        if (dbs.length > 0) {
-          setSelectedDatabase(dbs[0]);
-        }
+      .then((dbs: string[]) => { 
+          setDatabases(dbs) 
+          if (dbs.length > 0) {
+            setSelectedDatabase(dbs[0]);
+          
+          }
       })
       .catch((err: unknown) => {
+        
         console.error("Comp. Error fetching databases:", err);
         enqueueSnackbar("Error fetching databases: " + (err as Error).message, { variant: 'error' });
-      })
-      .finally(() => setLoading(false)); // Stop loading
+
+      });
   }, [msalInstance]);
 
   useEffect(() => {
     if (selectedDatabase && selectedDatabase !== 'default' && selectedDatabase !== '') {
-      setLoading(true); // Start loading
       getExamples(msalInstance, selectedDatabase)
         .then((exs: IExample[]) => setExamples(exs))
         .catch((err: unknown) => {
-          console.error("Comp. Error fetching examples:", err);
+           // Assuming you have a toaster library like notistack
+           console.error("Comp. Error fetching examples:", err);
           enqueueSnackbar("Error fetching examples: " + (err as Error).message, { variant: 'error' });
-        })
-        .finally(() => setLoading(false)); // Stop loading
+          console.error("Comp. Error fetching examples:", err)
+        });
     }
   }, [selectedDatabase, msalInstance]);
 
@@ -95,9 +97,9 @@ const QuestionQueryExample: React.FC<ExamplesManagerProps> = ({ msalInstance }) 
     setEditDialogOpen(true);
   };
 
+ 
   const handleDeleteClick = (doc_id: string) => {
     if (window.confirm("Are you sure you want to delete this example?")) {
-      setLoading(true); // Start loading
       deleteExample(msalInstance, doc_id, selectedDatabase)
         .then(() => {
           setExamples(prev => prev.filter(example => example.doc_id !== doc_id));
@@ -105,17 +107,14 @@ const QuestionQueryExample: React.FC<ExamplesManagerProps> = ({ msalInstance }) 
         .catch((err: unknown) => {
           console.error("Comp. Error deleting example:", err);
           enqueueSnackbar("Error deleting example: " + (err as Error).message, { variant: 'error' });
-        })
-        .finally(() => setLoading(false)); // Stop loading
+        });
     }
   };
-
   const handleEditDialogClose = () => {
     setEditDialogOpen(false);
   };
 
   const handleEditSave = () => {
-    setLoading(true); // Start loading
     updateExample(msalInstance, currentExample.doc_id, currentExample.question, currentExample.sql, selectedDatabase)
       .then(() => {
         setExamples(prev =>
@@ -126,10 +125,11 @@ const QuestionQueryExample: React.FC<ExamplesManagerProps> = ({ msalInstance }) 
         setEditDialogOpen(false);
       })
       .catch((err: unknown) => {
+        // Assuming you have a toaster library like notistack
         console.error("Comp. Error updating example:", err);
-        enqueueSnackbar("Error updating example: " + (err as Error).message, { variant: 'error' });
-      })
-      .finally(() => setLoading(false)); // Stop loading
+       enqueueSnackbar("Error updating example: " + (err as Error).message, { variant: 'error' });
+       
+     });
   };
 
   const handleFieldChange = (field: keyof IExample, value: string) => {
@@ -146,17 +146,18 @@ const QuestionQueryExample: React.FC<ExamplesManagerProps> = ({ msalInstance }) 
   };
 
   const handleCreateSave = () => {
-    setLoading(true); // Start loading
     addExample(msalInstance, newExample.question, newExample.sql, selectedDatabase)
       .then(() => {
-        setExamples(prev => [...prev, newExample]);
-        setCreateDialogOpen(false);
+      setExamples(prev => [...prev, newExample]);
+      setCreateDialogOpen(false);
       })
       .catch((err: unknown) => {
+        // Assuming you have a toaster library like notistack
         console.error("Comp. adding new example", err);
-        enqueueSnackbar("Error adding new example: " + (err as Error).message, { variant: 'error' });
-      })
-      .finally(() => setLoading(false)); // Stop loading
+       enqueueSnackbar("Error adding new example: " + (err as Error).message, { variant: 'error' });
+       
+     });
+      
   };
 
   const handleNewFieldChange = (field: keyof IExample, value: string) => {
@@ -165,7 +166,7 @@ const QuestionQueryExample: React.FC<ExamplesManagerProps> = ({ msalInstance }) 
 
   return (
     <Box sx={{ padding: 2 }}>
-      
+     
       <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
         <FormControl variant="outlined" sx={{ minWidth: 200, marginRight: 2 }}>
           <InputLabel id="database-select-label">Database</InputLabel>
@@ -186,7 +187,6 @@ const QuestionQueryExample: React.FC<ExamplesManagerProps> = ({ msalInstance }) 
           Create New
         </Button>
       </Box>
-      {loading && <LinearProgress />} {/* Show LinearProgress when loading */}
       <TableContainer component={Paper} sx={{ marginBottom: 2 }}>
         <Table aria-label="examples table">
           <TableHead>

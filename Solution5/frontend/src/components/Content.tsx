@@ -10,10 +10,10 @@ const Content: React.FC = () => {
   return (
     <main
       style={{
-        marginTop: 64, // Header height
-        padding: '20px',
+        marginTop: 48, // Header height
+       // padding: '20px',
         transition: 'margin-left 0.3s',
-        height: 'calc(100% - 64px)'
+        height: 'calc(100% - 48px)'
           }}
         >
       <Routes>

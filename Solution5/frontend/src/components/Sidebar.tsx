@@ -110,8 +110,8 @@ const Sidebar: React.FC = () => {
         '& .MuiDrawer-paper': {
           width: isOpen ? 240 : 60,
           position: 'fixed',
-          top: 64, /* Height of the Header */
-          height: 'calc(100% - 64px)', /* Fill remaining height */
+          top: 48, /* Height of the Header */
+          height: 'calc(100% - 48px)', /* Fill remaining height */
           overflowX: 'hidden',
           transition: 'width 0.3s',
         },

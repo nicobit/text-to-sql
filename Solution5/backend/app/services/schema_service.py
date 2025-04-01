@@ -66,7 +66,23 @@ def cosine_similarity(vec1: list, vec2: list) -> float:
         return 0.0
     return float(np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)))
 
-def get_relevant_schema(database:str,question_embedding: list, table_embedding:dict,top_k: int = 2) -> str:
+def is_similarity_significant(vec1: list, vec2: list, threshold: float = 0.7) -> bool:
+    """
+    Check if the cosine similarity between two vectors is above a given threshold.
+    
+    Args:
+        vec1 (list): First vector.
+        vec2 (list): Second vector.
+        threshold (float): The similarity threshold to consider as significant.
+        
+    Returns:
+        bool: True if similarity is above the threshold, False otherwise.
+    """
+    similarity = cosine_similarity(vec1, vec2)
+    return similarity >= threshold
+
+
+def get_relevant_schema(database:str,question_embedding: list, table_embedding:dict,top_k: int = 6) -> list:
     """
     Given the embedding for the user question, select the top_k most relevant tables
     from the schema and return a string description.
@@ -86,5 +102,6 @@ def get_relevant_schema(database:str,question_embedding: list, table_embedding:d
         #line = f"Table: {table['table']} | Columns: {', '.join(table['columns'])} | Description: {table['description']}"
         line = f"Table: {table} | Columns: {', '.join(table_embedding[table]['columns'])} "
         schema_snippet_lines.append(line)
-    return "\n".join(schema_snippet_lines)
+    #return "\n".join(schema_snippet_lines)
+    return schema_snippet_lines
 

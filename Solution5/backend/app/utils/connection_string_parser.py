@@ -116,7 +116,8 @@ class ConnectionStringParser:
 
         if database not in retval:
             logger.info(f"Database not found in connection string, adding it: {database}")
-            retval = retval.lower().replace("database=;", f"database={database};")
+            retval = retval.replace("database=;", f"database={database};")
+            retval = retval.replace("Database=;", f"Database={database};")
 
         logger.info(f"Updated connection string: {retval}")
         return retval

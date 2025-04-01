@@ -21,24 +21,30 @@ def select_relevant_schema_node(state: ConversationState) -> ConversationState:
 
     
     # 1. Retrieve relevant schema based on question and related schema
-    relevant_schema_1 = schemaService.get_relevant_schema(database,state["question_embedding"], state["table_embedding"][database])
+    relevant_schema = schemaService.get_relevant_schema(database,state["question_embedding"], state["table_embedding"][database])
 
     # 2. Retrieve relevant schema based on sql examples and related schema
-    logger.info(f"examples: {state['examples']}")
-    examples = [] #state["examples"]
+    examples = state["examples"]
+    filtered_examples = []
     if examples:
-        relevant_schema_2 = []
+        
         for example in examples:
-            example_embedding = example["sql_embedding"]
-            relevant_schema = schemaService.get_relevant_schema(database, example_embedding, state["table_embedding"][database])
-            relevant_schema_2.append(relevant_schema)
-
-    # Merge relevant_schema_1 and relevant_schema_2
-    if examples:
-        relevant_schema = list(set(relevant_schema_1) | set().union(*relevant_schema_2))
-    else:
-        relevant_schema = relevant_schema_1
-    
-    state["relevant_schema"] = relevant_schema
+            # 1. Check if the question has some match in the example questions
+            example_embedding = example["question_embedding"]
+            isSimilar = schemaService.is_similarity_significant(example_embedding,state["question_embedding"] )
+            # 2. If yes, then get the relevant schema for that example question and add the ones that are not already in the relevant schema list
+            if isSimilar == True:
+                temp = schemaService.get_relevant_schema(database, example["sql_embedding"], state["table_embedding"][database])
+                if temp and len(temp) > 0:
+                    filtered_examples.append(example)
+                    if temp:
+                        new_schemas = [schema for schema in temp if schema not in relevant_schema]
+                        relevant_schema.extend(new_schemas)
+            # 3. If no, then skip that example
+            
+    # Store filtered examples back in state
+    state["examples"] = filtered_examples
+    relevant_schema_str =  "\n".join(relevant_schema)
+    state["relevant_schema"] = relevant_schema_str
     
     return state

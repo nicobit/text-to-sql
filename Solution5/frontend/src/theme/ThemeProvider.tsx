@@ -12,25 +12,19 @@ const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     setMode((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
 
-  const theme = createTheme({
+
+  let theme = createTheme({
     palette: {
       mode,
-      primary: { main: '#1976d2' },
-      secondary: { main: '#ff4081' },
-    },
-    typography: {
-      fontFamily: 'Roboto, Arial, sans-serif',
-    },
-  });
-
- 
-
-  let theme2 = createTheme({
-    palette: {
       primary: {
         light: '#63ccff',
         main: '#009be5',
         dark: '#006db3',
+      },
+      secondary: {
+        light: '#ff4081',
+        main: '#f50057',
+        dark: '#ab003c',
       },
     },
     typography: {
@@ -57,7 +51,7 @@ const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     },
   });
   
-  theme2 = {
+  theme = {
     ...theme,
     components: {
       MuiDrawer: {
@@ -170,7 +164,7 @@ const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   return (
     <ThemeContext.Provider value={{ toggleTheme, mode }}>
-      <MuiThemeProvider theme={theme2}>
+      <MuiThemeProvider theme={theme}>
         <CssBaseline />
         {children}
       </MuiThemeProvider>

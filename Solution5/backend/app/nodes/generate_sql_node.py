@@ -11,8 +11,6 @@ def build_prompt(user_question: str, examples: list, dynamic_schema: str) -> str
     """
     logger.info("Building prompt for SQL generation...")
     logger.info(f"User question: {user_question}") 
-    logger.info(f"Dynamic schema: {dynamic_schema}")
-    logger.info(f"Few-shot examples: {examples}")   
     prompt_lines = []
     prompt_lines.append("You are an expert at providing facts from a SQL Database. "
                         f"Given the database schema , produce a Microsoft SQL SELECT query that answers the question and return maximum {ROWS_LIMIT} rows. "
@@ -21,13 +19,15 @@ def build_prompt(user_question: str, examples: list, dynamic_schema: str) -> str
                         "Also suggest an ideal chart type (e.g., bar, line, pie) for visualizing the result, don't give any explanation and add after ChartType: \n")
     prompt_lines.append("Relevant Schema:")
     prompt_lines.append(dynamic_schema)
-    prompt_lines.append("")
+    prompt_lines.append("\n")
+    prompt_lines.append("Examples:")
     # Include few-shot examples from Azure Search.
     for ex in examples:
-        prompt_lines.append(f"Q: {ex['question']}")
-        prompt_lines.append(f"SQL: {ex['sql']}\n")
-    prompt_lines.append(f"User Questions: {user_question}")
-    prompt_lines.append("SQL Query:")
+        prompt_lines.append(f" Q: {ex['question']}")
+        prompt_lines.append(f" SQL: {ex['sql']}\n")
+    prompt_lines.append("\n")
+    prompt_lines.append(f" User Questions: {user_question}")
+    prompt_lines.append(" SQL Query:")
 
     
     return "\n".join(prompt_lines)

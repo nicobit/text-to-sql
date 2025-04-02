@@ -19,14 +19,20 @@ import {
   
   Chat,
   
+  
 } from '@mui/icons-material';
 import ListItemButton from '@mui/material/ListItemButton';
 
 
-import SettingsInputComponentIcon from '@mui/icons-material/SettingsInputComponent';
+
 import TimerIcon from '@mui/icons-material/Timer';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PhonelinkSetupIcon from '@mui/icons-material/PhonelinkSetup';
+import AnalyticsIcon from '@mui/icons-material/Analytics';
+import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
+import WidgetsIcon from '@mui/icons-material/Widgets';
+import SchemaIcon from '@mui/icons-material/Schema';
+import HomeIcon from '@mui/icons-material/Home';
 
 import { Link } from 'react-router-dom';
 
@@ -71,7 +77,7 @@ const Sidebar: React.FC = () => {
   const categories = [
     {
       id: 'Home',
-      icon: '',
+      icon: <HomeIcon />,
       to: '',
       children: [
         { id: 'Dashboard', icon: <Dashboard />,
@@ -85,16 +91,16 @@ const Sidebar: React.FC = () => {
       icon: <SettingsIcon />,
       to: '',
       children: [
-        { id: 'General', icon: <SettingsIcon />, to:'' },
-        { id: 'Question Ex.', icon: <SettingsInputComponentIcon />, to:'/settings/examples'},
+        { id: 'Flow', icon: <SchemaIcon />, to:'/settings/flow' },
+        { id: 'Question / SQL Query', icon: <SettingsSuggestIcon />, to:'/settings/examples'},
       ],
     },
     {
       id: 'Quality',
-      icon: '',
+      icon: <WidgetsIcon />,
       to: '',
       children: [
-        { id: 'Analytics', icon: <SettingsIcon />, to:'' },
+        { id: 'Analytics', icon: <AnalyticsIcon />, to:'' },
         { id: 'Performance', icon: <TimerIcon /> , to:'' },
         { id: 'Test Lab', icon: <PhonelinkSetupIcon /> , to:'' },
       ],

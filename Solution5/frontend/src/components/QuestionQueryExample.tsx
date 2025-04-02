@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import * as monaco from 'monaco-editor';
 import { IPublicClientApplication } from "@azure/msal-browser";
+import MonacoEditor from 'react-monaco-editor';
 import {
   Button,
   Select,
@@ -18,7 +20,7 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  Typography,
+  
   Box,
   SelectChangeEvent,
   LinearProgress
@@ -56,6 +58,15 @@ const QuestionQueryExample: React.FC<ExamplesManagerProps> = ({ msalInstance }) 
     sql_embedding: []
   });
   const [loading, setLoading] = useState<boolean>(false); // Loading state
+
+  useEffect(() => {
+
+    monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+      noSemanticValidation: false,
+      noSyntaxValidation: false,
+    });
+   
+  }, []);
 
   useEffect(() => {
     setLoading(true); // Start loading
@@ -163,127 +174,159 @@ const QuestionQueryExample: React.FC<ExamplesManagerProps> = ({ msalInstance }) 
     setNewExample(prev => ({ ...prev, [field]: value }));
   };
 
+  
+
   return (
     <Box sx={{ padding: 2 }}>
+      {loading && <LinearProgress sx={{ height: 5 }} />} {/* Show LinearProgress with height 5 pixels when loading */}
+      {!loading && <div style={{ height: '5px' }} />}
       
-      <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
-        <FormControl variant="outlined" sx={{ minWidth: 200, marginRight: 2 }}>
-          <InputLabel id="database-select-label">Database</InputLabel>
-          <Select
-            labelId="database-select-label"
-            value={selectedDatabase}
-            onChange={handleDatabaseChange}
-            label="Database"
-          >
-            {databases.map((db, idx) => (
-              <MenuItem key={idx} value={db}>
-                {db}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Button variant="contained" color="primary" onClick={handleCreateDialogOpen}>
-          Create New
-        </Button>
+      <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2, marginTop: 2 }}>
+      <FormControl variant="outlined" sx={{ minWidth: 200, marginRight: 2 }}>
+        <InputLabel id="database-select-label">Database</InputLabel>
+        <Select
+        labelId="database-select-label"
+        value={selectedDatabase}
+        onChange={handleDatabaseChange}
+        label="Database"
+        >
+        {databases.map((db, idx) => (
+          <MenuItem key={idx} value={db}>
+          {db}
+          </MenuItem>
+        ))}
+        </Select>
+      </FormControl>
+      <Button variant="contained" color="primary" onClick={handleCreateDialogOpen}>
+        Create New
+      </Button>
       </Box>
-      {loading && <LinearProgress />} {/* Show LinearProgress when loading */}
+    
       <TableContainer component={Paper} sx={{ marginBottom: 2 }}>
-        <Table aria-label="examples table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Question</TableCell>
-              <TableCell>SQL</TableCell>
-              <TableCell align="right">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {examples.map((example) => (
-              <TableRow key={example.doc_id}>
-                <TableCell>{example.question}</TableCell>
-                <TableCell>{example.sql}</TableCell>
-                <TableCell align="right">
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleEditClick(example)}
-                    sx={{ marginRight: 1 }}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => handleDeleteClick(example.doc_id)}
-                  >
-                    Delete
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+      <Table aria-label="examples table">
+        <TableHead>
+        <TableRow>
+          <TableCell>Question</TableCell>
+          <TableCell>SQL</TableCell>
+          <TableCell align="right">Actions</TableCell>
+        </TableRow>
+        </TableHead>
+        <TableBody>
+        {examples.map((example) => (
+          <TableRow key={example.doc_id}>
+          <TableCell>{example.question}</TableCell>
+          <TableCell>{example.sql}</TableCell>
+          <TableCell align="right">
+            <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleEditClick(example)}
+            sx={{ marginRight: 1 }}
+            >
+            Edit
+            </Button>
+            <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => handleDeleteClick(example.doc_id)}
+            >
+            Delete
+            </Button>
+          </TableCell>
+          </TableRow>
+        ))}
+        </TableBody>
+      </Table>
       </TableContainer>
 
       {/* Edit Example Dialog */}
-      <Dialog open={editDialogOpen} onClose={handleEditDialogClose}>
-        <DialogTitle>Edit Example</DialogTitle>
-        <DialogContent>
-          <TextField
-            margin="dense"
-            label="Question"
-            fullWidth
-            variant="outlined"
-            value={currentExample.question}
-            onChange={(e) => handleFieldChange('question', e.target.value)}
+      <Dialog open={editDialogOpen} onClose={handleEditDialogClose}  PaperProps={{
+          style: {
+            width: '70vw', // 70% of viewport width
+            height: '70vh', // 70% of viewport height
+            maxWidth: '70vw', // Prevent from growing too wide
+          },
+        }} >
+      <DialogTitle>Edit Example</DialogTitle>
+      <DialogContent sx={{display: 'flex', flexDirection: 'column' }}>
+        <TextField
+          margin="dense"
+          label="Question"
+          fullWidth
+          variant="outlined"
+          value={currentExample.question}
+          onChange={(e) => handleFieldChange('question', e.target.value)}
+        />
+        <Box sx={{ marginTop: 2 }}>
+          <InputLabel>SQL</InputLabel>
+          <MonacoEditor
+          width="100%"
+        height="calc(80vh - 350px)"
+        language="sql"
+        theme="vs-dark"
+        value={currentExample.sql}
+        options={{
+          selectOnLineNumbers: true,
+          automaticLayout: true,
+          minimap: { enabled: false },
+        }}
+        onChange={(value) => handleFieldChange('sql', value || '')}
           />
-          <TextField
-            margin="dense"
-            label="SQL"
-            fullWidth
-            variant="outlined"
-            value={currentExample.sql}
-            onChange={(e) => handleFieldChange('sql', e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleEditDialogClose} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleEditSave} color="primary">
-            Save
-          </Button>
-        </DialogActions>
+        </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleEditDialogClose} color="secondary">
+        Cancel
+        </Button>
+        <Button onClick={handleEditSave} color="primary">
+        Save
+        </Button>
+      </DialogActions>
       </Dialog>
 
       {/* Create New Example Dialog */}
-      <Dialog open={createDialogOpen} onClose={handleCreateDialogClose}>
-        <DialogTitle>Create New Example</DialogTitle>
-        <DialogContent>
-          <TextField
-            margin="dense"
-            label="Question"
-            fullWidth
-            variant="outlined"
-            value={newExample.question}
-            onChange={(e) => handleNewFieldChange('question', e.target.value)}
+      <Dialog open={createDialogOpen} onClose={handleCreateDialogClose}  PaperProps={{
+          style: {
+            width: '70vw', // 70% of viewport width
+            height: '70vh', // 70% of viewport height
+            maxWidth: '70vw', // Prevent from growing too wide
+          },
+        }} >
+      <DialogTitle>Create New Example</DialogTitle>
+      <DialogContent sx={{  display: 'flex' , flexDirection: 'column' }}>
+        <TextField
+        margin="dense"
+        label="Question"
+        fullWidth
+        variant="outlined"
+        value={newExample.question}
+        onChange={(e) => handleNewFieldChange('question', e.target.value)}
+        />
+         <Box sx={{ marginTop: 2 }}>
+         <InputLabel>SQL</InputLabel>
+          <MonacoEditor
+        width="100%"
+        height="calc(80vh - 350px)"
+        language="sql"
+        theme="vs-dark"
+        value={newExample.sql}
+        options={{
+          selectOnLineNumbers: true,
+          automaticLayout: true,
+          minimap: { enabled: false },
+        }}
+        onChange={(value) => handleNewFieldChange('sql', value || '')}
           />
-          <TextField
-            margin="dense"
-            label="SQL"
-            fullWidth
-            variant="outlined"
-            value={newExample.sql}
-            onChange={(e) => handleNewFieldChange('sql', e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCreateDialogClose} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleCreateSave} color="primary">
-            Save
-          </Button>
-        </DialogActions>
+      </Box>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCreateDialogClose} color="secondary">
+        Cancel
+        </Button>
+        <Button onClick={handleCreateSave} color="primary">
+        Save
+        </Button>
+      </DialogActions>
       </Dialog>
     </Box>
   );

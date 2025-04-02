@@ -1,7 +1,7 @@
 import azure.functions as func 
 from fastapi import FastAPI, Request, Response
 from pydantic import BaseModel
-from app.ai_bot import nl_to_sql
+from app.ai_bot import nl_to_sql,  graph_png_bytes
 from app.utils.nb_logger import NBLogger
 from app.context import get_current_user
 from app.utils.cors_helper import CORSHelper
@@ -48,6 +48,13 @@ async def query(req: Request, body:  QueryRequest):
         result["chart_type"] = "None"
 
     return {"results": result["response"],"chart_type":result["chart_type"],"answer":result["answer"],"sql_query":result["sql_query"]}
+
+@fast_app.get("/graph.png")
+async def get_graph_image():
+    # Generate the image as PNG bytes using Mermaid rendering
+    #return graph_mermaid
+    png_bytes = graph_png_bytes
+    return Response(content=png_bytes, media_type="image/png")
 
 
 @fast_app.get("/databases")

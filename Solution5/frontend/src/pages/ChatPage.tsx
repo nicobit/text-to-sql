@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Chat from '../components/Chat';
+import ContentTitle from '../components/ContentTitle';
 import ResultsTable from '../components/ResultsTable';
 import BarChart from '../components/BarChart';
 import { Box, Tabs, Tab, Collapse, IconButton } from '@mui/material';
@@ -20,7 +21,7 @@ const ChatPage: React.FC = () => {
 
   return (
     <div style={{ height: '88vh', overflow: 'hidden' }}>
-      <h2 style={{ margin: 0, padding: '1rem' }}>Chat</h2>
+     <ContentTitle title="Questions/SQL Query Examples" />
       {/* Adjust the remaining height by subtracting header height (e.g., 60px) */}
       <Box sx={{ display: 'flex', height: 'calc(100% - 60px)' }}>
         <ChatSideBar />

@@ -118,7 +118,7 @@ class AzureSearchService:
             
             examples = []
             for result in results:
-                if not result.get("database") or result.get("database") != databaseName:
+                if not result["database"] or result["database"] != databaseName:
                     raise AzureSearchServiceError("Database field is null or empty in the search result", code=1007)
                 examples.append({
                     "doc_id": result["doc_id"],

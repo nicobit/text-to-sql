@@ -9,10 +9,11 @@ from app.nodes.generate_sql_node import generate_sql_node
 from app.nodes.execute_sql_node import execute_sql_node 
 from app.nodes.generate_final_answer_node import generate_final_answer_node
 from app.nodes.select_relevant_schema_node import select_relevant_schema_node
-from app.nodes.embed_user_question_node import embed_user_question_node
+from app.nodes.review_question_node import review_question_node
 from app.nodes.retrieve_examples_node import retrieve_examples_node
 from app.nodes.fake_node import fake_node
 from app.settings import DATABASE_NAME
+from app.nodes.chat_agent import chat_agent
 
 from app.services.db_service import DBHelper
 
@@ -24,9 +25,10 @@ user_sessions: Dict[str, "ConversationState"] = {}
 graph = StateGraph(ConversationState)
 state = ConversationState()
 
+CHAT_AGENT = "Chat Agent"
 VALIDATE_USER_QUESTION_NODE_STR = "Validate User Question"
 REFINE_USER_QUESTION_NODE_STR = "Refine User Question"
-EMBED_USER_QUESTION_NODE_STR = "Embed User Questions"
+REVIEW_USER_QUESTION_STR = "Review user question"
 RETRIEVE_EXAMPLES_NODE_STR = "Retrieve Examples"
 SELECT_RELEVANT_SCHEMA_NODE_STR = "Select Relevant Schemas"
 GENERATE_SQL_NODE_STR = "Generate SQL"
@@ -34,9 +36,11 @@ EXECUTE_SQL_NODE_STR = "Execute SQL"
 VALIDATE_RESULT_NODE_STR = "Validate Result"
 GENERATE_FINAL_ANSWER_NODE_STR = "Generate Final Answer"
 
+
+graph.add_node(CHAT_AGENT, chat_agent)
 graph.add_node(VALIDATE_USER_QUESTION_NODE_STR, fake_node)
 graph.add_node(REFINE_USER_QUESTION_NODE_STR, fake_node)
-graph.add_node(EMBED_USER_QUESTION_NODE_STR, embed_user_question_node)
+graph.add_node(REVIEW_USER_QUESTION_STR, review_question_node)
 graph.add_node(RETRIEVE_EXAMPLES_NODE_STR, retrieve_examples_node )
 graph.add_node(SELECT_RELEVANT_SCHEMA_NODE_STR, select_relevant_schema_node)
 graph.add_node(GENERATE_SQL_NODE_STR, generate_sql_node)
@@ -52,14 +56,30 @@ def route_by_state(state: ConversationState) -> str:
 graph.add_conditional_edges(VALIDATE_USER_QUESTION_NODE_STR, lambda state: state["result"],
     {
         "not valid": END, 
-        "continue": REFINE_USER_QUESTION_NODE_STR
+        "continue": CHAT_AGENT
     }
 )
-graph.add_edge(REFINE_USER_QUESTION_NODE_STR, EMBED_USER_QUESTION_NODE_STR)
-graph.add_edge(EMBED_USER_QUESTION_NODE_STR, RETRIEVE_EXAMPLES_NODE_STR)
+graph.add_conditional_edges(CHAT_AGENT, lambda state: state["command"],
+    {
+        "BUSINESS": REFINE_USER_QUESTION_NODE_STR, 
+        "IT-ENGINEER": END,
+        "OTHER":END,
+        "CLARIFY":END
+    }
+)
+
+graph.add_edge(REFINE_USER_QUESTION_NODE_STR, REVIEW_USER_QUESTION_STR)
+graph.add_edge(REVIEW_USER_QUESTION_STR, RETRIEVE_EXAMPLES_NODE_STR)
 graph.add_edge(RETRIEVE_EXAMPLES_NODE_STR, SELECT_RELEVANT_SCHEMA_NODE_STR)
 graph.add_edge(SELECT_RELEVANT_SCHEMA_NODE_STR, GENERATE_SQL_NODE_STR)
-graph.add_edge(GENERATE_SQL_NODE_STR, EXECUTE_SQL_NODE_STR)
+
+graph.add_conditional_edges(GENERATE_SQL_NODE_STR, lambda state: state["command"],
+    {
+        "NO-SCHEMA": END, 
+        "CONTINUE": EXECUTE_SQL_NODE_STR
+    }
+)
+
 graph.add_edge(EXECUTE_SQL_NODE_STR, VALIDATE_RESULT_NODE_STR)
 graph.add_conditional_edges(VALIDATE_RESULT_NODE_STR, lambda state: state["result"],
     {

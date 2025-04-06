@@ -30,21 +30,30 @@ def select_relevant_schema_node(state: ConversationState) -> ConversationState:
         
         for example in examples:
             # 1. Check if the question has some match in the example questions
-            example_embedding = example["question_embedding"]
-            isSimilar = schemaService.is_similarity_significant(example_embedding,state["question_embedding"] )
+            question_embedding = example["question_embedding"]
+            example_embedding = state["question_embedding"]
+            #logger.info(f"comparing {question_embedding} with {example_embedding}")
+            isSimilar = schemaService.is_similarity_significant(example_embedding,question_embedding )
+            logger.info(f"Similarity: {isSimilar}")
             # 2. If yes, then get the relevant schema for that example question and add the ones that are not already in the relevant schema list
             if isSimilar == True:
                 temp = schemaService.get_relevant_schema(database, example["sql_embedding"], state["table_embedding"][database])
                 if temp and len(temp) > 0:
                     filtered_examples.append(example)
-                    if temp:
-                        new_schemas = [schema for schema in temp if schema not in relevant_schema]
-                        relevant_schema.extend(new_schemas)
+                    for table, lines in temp.items():
+                        if table in relevant_schema:
+                            # Append lines from temp that are not already in relevant_schema[table]
+                            for line in lines:
+                                if line not in relevant_schema[table]:
+                                    relevant_schema[table].append(line)
+                        else:
+                            relevant_schema[table] = lines.copy()
             # 3. If no, then skip that example
             
     # Store filtered examples back in state
     state["examples"] = filtered_examples
-    relevant_schema_str =  "\n".join(relevant_schema)
+    relevant_schema_str = "\n".join([f"{', '.join(lines)}" for table, lines in relevant_schema.items()])
+
     state["relevant_schema"] = relevant_schema_str
     
     return state

@@ -7,6 +7,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import LoadingIndicator from './LoadingIndicator';
 
 function Chat() {
   const queryContext = useContext(QueryContext);
@@ -23,14 +24,14 @@ function Chat() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
-
+    setInput('');
     setLoading(true); // Start loading
     try {
       await runQuery(input.trim());
     } finally {
       setLoading(false); // Stop loading regardless of success or error
     }
-    setInput('');
+    
   };
 
   return (
@@ -123,7 +124,9 @@ function Chat() {
             </ListItem>
           ))}
         </List>
+        {loading ? <LoadingIndicator /> : <p></p>}
       </Box>
+     
       {/* Input box */}
       <Box
         component="form"

@@ -12,15 +12,16 @@ class ConversationState(TypedDict):
     question_embedding: list
     table_embedding: dict # Dict[str,Dict[str, Dict[str, str]]]  # database, trable , fields
     relevant_schema: str
-    query_result: str
+    query_result: List
     examples: List
     answer:str
     result:str
+    command:str
 
 def initialize_conversation_state() -> ConversationState:
     return {
         "history": [],
-        "query_result": "",
+        "query_result": [],
         "sql_query": "",
         "chart_type": "",
         "db_schema": "",
@@ -31,6 +32,7 @@ def initialize_conversation_state() -> ConversationState:
         "question_embedding": [],
         "examples":[],
         "answer": "",
-        "result": ""
+        "result": "",
+        "command":""
 
     }

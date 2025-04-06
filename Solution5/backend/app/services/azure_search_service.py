@@ -29,7 +29,6 @@ class AzureSearchService:
             # Check if the index already exists
             existing_indexes = index_client.list_indexes()
             if any(index.name == index_name for index in existing_indexes):
-                logger.info(f"Search index '{index_name}' already exists.")
                 return
 
             index_definition = {

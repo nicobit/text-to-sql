@@ -65,7 +65,7 @@ const ChatPage: React.FC = () => {
             )}
           </IconButton>
           <Collapse in={!isCollapsed} timeout="auto" unmountOnExit sx={{ flexGrow: 1 }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', maxHeight: '80vh',  maxWidth: '70%' }}>
               <Tabs value={selectedTab} onChange={handleTabChange}>
                 <Tab label="Results Table" />
                 <Tab label="Chart" />

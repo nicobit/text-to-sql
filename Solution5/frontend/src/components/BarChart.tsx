@@ -100,7 +100,7 @@ function BarChart() {
   }, [data, width]);
 
   return (
-    <Box sx={{ mt: 2, width: '100%' , height:500, position: 'relative' }}>
+    <Box sx={{ mt: 2, width: '100%' , height:500, maxHeight:'60vh', position: 'relative' }}>
       <Typography variant="h6">Chart</Typography>
       <svg ref={chartRef} width="100%" height="100%"></svg>
     </Box>

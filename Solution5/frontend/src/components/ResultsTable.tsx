@@ -4,6 +4,7 @@ import { Button, Table, Paper, TableHead, TableRow, TableCell, TableBody, Typogr
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import CodeIcon from '@mui/icons-material/Code';
+import { Box} from '@mui/material';
 
 interface QueryResult {
   [key: string]: any;
@@ -100,27 +101,37 @@ function ResultsTable() {
             </Typography>
           </Paper>
         )}
-
-        <Table sx={{ mt: 2 }} size="small">
-          <TableHead>
-            <TableRow>
-              {columns.map(col => (
-                <TableCell key={col}><strong>{col}</strong></TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data.map((row, idx) => (
-              <TableRow key={idx}>
-                {columns.map(col => (
-                  <TableCell key={col + idx}>
-                    {row[col] !== undefined ? String(row[col]) : ''}
-                  </TableCell>
-                ))}
+        <Box
+          sx={{
+            flexGrow: 1,
+            mb: 2,
+           
+            maxHeight: '60vh' , // Set a maximum height for the table container
+            overflowX: 'auto', // Enable horizontal scrolling
+            overflowY: 'auto', // Enable vertical scrolling
+          }}
+        >
+          <Table sx={{ mt: 2 }} size="small" stickyHeader>
+            <TableHead>
+              <TableRow>
+          {columns.map(col => (
+            <TableCell key={col}><strong>{col}</strong></TableCell>
+          ))}
               </TableRow>
+            </TableHead>
+            <TableBody>
+              {data.map((row, idx) => (
+          <TableRow key={idx}>
+            {columns.map(col => (
+              <TableCell key={col + idx}>
+                {row[col] !== undefined ? String(row[col]) : ''}
+              </TableCell>
             ))}
-          </TableBody>
-        </Table>
+          </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Box>
       </div>
     </>
   );

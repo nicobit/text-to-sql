@@ -1,5 +1,5 @@
 import re
-from urllib.parse import urlparse, parse_qs, unquote_plus, urlencode, urlunparse
+from urllib.parse import urlparse, parse_qs, unquote_plus, urlencode, urlunparse, quote_plus
 from app.utils.nb_logger import NBLogger
 
 logger = NBLogger().Log()
@@ -48,9 +48,18 @@ class ConnectionStringParser:
             if "pwd" in parsed:
                 parsed["password"] = parsed["pwd"]
                 
-        logger.info(f"Parsed connection string: {parsed}")
         return parsed
     
+    @staticmethod
+    def quote(connection_string: str) -> str:
+        """
+        URL-encode the connection string for safe transport in URLs.
+        """
+        quoted = quote_plus(connection_string)
+        logger.info(f"Quoted connection string: {quoted}")
+        return quoted
+    
+
     @staticmethod
     def setConnectionStringWithDatabase(connection_string: str, database: str) -> str:
         """
@@ -119,5 +128,4 @@ class ConnectionStringParser:
             retval = retval.replace("database=;", f"database={database};")
             retval = retval.replace("Database=;", f"Database={database};")
 
-        logger.info(f"Updated connection string: {retval}")
         return retval

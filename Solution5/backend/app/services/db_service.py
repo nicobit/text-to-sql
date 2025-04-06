@@ -14,12 +14,19 @@ from app.settings import (
 )
 from app.utils.nb_logger import NBLogger  
 from app.utils.connection_string_parser import ConnectionStringParser
+from sqlalchemy import create_engine
+from app.services.schema_engine import SchemaEngine
+from app.services.m_schema import MSchema
+import traceback
 
 logger = NBLogger().Log()
+
+
 
 class DBHelper:
     # Class variable to cache the connection string across calls.
     _cached_connection_string = ""
+    _mschemas = {}
 
     @staticmethod
     def credential():
@@ -103,6 +110,61 @@ class DBHelper:
         connectionString = DBHelper.getConnectionString(databaseInput)
         retval = ConnectionStringParser.parse(connectionString)["database"]
         return retval
+
+
+    @staticmethod
+    def get_mschema(database: str) -> MSchema:
+        """
+        Returns the M-Schema for the specified database.
+        """
+        try:
+            if  database not in DBHelper._mschemas:
+                connection_string = DBHelper.getConnectionString(database)                                                
+                params = ConnectionStringParser.quote(connection_string)
+                logger.info(f"Database: {database}")
+                db_engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}")
+                
+                logger.info(f"Engine created")
+                schema_engine = SchemaEngine(engine=db_engine, db_name=database)
+                 
+                DBHelper._mschemas[database] = schema_engine.mschema
+            
+            mschema = DBHelper._mschemas[database]
+            return mschema
+        except Exception as e:
+            #logger.error(f"Schema inference failed: {str(e.)}")
+            error_details = traceback.format_exc()
+            logger.error("An error occurred:\n%s", error_details)
+            return {}
+
+    @staticmethod
+    def get_mschema_tables(database: str) -> dict:
+        """
+        Returns the M-Schema for the specified database.
+        """
+        schema = {}
+        try:
+            
+            mschema = DBHelper.get_mschema(database)
+            tables = mschema.tables
+
+            logger.error (mschema.to_mschema())
+
+            for table_name, table_info in tables.items():
+                mschemaTable = mschema.single_table_mschema(table_name)
+                
+                if table_name not in schema:
+                    schema[table_name] = []
+
+                schema[table_name].append(mschemaTable)
+               
+            return schema
+        except Exception as e:
+            #logger.error(f"Schema inference failed: {str(e.)}")
+            error_details = traceback.format_exc()
+            logger.error("An error occurred:\n%s", error_details)
+            return {}
+
 
     @staticmethod
     def getDBSchema(database: str) -> dict:

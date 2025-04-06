@@ -8,6 +8,10 @@ from app.utils.cors_helper import CORSHelper
 from app.services.db_service import DBHelper
 from app.services.search_service import SearchService
 from app.utils.connection_string_parser import ConnectionStringParser
+#from nltosql_chat.main import chat as myChat, ChatRequest, ChatResponse
+from sqlalchemy import create_engine
+from app.services.schema_engine import SchemaEngine
+
 
 
 logger = NBLogger().Log()
@@ -33,7 +37,9 @@ class QueryRequest(BaseModel):
 class QueryResponse(BaseModel):
     chart_type: str
     results: list
-    
+
+
+
 @fast_app.post("/query")
 async def query(req: Request, body:  QueryRequest):
    
@@ -42,12 +48,29 @@ async def query(req: Request, body:  QueryRequest):
     session_id = body.session_id 
     database = body.database
 
+    connection_string = DBHelper.getConnectionString("")
+    logger.info(f"Connection string: {connection_string}")
+                                        
+
     logger.info(f"query called with the following paramenters:query={query};session_id={session_id}")
     result = await nl_to_sql(query, session_id, user["oid"],database)
     if result["chart_type"] == None:
         result["chart_type"] = "None"
 
     return {"results": result["response"],"chart_type":result["chart_type"],"answer":result["answer"],"sql_query":result["sql_query"]}
+
+
+
+#class ChatRequest(BaseModel):
+#    question: str
+#    session_id: str = "default"
+#    database_name:str = ""
+#    limit: int = 10
+#    num_candidates: int = 3
+
+#@fast_app.post("/chat")
+#async def chat(req: Request, body:  ChatRequest):
+#    return await myChat(body)
 
 @fast_app.get("/graph.png")
 async def get_graph_image():

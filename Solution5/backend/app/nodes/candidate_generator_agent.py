@@ -99,7 +99,7 @@ def assemble_final_query( examples, db_schema, user_question, sub_questions, par
     for i, (sub_question, partial_sql) in enumerate(zip(sub_questions, partial_sqls)):
         prompt += f"Sub-question {i+1}: {sub_question}\n"
         prompt += f"SQL {i+1}: {partial_sql}\n"
-    prompt += f"Combine the above SQL queries into a final SQL query (include TOP statement to retrieve just {ROWS_LIMIT} rows and return based on the needed fields/columns:  the top must be soon after select) that answers the user question:"
+    prompt += f"Combine the above SQL queries into a final SQL query (include TOP statement to retrieve just {ROWS_LIMIT} rows and return based on the needed fields/columns:  the top must be soon after select) that answers the user question. Do not include any additional explanation or commentary :"
     messages = [{"role":"assistant", "content": prompt}]
     response = chat(messages)
     final_sql = response.strip()

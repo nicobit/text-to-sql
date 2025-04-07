@@ -3,6 +3,7 @@ from app.data.conversation_state import ConversationState
 from app.utils.nb_logger import NBLogger
 from app.services.openai_service import chat
 import re
+from app.services.openai_service import get_embedding
 
 logger = NBLogger().Log()
 
@@ -46,9 +47,8 @@ def chat_agent(state: ConversationState) -> ConversationState:
     else:
         history[-1].content = final_question
         state["answer"] = str("Question not supported.")
-
         state["history"] = history
-
+        state["question_embedding"] = get_embedding(final_question)
         context_selector_messages  = [
             {"role": "system", "content": _CONTEXT_SELECTOR_SYSTEM_PROMPT},
             {"role": "user", "content": new_question}
@@ -73,5 +73,5 @@ def extract_question(llm_response):
             original_question = match.group(1)
             return original_question
         else:
-            return llm_response.strip()  # Return the entire response if no specific question is found
+            return "" #llm_response.strip()  # Return the entire response if no specific question is found
             #raise ValueError("No question found in the response.")

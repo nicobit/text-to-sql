@@ -1,13 +1,18 @@
 import { useState, useContext, FormEvent } from 'react';
 import { QueryContext } from '../context/QueryContext';
 import { Box, IconButton, TextField, List, ListItem, Typography, LinearProgress } from '@mui/material';
+import { Tabs, Tab, Dialog, DialogContent, DialogTitle } from '@mui/material';
 import ReactMarkdown from 'react-markdown';
 
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import TableViewIcon from '@mui/icons-material/TableView';
+import CloseIcon from '@mui/icons-material/Close';
 import LoadingIndicator from './LoadingIndicator';
+import ResultsTable from '../components/ResultsTable';
+import BarChart from '../components/BarChart';
 
 function Chat() {
   const queryContext = useContext(QueryContext);
@@ -16,10 +21,24 @@ function Chat() {
     return <div>Loading...</div>;
   }
 
-  const { queries, runQuery } = queryContext;
+  const { queries, runQuery , selectQuery} = queryContext;
+  
 
   const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false); // State for dialog
+  const [selectedTab, setSelectedTab] = useState<number>(0); // State for tabs
+
+  const toggleDialog = (idx?: number) => {
+    if (idx !== undefined) {
+      selectQuery(idx);
+    }
+    setIsDialogOpen((prev) => !prev); // Toggle dialog open/close state
+  };
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setSelectedTab(newValue); // Handle tab change
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -31,14 +50,11 @@ function Chat() {
     } finally {
       setLoading(false); // Stop loading regardless of success or error
     }
-    
   };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {/* Linear Progress */}
-      {loading && <LinearProgress />}
-
+   
       {/* Chat history */}
       <Box
         sx={{
@@ -118,6 +134,20 @@ function Chat() {
                     >
                       <VolumeUpIcon fontSize="small" />
                     </IconButton>
+                    {entry.result !== null && (
+                      <IconButton
+                      sx={{
+                        color: 'gray',
+                        fontSize: 'small',
+                        outline: 'none',
+                        '&:focus': { outline: 'none' },
+                      }}
+                      aria-label="table"
+                      onClick={() => toggleDialog(index)} // Wrap in an arrow function
+                      >
+                      <TableViewIcon fontSize="small" />
+                      </IconButton>
+                    )}
                   </Box>
                 </div>
               ) : null}
@@ -126,7 +156,7 @@ function Chat() {
         </List>
         {loading ? <LoadingIndicator /> : <p></p>}
       </Box>
-     
+
       {/* Input box */}
       <Box
         component="form"
@@ -155,6 +185,35 @@ function Chat() {
           }}
         />
       </Box>
+      <Dialog open={isDialogOpen} onClose={() => toggleDialog()} fullWidth maxWidth="lg">
+        <DialogTitle>
+          Results
+          <IconButton
+        aria-label="close"
+        onClick={() => toggleDialog()}
+        sx={{
+          position: 'absolute',
+          right: 8,
+          top: 8,
+          color: (theme) => theme.palette.grey[500],
+        }}
+          >
+        <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', maxHeight: '80vh' }}>
+        <Tabs value={selectedTab} onChange={handleTabChange}>
+          <Tab label="Results Table" />
+          <Tab label="Chart" />
+        </Tabs>
+        <Box sx={{ flexGrow: 1, overflow: 'auto', minHeight: 700 }}>
+          {selectedTab === 0 && <ResultsTable />}
+          {selectedTab === 1 && <BarChart />}
+        </Box>
+          </Box>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 }

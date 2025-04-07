@@ -50,8 +50,11 @@ function ResultsTable() {
             variant="outlined"
             startIcon={<ContentCopyIcon />}
             onClick={() => {
+              const header = columns.join('\t'); // Join column names with tabs
               const text = data.map(row => columns.map(col => row[col]).join('\t')).join('\n');
-              navigator.clipboard.writeText(text);
+              const clipboardText = `${header}\n${text}`; // Include the header in the copied text
+              navigator.clipboard.writeText(clipboardText);
+              ;
             }}
             style={{ marginRight: '8px' }}
           >

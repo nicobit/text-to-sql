@@ -3,7 +3,7 @@ from typing_extensions import TypedDict, List
 from langchain.schema import HumanMessage
 
 class ConversationState(TypedDict):
-    db_schema: str
+    
     database:str
     user_session: str
     chart_type: str
@@ -24,7 +24,7 @@ def initialize_conversation_state() -> ConversationState:
         "query_result": [],
         "sql_query": "",
         "chart_type": "",
-        "db_schema": "",
+        
         "database": "",
         "user_session": "",
         "table_embedding": {},

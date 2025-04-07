@@ -8,9 +8,10 @@ from app.data.conversation_state import ConversationState, initialize_conversati
 from app.nodes.generate_sql_node import generate_sql_node
 from app.nodes.execute_sql_node import execute_sql_node 
 from app.nodes.generate_final_answer_node import generate_final_answer_node
-from app.nodes.select_relevant_schema_node import select_relevant_schema_node
-from app.nodes.review_question_node import review_question_node
-from app.nodes.retrieve_examples_node import retrieve_examples_node
+from app.nodes.schema_selector_agent import schema_selector_agent
+from app.nodes.candidate_generator_agent import candidate_generator_agent
+
+from app.nodes.information_retriever_agent import information_retriever_agent
 from app.nodes.fake_node import fake_node
 from app.settings import DATABASE_NAME
 from app.nodes.chat_agent import chat_agent
@@ -27,23 +28,22 @@ state = ConversationState()
 
 CHAT_AGENT = "Chat Agent"
 VALIDATE_USER_QUESTION_NODE_STR = "Validate User Question"
-REFINE_USER_QUESTION_NODE_STR = "Refine User Question"
-REVIEW_USER_QUESTION_STR = "Review user question"
-RETRIEVE_EXAMPLES_NODE_STR = "Retrieve Examples"
-SELECT_RELEVANT_SCHEMA_NODE_STR = "Select Relevant Schemas"
+
+INFORMATION_RETREIVER_AGENT = "Information Retriever Agent"
+SCHEMA_SELECTOR_AGENT_STR = "Schema Selector Agent"
 GENERATE_SQL_NODE_STR = "Generate SQL"
 EXECUTE_SQL_NODE_STR = "Execute SQL"
 VALIDATE_RESULT_NODE_STR = "Validate Result"
 GENERATE_FINAL_ANSWER_NODE_STR = "Generate Final Answer"
+CANDIDATE_GENERATOR_AGENT_STR = "Candidate Generator Agent"
 
 
 graph.add_node(CHAT_AGENT, chat_agent)
-graph.add_node(VALIDATE_USER_QUESTION_NODE_STR, fake_node)
-graph.add_node(REFINE_USER_QUESTION_NODE_STR, fake_node)
-graph.add_node(REVIEW_USER_QUESTION_STR, review_question_node)
-graph.add_node(RETRIEVE_EXAMPLES_NODE_STR, retrieve_examples_node )
-graph.add_node(SELECT_RELEVANT_SCHEMA_NODE_STR, select_relevant_schema_node)
-graph.add_node(GENERATE_SQL_NODE_STR, generate_sql_node)
+graph.add_node(CANDIDATE_GENERATOR_AGENT_STR, candidate_generator_agent)
+
+graph.add_node(SCHEMA_SELECTOR_AGENT_STR, schema_selector_agent)
+graph.add_node(INFORMATION_RETREIVER_AGENT, information_retriever_agent )
+#graph.add_node(GENERATE_SQL_NODE_STR, generate_sql_node)
 graph.add_node(EXECUTE_SQL_NODE_STR, execute_sql_node)
 graph.add_node(VALIDATE_RESULT_NODE_STR, fake_node)
 graph.add_node(GENERATE_FINAL_ANSWER_NODE_STR, generate_final_answer_node)
@@ -53,37 +53,42 @@ def route_by_state(state: ConversationState) -> str:
     return state["result"]
 
 # Edges
-graph.add_conditional_edges(VALIDATE_USER_QUESTION_NODE_STR, lambda state: state["result"],
-    {
-        "not valid": END, 
-        "continue": CHAT_AGENT
-    }
-)
+
 graph.add_conditional_edges(CHAT_AGENT, lambda state: state["command"],
     {
-        "BUSINESS": REFINE_USER_QUESTION_NODE_STR, 
+        "BUSINESS": INFORMATION_RETREIVER_AGENT, 
         "IT-ENGINEER": END,
         "OTHER":END,
         "CLARIFY":END
     }
 )
 
-graph.add_edge(REFINE_USER_QUESTION_NODE_STR, REVIEW_USER_QUESTION_STR)
-graph.add_edge(REVIEW_USER_QUESTION_STR, RETRIEVE_EXAMPLES_NODE_STR)
-graph.add_edge(RETRIEVE_EXAMPLES_NODE_STR, SELECT_RELEVANT_SCHEMA_NODE_STR)
-graph.add_edge(SELECT_RELEVANT_SCHEMA_NODE_STR, GENERATE_SQL_NODE_STR)
 
-graph.add_conditional_edges(GENERATE_SQL_NODE_STR, lambda state: state["command"],
+graph.add_edge(INFORMATION_RETREIVER_AGENT, SCHEMA_SELECTOR_AGENT_STR)
+
+graph.add_conditional_edges(SCHEMA_SELECTOR_AGENT_STR, lambda state: state["command"],
     {
         "NO-SCHEMA": END, 
-        "CONTINUE": EXECUTE_SQL_NODE_STR
+        "CONTINUE": CANDIDATE_GENERATOR_AGENT_STR,
+       
     }
 )
+
+graph.add_conditional_edges(CANDIDATE_GENERATOR_AGENT_STR, lambda state: state["command"],
+    {
+        "NO-QUERY": END, 
+        "CONTINUE": EXECUTE_SQL_NODE_STR,
+      
+    }
+)
+#graph.add_edge(DEVIDE_AND_CONQUER_NODE_STR, GENERATE_SQL_NODE_STR)
+
+#graph.add_edge(GENERATE_SQL_NODE_STR, EXECUTE_SQL_NODE_STR)
 
 graph.add_edge(EXECUTE_SQL_NODE_STR, VALIDATE_RESULT_NODE_STR)
 graph.add_conditional_edges(VALIDATE_RESULT_NODE_STR, lambda state: state["result"],
     {
-        "retry": SELECT_RELEVANT_SCHEMA_NODE_STR, 
+        "retry": SCHEMA_SELECTOR_AGENT_STR, 
         "continue": GENERATE_FINAL_ANSWER_NODE_STR
     }
 )
@@ -92,7 +97,7 @@ graph.add_conditional_edges(VALIDATE_RESULT_NODE_STR, lambda state: state["resul
 graph.add_edge(GENERATE_FINAL_ANSWER_NODE_STR, END)
 
 # Entry Point
-graph.set_entry_point(VALIDATE_USER_QUESTION_NODE_STR)
+graph.set_entry_point(CHAT_AGENT)
 
 compiled_graph = graph.compile()
 

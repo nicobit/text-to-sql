@@ -29,18 +29,17 @@ def candidate_generator_agent(state: ConversationState) -> ConversationState:
     final_sql = assemble_final_query(examples, db_schema, user_question, sub_questions, partial_sqls)
 
     logger.warning(f"Final SQL query: {final_sql}")
+    sql_query = ""
+    queries = extract_sql_queries(final_sql)
 
-    # Extract SQL Query
-    pattern = r"```sql\n(.*?)\n```"
-    match = re.search(pattern, final_sql, re.DOTALL)
-    if match:
-        sql_query = match.group(1)
+    if queries:
+        sql_query = queries[0]
         state["sql_query"] = sql_query
         state["chart_type"] = "bar"  # Placeholder for chart type, can be improved
         state["command"] = "CONTINUE"
     else:
         state["command"] = "NO-QUERY"
-
+       
     # EVALUATE QUERY PLANNER
     # ----------------------------------------
     # Check if the SQL query is valid and get the query plan description
@@ -48,6 +47,22 @@ def candidate_generator_agent(state: ConversationState) -> ConversationState:
     query_plan = DBHelper.test(database_name, sql_query,db_schema)
     logger.warning(f"Query Plan: {query_plan}")
     return state
+
+def extract_sql_queries(text):
+    queries = []
+    
+    # Pattern for SQL queries inside fenced code blocks: ```sql ... ```
+    code_block_pattern = r"```sql\s*([\s\S]*?)\s*```"
+    code_block_matches = re.findall(code_block_pattern, text, flags=re.IGNORECASE)
+    queries.extend(match.strip() for match in code_block_matches if match.strip())
+    
+    # Pattern for SQL queries that might be inline after a numbered item (e.g. "3.  select * from products")
+    inline_pattern = r"^\s*\d+\.\s*(select[\s\S]*?)(?=\n\d+\.|\Z)"
+    inline_matches = re.findall(inline_pattern, text, flags=re.IGNORECASE | re.MULTILINE)
+    queries.extend(match.strip() for match in inline_matches if match.strip())
+    
+    return queries
+
 
 def decompose_question(examples, db_schema, user_question):
     prompt = f"Given the database schema: \n {db_schema}\n\n"

@@ -1,6 +1,6 @@
 import { useState, useContext, FormEvent } from 'react';
 import { QueryContext } from '../context/QueryContext';
-import { Box, IconButton, TextField, List, ListItem, Typography, LinearProgress } from '@mui/material';
+import { Box, IconButton, TextField, List, ListItem, Typography } from '@mui/material';
 import { Tabs, Tab, Dialog, DialogContent, DialogTitle } from '@mui/material';
 import ReactMarkdown from 'react-markdown';
 
@@ -36,7 +36,7 @@ function Chat() {
     setIsDialogOpen((prev) => !prev); // Toggle dialog open/close state
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue); // Handle tab change
   };
 

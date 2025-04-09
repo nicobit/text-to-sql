@@ -71,6 +71,11 @@ def extract_sql_queries(text):
     inline_pattern = r"^\s*\d+\.\s*(select[\s\S]*?)(?=\n\d+\.|\Z)"
     inline_matches = re.findall(inline_pattern, text, flags=re.IGNORECASE | re.MULTILINE)
     queries.extend(match.strip() for match in inline_matches if match.strip())
+
+    # Pattern for SQL queries that start with "select" (case-insensitive)
+    select_pattern = r"^\s*(select[\s\S]*?)(?=\n|$)"
+    select_matches = re.findall(select_pattern, text, flags=re.IGNORECASE | re.MULTILINE)
+    queries.extend(match.strip() for match in select_matches if match.strip())
     
     return queries
 

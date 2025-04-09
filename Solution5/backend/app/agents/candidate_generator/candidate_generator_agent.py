@@ -40,13 +40,14 @@ def candidate_generator_agent(state: ConversationState) -> ConversationState:
     sql_query = ""
     queries = extract_sql_queries(final_sql)
 
-    if queries:
+    if not queries or len(queries) == 0 or (queries[0].strip() == ""):
+        sql_query = final_sql
+        state["command"] = "NO-QUERY"
+    else:
         sql_query = queries[0]
         state["sql_query"] = sql_query
         state["chart_type"] = "bar"  # Placeholder for chart type, can be improved
         state["command"] = "CONTINUE"
-    else:
-        state["command"] = "NO-QUERY"
        
     # EVALUATE QUERY PLANNER
     # ----------------------------------------

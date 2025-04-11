@@ -56,7 +56,7 @@ class ConnectionStringParser:
         URL-encode the connection string for safe transport in URLs.
         """
         quoted = quote_plus(connection_string)
-        logger.info(f"Quoted connection string: {quoted}")
+        #logger.info(f"Quoted connection string: {quoted}")
         return quoted
     
 

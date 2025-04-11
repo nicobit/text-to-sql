@@ -149,7 +149,7 @@ class DBHelper:
             mschema = DBHelper.get_mschema(database)
             tables = mschema.tables
 
-            logger.error (mschema.to_mschema())
+            #logger.error (mschema.to_mschema())
 
             for table_name, table_info in tables.items():
                 mschemaTable = mschema.single_table_mschema(table_name)
@@ -214,58 +214,42 @@ class DBHelper:
             logger.error(f"Failed to retrieve database list: {str(e)}")
             raise
     
-    @staticmethod
-    def get_query_plan_description_mssql(database,sql_query):
-        """
-        Generates a human-readable description of the SQL Server query execution plan.
-        
-        Parameters:
-            server (str): SQL Server name or IP address.
-            database (str): Database name.
-            username (str): Username for authentication.
-            password (str): Password for authentication.
-            sql_query (str): The SQL query to analyze.
-        
-        Returns:
-            str: A detailed description of the query execution plan.
-        """
-        # Connect to the SQL Server database
-        connection_string = DBHelper.getConnectionString(database)
-        connection = pyodbc.connect(connection_string)
-        cursor = connection.cursor()
-        
-        # Enable SHOWPLAN_XML to get the execution plan without executing the query
-        cursor.execute("SET SHOWPLAN_XML ON")
-        cursor.nextset()  # Move to the next result set
-        
-        # Execute the query to get the execution plan
-        cursor.execute(sql_query)
-        plan_xml = cursor.fetchone()[0]
-        
-        # Reset SHOWPLAN_XML to OFF
-        cursor.execute("SET SHOWPLAN_XML OFF")
-        cursor.nextset()
-        
-        # Close the connection
-        connection.close()
-        
-        # Parse the XML execution plan
-        root = ET.fromstring(plan_xml)
-        namespaces = {'sql': 'http://schemas.microsoft.com/sqlserver/2004/07/showplan'}
-        
-        descriptions = []
-        for stmt in root.findall('.//sql:StmtSimple', namespaces):
-            statement_text = stmt.attrib.get('StatementText', '').strip()
-            statement_type = stmt.attrib.get('StatementType', '').strip()
-            descriptions.append(f"{statement_type} Statement: {statement_text}")
-            
-            for operator in stmt.findall('.//sql:RelOp', namespaces):
-                op_type = operator.attrib.get('PhysicalOp', '').strip()
-                logical_op = operator.attrib.get('LogicalOp', '').strip()
-                descriptions.append(f"  - {logical_op} operation using {op_type}")
-        
-        return "\n".join(descriptions)
 
+# -----------------------------------------------------------------------------
+    @staticmethod
+    def test(database, sql_query, schema):
+         # Get the XML execution plan from MSSQL
+
+        conn_str = DBHelper.getConnectionString(database)
+        conn = pyodbc.connect(conn_str)
+        xml_plan = DBHelper.get_execution_plan_xml(database, sql_query)
+
+        if xml_plan is None:
+
+            logger.error("Failed to retrieve execution plan.")
+
+            return
+
+
+
+        # Parse the XML into human-readable steps
+
+        execution_steps = DBHelper.parse_showplan_xml(xml_plan)
+
+        if not execution_steps:
+
+            logger.error("No execution steps found in the plan.")
+
+            return
+
+
+
+        # Generate the final prompt combining schema, query, and execution plan steps
+
+        final_prompt = DBHelper.a_generate_prompt(schema, sql_query, execution_steps)
+
+        return final_prompt
+    
     @staticmethod
     def get_execution_plan_xml(database,sql_query):
         """
@@ -285,8 +269,10 @@ class DBHelper:
         cursor.execute(sql_query)
         row = cursor.fetchone()
         if row:
+            logger.info(f"Execution plan XML: {row[0]}")
             plan_xml = row[0]
         else:
+            logger.info("Execution plan XML: None")
             plan_xml = None
 
         # Turn off SHOWPLAN_XML
@@ -296,120 +282,68 @@ class DBHelper:
 
         return plan_xml
 
-    @staticmethod
-    def parse_query_plan(plan_xml):
+
+    def parse_showplan_xml(xml_content: str) -> list:
         """
-        Parses the XML execution plan and converts it into a human-readable description.
-        This implementation focuses on a few common operations.
+        Parse a SQL Server XML execution plan and create a human-readable summary.
         """
-        if plan_xml is None:
-            return "No execution plan was returned."
-
-        # Parse the XML
-        root = ET.fromstring(plan_xml)
-        # SQL Server execution plan XML uses a namespace – get its URL from the root tag
-        ns = {'sql': root.tag.split('}')[0].strip('{')}
-
-        descriptions = []
-        # For each simple statement in the plan
-        for stmt in root.findall('.//sql:StmtSimple', ns):
-            statement_text = stmt.attrib.get('StatementText', '').strip()
-            statement_type = stmt.attrib.get('StatementType', '').strip()
-            descriptions.append(f"{statement_type} Statement: {statement_text}")
-
-            # Look for relational operators (RelOp elements)
-            for relop in stmt.findall('.//sql:RelOp', ns):
-                physical_op = relop.attrib.get('PhysicalOp', '').strip()
-                logical_op = relop.attrib.get('LogicalOp', '').strip()
-                detail = f"  - {logical_op} operation using {physical_op}"
-                # Try to extract additional info, e.g., object names for scans or searches
-                for node in relop.findall('.//sql:IndexScan', ns):
-                    table = node.attrib.get('Table', 'Unknown table')
-                    detail += f" on table {table}"
-                for node in relop.findall('.//sql:IndexSeek', ns):
-                    table = node.attrib.get('Table', 'Unknown table')
-                    detail += f" on table {table}"
-                descriptions.append(detail)
-        return "\n".join(descriptions)
-
-    @staticmethod
-    def generate_human_readable_plan(database,sql_query):
-        """
-        Connects to the SQL Server, retrieves the execution plan for a given query,
-        and returns a human-readable description.
-        """
-        plan_xml = DBHelper.get_execution_plan_xml( database,  sql_query)
-        description = DBHelper.parse_query_plan(plan_xml)
-        return description
-
-    @staticmethod
-    def a_get_execution_plan(conn, sql_query):
-        """
-        Executes the given SQL query with SET STATISTICS XML ON and returns the XML execution plan.
-        Note: In MSSQL, after the result set, the XML execution plan is returned as an additional result set.
-        """
-        cursor = conn.cursor()
-        # Enable XML statistics
-        cursor.execute("SET STATISTICS XML ON;")
-        # Execute the query (this may return a result set that you can discard)
-        cursor.execute(sql_query)
-        # Fetch all rows from the main result set (if needed)
-        try:
-            _ = cursor.fetchall()
-        except Exception:
-            pass  # Some queries might not return rows
-
-        # Advance to the next result set, which should contain the execution plan
-        if cursor.nextset():
-            # MSSQL returns the execution plan as a single-row, single-column result (XML string)
-            plan_row = cursor.fetchone()
-            if plan_row:
-                return plan_row[0]
-        return None
-
-
-
-
-    @staticmethod
-    def a_parse_execution_plan(xml_plan):
-        """
-        Parses the XML execution plan and returns a list of human-readable step descriptions.
-        This example simply iterates over all <RelOp> nodes and extracts the PhysicalOp, LogicalOp,
-        and EstimatedTotalSubtreeCost attributes.
-        """
-
-        steps = []
-
-        try:
-
-            root = ET.fromstring(xml_plan)
-
-        except ET.ParseError as e:
-
-            logger.error("Error parsing XML execution plan:", e)
-
-            return steps
-
-
-
-        # Traverse all RelOp nodes in the plan (they represent relational operators)
-
-        for relop in root.iter('RelOp'):
-
-            physical_op = relop.get('PhysicalOp', 'N/A')
-
-            logical_op = relop.get('LogicalOp', 'N/A')
-
-            cost = relop.get('EstimatedTotalSubtreeCost', 'N/A')
-
-            # Create a simple text description for this operator
-
-            step_desc = f"{physical_op} ({logical_op}) with cost {cost}"
-
-            steps.append(step_desc)
-
-        return steps
-
+        
+        # Parse the XML content.
+        root = ET.fromstring(xml_content)
+        ns = {"sql": "http://schemas.microsoft.com/sqlserver/2004/07/showplan"}
+        
+        summary_lines = []
+        
+        # Extract high-level details from the <ShowPlanXML> root element.
+        version = root.attrib.get("Version", "Unknown")
+        build = root.attrib.get("Build", "Unknown")
+        summary_lines.append(f"Execution Plan Version: {version} (Build {build})")
+        
+        # Look for MissingIndexes suggestions
+        missing_indexes = root.findall(".//sql:MissingIndex", ns)
+        if missing_indexes:
+            summary_lines.append("\nMissing Index Recommendations:")
+            for mi in missing_indexes:
+                table = mi.find("./sql:MissingIndexGroup/sql:MissingIndex", ns)
+                if table is not None:
+                    table_attrib = table.attrib
+                    db = table_attrib.get("Database", "Unknown")
+                    schema = table_attrib.get("Schema", "Unknown")
+                    table_name = table_attrib.get("Table", "Unknown")
+                    summary_lines.append(
+                        f"- Consider creating an index on {db}.{schema}.{table_name}."
+                    )
+        else:
+            summary_lines.append("\nNo missing index recommendations found.")
+        
+        # Find all operator nodes and summarize key info
+        relops = root.findall(".//sql:RelOp", ns)
+        if relops:
+            summary_lines.append("\nOperators and Costs:")
+            for op in relops:
+                physical_op = op.attrib.get("PhysicalOp", "Unknown")
+                logical_op = op.attrib.get("LogicalOp", "Unknown")
+                est_rows = op.attrib.get("EstimateRows", "Unknown")
+                cost = op.attrib.get("EstimatedTotalSubtreeCost", "Unknown")
+                summary_lines.append(
+                    f"Operator: {physical_op} (Logical: {logical_op}), Estimated Rows: {est_rows}, Cost: {cost}"
+                )
+        else:
+            summary_lines.append("\nNo operator details found.")
+        
+        # Optionally, extract additional details such as predicate information:
+        predicates = root.findall(".//sql:Predicate", ns)
+        if predicates:
+            summary_lines.append("\nPredicates:")
+            for idx, pred in enumerate(predicates, start=1):
+                scalar = pred.find(".//sql:ScalarOperator", ns)
+                if scalar is not None and scalar.attrib.get("ScalarString"):
+                    summary_lines.append(f"Predicate {idx}: {scalar.attrib.get('ScalarString')}")
+        
+        # Combine all summary lines into a single string.
+        #summary = "\n".join(summary_lines)
+        return summary_lines
+    
 
 
     @staticmethod
@@ -437,40 +371,35 @@ class DBHelper:
 
             prompt += f"Step {i}: {step}\n"
 
+        prompt += "\nPlease provide an optimized sql query ( if exists ) based on the information above."
+
+        return prompt
+    
+    @staticmethod
+    def a_generate_prompt_1(schema, sql_query, execution_steps):
+
+        """
+
+        Combines the schema, the SQL query, and the execution plan steps into a final prompt.
+
+        The prompt is intended to be human-readable and can be sent to an LLM.
+
+        """
+
+        prompt = "Below is the SQL table schema:\n"
+
+        prompt += schema + "\n\n"
+
+        prompt += "For the following query:\n"
+
+        prompt += sql_query + "\n\n"
+
+        prompt += "The execution plan was as follows:\n"
+
+        for i, step in enumerate(execution_steps, start=1):
+
+            prompt += f"Step {i}: {step}\n"
+
         prompt += "\nPlease provide a human-readable explanation of the above execution plan."
 
         return prompt
-
-    @staticmethod
-    def test(database, sql_query, schema):
-         # Get the XML execution plan from MSSQL
-
-        conn_str = DBHelper.getConnectionString(database)
-        conn = pyodbc.connect(conn_str)
-        xml_plan = DBHelper.get_execution_plan_xml(database, sql_query)
-
-        if xml_plan is None:
-
-            logger.error("Failed to retrieve execution plan.")
-
-            return
-
-
-
-        # Parse the XML into human-readable steps
-
-        execution_steps = DBHelper.a_parse_execution_plan(xml_plan)
-
-        if not execution_steps:
-
-            logger.error("No execution steps found in the plan.")
-
-            return
-
-
-
-        # Generate the final prompt combining schema, query, and execution plan steps
-
-        final_prompt = DBHelper.a_generate_prompt(schema, sql_query, execution_steps)
-
-        return final_prompt

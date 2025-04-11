@@ -10,8 +10,6 @@ from app.services.search_service import SearchService
 from app.utils.connection_string_parser import ConnectionStringParser
 
 
-
-
 logger = NBLogger().Log()
 fast_app = FastAPI() 
 CORSHelper.set_CORS(fast_app)

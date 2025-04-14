@@ -15,8 +15,10 @@ Requirements for the Mermaid diagram:
 - Draw directed arrows between nodes to represent relationships, where an arrow goes from the table containing the foreign key to the table that is referenced by that foreign key. Use the full arrow syntax with "-->" (e.g., TableA --> TableB).
 - Use descriptive and unquoted identifiers for nodes and subgraphs. Ensure that parent elements (e.g., subgraphs) and child elements (e.g., tables) have distinct identifiers.
 - Do not include any comment lines (e.g., lines starting with `//`) in the output.
+- Use unquoted identifiers for nodes or subgraphs, with the display label provided inside square brackets, and ensure that the text within the square brackets is enclosed in double quotes. For example:
+      NodeName["My Node Text"]
 - Remove any triple backticks (```mermaid and ```) from the output.
 - Wrap the final Mermaid diagram code within `<mermaid>` tags.
 - Additionally, provide an explanation of the diagram in markdown format that describes each table and relationship. Wrap the explanation within `<answer>` tags.
 
-Please generate the complete Mermaid diagram code and the explanation as specified.
+Please generate the complete Mermaid diagram code as required and include it inside `<diagram>` tags and the explanation of the diagram, using markdown format, inside `<answer>` tags.

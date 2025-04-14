@@ -10,7 +10,7 @@ Sub questions and SQL Query:
 {subquestions_and_sqlquery}
 
 Combine the above SQL queries into a final SQL query.
-Include a TOP statement to retrieve just {ROWS_LIMIT} rows; the TOP clause must immediately follow SELECT.
+Include a TOP statement to retrieve just {rows_limit} rows; the TOP clause must immediately follow SELECT.
 Prefer using COUNT, DISTINCT, and GROUP BY when needed.
 Do not include any additional explanation or commentary.
 

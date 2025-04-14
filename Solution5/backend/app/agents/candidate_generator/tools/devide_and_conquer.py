@@ -31,6 +31,9 @@ class DevideAndConquer(BaseTool[ConversationState]):
         sql_query = ""
         queries = self.extract_result(final_sql,"sql_query")
 
+        if not queries and final_sql.lower().startswith("select"):
+            queries = final_sql
+
         if not queries or len(queries) == 0 or (queries[0].strip() == ""):
             sql_query = final_sql
             state["command"] = "NO-QUERY"

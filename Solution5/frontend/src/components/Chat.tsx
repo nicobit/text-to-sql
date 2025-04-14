@@ -85,7 +85,7 @@ function Chat() {
                 <Typography variant="body2" color="error">
                   <strong>Error:</strong> {entry.error}
                 </Typography>
-              ) : entry.answer ? (
+              ) : entry.answer || entry.mermaid ?  (
                 <div>
                   <Box sx={{ mt: 1, pl: 2, borderLeft: '2px solid grey', color: 'grey' }}>
                     <Box

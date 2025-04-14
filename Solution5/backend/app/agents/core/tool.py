@@ -12,10 +12,13 @@ from app.utils.nb_logger import NBLogger
 
 
 class BaseTool(ABC, Generic[T]):
-    def __init__(self):
+    def __init__(self, name = "", description = ""):
         # Set a consistent tool name by converting the class name to snake_case.
         self.logger = NBLogger().Log()
-        self.tool_name = self._camel_to_snake(self.__class__.__name__)   
+        if( not name):
+            name = self._camel_to_snake(self.__class__.__name__)
+        self.tool_name = name 
+        self.description  = description
         self.promptManager = PromptManager()
 
     def __call__(self, state: T) -> T:
@@ -31,11 +34,11 @@ class BaseTool(ABC, Generic[T]):
             # Execute the tool's main functionality.
             status = {"executed_at": time.strftime("%Y.%m.%d: %H.%M.%S")}
             state = self.run(state)
-            status = {"status": "success"}
+            status["status"] = "success"
         except Exception as err:
             error_msg = f"{type(err).__name__}: {err}"
             self.logger.error(f"Tool '{self.tool_name}' encountered an error:\n{error_msg}")
-            state.errors[self.tool_name] = error_msg
+            state["errors"][self.tool_name] = error_msg
             status = {"status": "error", "error": error_msg}
         
         status["execution_time"] = round(time.time() - start_time, 1)

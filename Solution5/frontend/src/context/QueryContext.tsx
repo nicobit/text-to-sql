@@ -11,13 +11,18 @@ interface Query {
   chartType:string;
   error: string | null;
   sql_query?: string;
+  execution_history?: [];
+  mermaid?: string;
+  isExpanded?: boolean; // Added property to track expansion state
 }
 
-interface QueryContextType {
+interface QueryContextType {  
   queries: Query[];
   runQuery: (queryText: string) => Promise<void>;
   selectedIndex: number | null;
   selectQuery: (index: number) => void;
+  setQueries: (queries: Query[]) => void; // Add setQueries function
+  
 }
 
 export const QueryContext = createContext<QueryContextType | null>(null);
@@ -40,7 +45,14 @@ export function QueryProvider({ children }: QueryProviderProps) {
     try {
       const resultData = await submitQuery(instance, queryText);
       setQueries(prev => {
-        const newEntry: Query = {sql_query:  resultData.sql_query, query: queryText, result: resultData.results,answer:resultData.answer, chartType:resultData.chart_type, error: null };
+        const newEntry: Query = {sql_query:  resultData.sql_query, 
+          query: queryText, 
+          result: resultData.results,
+          answer:resultData.answer,
+           chartType:resultData.chart_type, 
+           error: null, 
+           execution_history: resultData.execution_history, 
+           mermaid : resultData.mermaid};
         return [...prev, newEntry];
       });
       setSelectedIndex(queries.length);
@@ -60,7 +72,7 @@ export function QueryProvider({ children }: QueryProviderProps) {
   };
 
   return (
-    <QueryContext.Provider value={{ queries, runQuery, selectedIndex, selectQuery }}>
+    <QueryContext.Provider value={{ queries, runQuery, selectedIndex, selectQuery , setQueries}}>
       {children}
     </QueryContext.Provider>
   );

@@ -1,6 +1,7 @@
 from app.agents.conversation_state import ConversationState
 from app.agents.core.tool import BaseTool
 from app.settings import ROWS_LIMIT
+from app.agents.candidate_generator.tools.utils import Utils
 
 
 
@@ -8,14 +9,12 @@ class DevideAndConquer(BaseTool[ConversationState]):
     """
     Use Devide and Conquer to generate the sql query to answer the question.
     """
-   
+    history = {}
     def run(self, state: ConversationState) -> ConversationState:
 
         db_schema = state['relevant_schema']
         examples = state['examples']
-        history = state['history']
-        database_name = state['database']
-        user_question = history[-1].content
+        user_question = state["question"]
 
         #  DEVIDE AND CONQUER STRATEGY
         # ----------------------------------------
@@ -40,59 +39,50 @@ class DevideAndConquer(BaseTool[ConversationState]):
             state["sql_query"] = sql_query
             state["chart_type"] = "bar"  # Placeholder for chart type, can be improved
             state["command"] = "CONTINUE"
+        
+        return state
 
     
     def get_run_updates(self, state: ConversationState) -> dict:
-        return {"sql_query": state["sql_query"]}
+        self.history["Final query"] = state["sql_query"]
+        return self.history
     
     def decompose_question(self,examples, db_schema, user_question):
-
-    
-        examples_str = self.get_example_str(examples)
-        
-        prompt = f"Given the database schema: \n {db_schema}\n\n"
-        prompt += f"Decompose the following question into simpler sub-questions:\n{user_question}\n"
-        prompt += f"Examples:\n" + examples_str + "\n\n"
-        prompt += f"Sub-questions:"
-
-        messages = [{"role":"assistant", "content": prompt}]
+        self.history["question decomposed"] = user_question
+        examples_str = Utils.get_example_str(examples)
+        prompt = self.promptManager.create_prompt("decompose_question").format(db_schema=db_schema, examples=examples_str, user_question=user_question)
         response = self.call_llm(prompt,"" ) 
         sub_questions = response.split('\n')
         self.logger.warning(f"Sub-questions: {sub_questions}")
         return [sq.strip() for sq in sub_questions if sq.strip()]
 
-    def get_example_str(self,examples):
-        retval =  "\n".join(f"{example['question']}: {example['sql']}" for example in examples if isinstance(example, dict) and 'question' in example and 'sql' in example)
-        return retval
-
-
+  
     def generate_partial_sql(self,examples, db_schema, user_question, sub_questions):
+        
         partial_sqls = []
-        examples_str = self.get_example_str(examples)
+        examples_str = Utils.get_example_str(examples)
         for i, sub_question in enumerate(sub_questions):
+            self.history[f"{i+1} Question "] = sub_question
             context = " ".join(f"Q{i+1}: {sq} SQL{i+1}: {sql}" for i, (sq, sql) in enumerate(zip(sub_questions[:i], partial_sqls)))
-            prompt = f"Given the database schema: {db_schema}\n"
-            prompt += f"User question: {user_question}\n"
-            prompt += f"Sub-question {i+1}: {sub_question}\n"
-            prompt += f"Context: {context}\n"
-            prompt += f"Examples:\n" + examples_str + "\n\n"
-            prompt += "Provide the SQL query for the sub-question:"
-            messages = [{"role":"assistant", "content": prompt}]
+
+            prompt = self.promptManager.create_prompt("generate_partial_sql").format(db_schema=db_schema, user_question=user_question,index = str(i+1), sub_question= sub_question, context = context, example_str = examples_str)
+
             response = self.call_llm(prompt,"")
             partial_sql = response.strip()
+
+            self.history[f"Partial SQL {i+1}"] = partial_sql
             partial_sqls.append(partial_sql)
         return partial_sqls
 
     def assemble_final_query( self,examples, db_schema, user_question, sub_questions, partial_sqls):
-        examples_str = self.get_example_str(examples)
-        prompt = f"Given the database schema: {db_schema}\n"
-        prompt += f"Examples:\n" + examples_str + "\n\n"
-        prompt += f"User question: {user_question}\n"
+        examples_str = Utils.get_example_str(examples)
+
+        sub_queries = ""
         for i, (sub_question, partial_sql) in enumerate(zip(sub_questions, partial_sqls)):
-            prompt += f"Sub-question {i+1}: {sub_question}\n"
-            prompt += f"SQL {i+1}: {partial_sql}\n"
-        prompt += f"Combine the above SQL queries into a final SQL query (include TOP statement to retrieve just {ROWS_LIMIT} rows and return based on the needed fields/columns:  the top must be soon after select) that answers the user question. Do not include any additional explanation or commentary. Please prodvide The identified sql query inside <sql_query> taags."
-        messages = [{"role":"assistant", "content": prompt}]
+            sub_queries += f"Sub-question {i+1}: {sub_question}\n"
+            sub_queries += f"SQL {i+1}: {partial_sql}\n"
+
+        prompt = self.promptManager.create_prompt("assemble_final_query").format(db_schema=db_schema, examples=examples_str, user_question=user_question, sub_queries=sub_queries, rows_limit = ROWS_LIMIT)
         response = self.call_llm(prompt,"")
         final_sql = response.strip()
         return final_sql

@@ -16,11 +16,11 @@ class ContextSelector(BaseTool[ConversationState]):
             user_prompt = state["question"]
             response = self.call_llm(system_prompt, user_prompt)
             context = self.extract_result(response, "context")
-            state["command"] = context
+            state["context"] = context
 
         except Exception as e:
             self.logger.error(f"Error in RewriteQuestion: {e}")
-            state["command"] = "ERROR"
+            state["context"] = "ERROR"
             state["answer"] = ""
             raise e
         
@@ -28,4 +28,4 @@ class ContextSelector(BaseTool[ConversationState]):
 
     
     def get_run_updates(self, state: ConversationState) -> dict:
-        return {"command": state["command"]}
+        return {"context": state["context"]}

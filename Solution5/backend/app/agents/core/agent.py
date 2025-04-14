@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from app.llm.openai_service import OpenAIService
 from app.llm.prompt_menager import PromptManager
 from typing import Generic
-
+import time
 from app.agents.core.tool import BaseTool
 from app.agents.core.system_state import T
 from app.utils.nb_logger import NBLogger
@@ -57,7 +57,7 @@ class AgentBase(ABC, Generic[T]):
             raise ValueError(f"Tool '{tool_name}' not found.")
         
         tool = self.tools[tool_name]
-
+        
         if not isinstance(tool, BaseTool):
             self.logger.error(f"Tool '{tool_name}' is not of type BaseTool.")
             raise TypeError(f"Tool '{tool_name}' is not of type BaseTool.")
@@ -65,8 +65,14 @@ class AgentBase(ABC, Generic[T]):
             try:
                 state = tool.run_tool(state)
             except Exception as e:
+                error_msg = f"{type(e).__name__}: {e}"
+                
+                state["errors"][tool_name] = error_msg
+                status = {"status": "error", "error": error_msg}
                 self.logger.error(f"Error in tool {tool_name}: {e}", exc_info=True)
                 raise Exception(f"Error in tool {tool_name}: {e}")
+            
+        
         return state
     
     # Common
@@ -77,8 +83,25 @@ class AgentBase(ABC, Generic[T]):
     def run_before(self, state: T) -> T:
         # Primary method to execute the agent's logic. To be implemented by subclasses
         return state
+
+    def log_update(self, state: T, status: dict):
+        # Prepare a log entry containing tool name and execution status.
+        run_log = {"agent_name": self.name}
+        if status["status"] == "success":
+            run_log.update(self.get_run_updates(state))
+        run_log.update(status)
+
+        if "execution_history" not in state:
+            state["execution_history"] = []
+
+        state["execution_history"].append(run_log)
+        ex_history = state["execution_history"]
+        self.logger.info(f"Execution History : {ex_history}")
     
-    
+    @abstractmethod
+    def get_run_updates(self, state: T) -> T:
+        pass
+
     def run_after(self, state: T) -> T:
         # Primary method to execute the agent's logic. To be implemented by subclasses
         return state
@@ -88,14 +111,15 @@ class AgentBase(ABC, Generic[T]):
 
     def run(self, state:T) -> T:
         self.logger.info(f"---START: {self.name}---")
+        state["execution_history"].append({"agent_name": f"{self.name}-----------------"})
+        start_time = time.time()
         try:
+            status = {"executed_at": time.strftime("%Y.%m.%d: %H.%M.%S")}
             state = self.run_before(state)
             self.logger.info(f"run-before called")
 
             for tool_name, tool in self.tools.items():
                 self.logger.info(f"Running tool: {tool_name}")
-               
-
                 self.add_history("agent", f"Calling tool: {tool_name}")
 
                 state = self.call_tool(tool_name, state)
@@ -104,13 +128,20 @@ class AgentBase(ABC, Generic[T]):
                     break
                     
             state = self.run_after(state)
+            status["status"] = "success"
             
-    
+            
         except Exception as e:
-            error_msg = f"Error in agent workflow: {e}"
+            error_msg = f"Error in agent workflow: {type(e).__name__}: {e}"
+             
+            state["errors"][self.name] = error_msg
+            status = {"status": "error", "error": error_msg}
             
             self.logger.info(f"Error: {error_msg}")
             self.add_history("error", error_msg)
+
+        status["execution_time"] = round(time.time() - start_time, 1)    
+        self.log_update(state, status)
         
         return state
 

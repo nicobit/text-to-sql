@@ -50,3 +50,4 @@ obj/
 wheels
 
 **/__pycache__/
+__pycache__

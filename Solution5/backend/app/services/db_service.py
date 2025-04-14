@@ -20,6 +20,11 @@ from app.services.m_schema import MSchema
 import traceback
 import xml.etree.ElementTree as ET
 
+from typing import (
+    Any, Callable, Dict, Final, Generator, Iterable, Iterator,
+    List, Optional, Sequence, Tuple, Union,
+)
+
 logger = NBLogger().Log()
 
 
@@ -35,7 +40,7 @@ class DBHelper:
         return ManagedIdentityCredential()
 
     @staticmethod
-    def executeSQLQuery(database, sql_query):
+    def executeSQLQuery(database, sql_query,  *params: Any ):
         """
         Executes a SQL query against Azure SQL Database and returns the results.
         """
@@ -43,17 +48,44 @@ class DBHelper:
             connection_string = DBHelper.getConnectionString(database)
             conn = pyodbc.connect(connection_string)
             cursor = conn.cursor()
-            cursor.execute(sql_query)
+            cursor.execute(sql_query, params)
             columns = [column[0] for column in cursor.description]
             rows = cursor.fetchall()
             conn.close()
-
-            results = [dict(zip(columns, row)) for row in rows]
+            # TODO: check if it is the right approach. Things changed otherwise  TypeError: unhashable type: 'list' when checking token size.
+            #results = [dict(zip([str(col) for col in columns], row)) for row in rows]
+            results = [
+                dict(zip(
+                    [tuple(col) if isinstance(col, list) else col for col in columns],
+                    row
+                ))
+                for row in rows
+            ]
+            #results = [dict(zip(columns, row)) for row in rows]
             return results
 
         except Exception as e:
             logger.error(f"Error executing SQL query: {e}")
             raise
+
+    @staticmethod
+    def executeAndFetchOne(database, sql_query,  *params: Any ):
+        """
+        Executes a SQL query against Azure SQL Database and returns the results.
+        """
+        try:
+            connection_string = DBHelper.getConnectionString(database)
+            conn = pyodbc.connect(connection_string)
+            cursor = conn.cursor()
+            cursor.execute(sql_query, params)
+            retval = cursor.fetchone()
+            conn.close()
+            return retval
+
+        except Exception as e:
+            logger.error(f"Error executing SQL query: {e}")
+            raise
+
 
     @staticmethod
     def getConnectionString(database: str) -> str:

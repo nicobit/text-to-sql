@@ -13,5 +13,9 @@ class ChatAgent(AgentBase[ConversationState]):
         self.register_tool("Rewrite Question", RewriteQuestion())
         self.register_tool("Context Selector", ContextSelector())
 
+    def get_run_updates(self, state: ConversationState) -> dict:
+        
+        return {}
+
 
     

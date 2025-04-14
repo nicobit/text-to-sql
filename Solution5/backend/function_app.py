@@ -53,7 +53,12 @@ async def query(req: Request, body:  QueryRequest):
     if result["chart_type"] == None:
         result["chart_type"] = "None"
 
-    return {"results": result["response"],"chart_type":result["chart_type"],"answer":result["answer"],"sql_query":result["sql_query"]}
+    return {"results": result["response"],
+            "chart_type":result["chart_type"],
+            "answer":result["answer"],
+            "sql_query":result["sql_query"],
+            "execution_history": result["execution_history"],
+            "mermaid": result["mermaid"]}    
 
 
 

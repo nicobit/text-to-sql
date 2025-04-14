@@ -4,16 +4,20 @@ from typing import Dict
 from langgraph.graph import StateGraph, END
 
 from app.utils.nb_logger import NBLogger
+
+
 from app.agents.conversation_state import ConversationState #, initialize_conversation_state
 
+from app.agents.fake.fake_agent import FakeAgent
 from app.agents.execute_sql_node import execute_sql_node 
-from app.agents.answer_generator.answer_generator_agent import answer_generator_agent
-from app.agents.schema_selector.schema_selector_agent import schema_selector_agent
+from app.agents.answer_generator.answer_generator import AnswerGeneratorAgent
+from app.agents.schema_selector.schema_selector import SchemaSelectorAgent
 from app.agents.candidate_generator.candidate_generator_agent import CandidateGeneratorAgent
 from app.agents.chat.chat_agent import ChatAgent
+from app.agents.architecure_assistant.architecure_assistant import ArchitectureAssistantAgent
+from app.agents.information_retriever.information_retriever import InformationRetrieverAgent
+from app.agents.database_assistant.database_assistant_agent import DatabaseAssitantAgent
 
-from app.agents.information_retriever.information_retriever_agent import information_retriever_agent
-from app.agents.fake_node import fake_node
 from app.settings import DATABASE_NAME
 
 
@@ -27,8 +31,6 @@ user_sessions: Dict[str, "ConversationState"] = {}
 graph = StateGraph(ConversationState)
 
 CHAT_AGENT = "Chat Agent"
-VALIDATE_USER_QUESTION_NODE_STR = "Validate User Question"
-
 INFORMATION_RETREIVER_AGENT = "Information Retriever Agent"
 SCHEMA_SELECTOR_AGENT_STR = "Schema Selector Agent"
 GENERATE_SQL_NODE_STR = "Generate SQL"
@@ -36,15 +38,19 @@ EXECUTE_SQL_NODE_STR = "Execute SQL"
 VALIDATE_RESULT_NODE_STR = "Validate Result"
 GENERATE_FINAL_ANSWER_NODE_STR = "Generate Final Answer"
 CANDIDATE_GENERATOR_AGENT_STR = "Candidate Generator Agent"
+ARCHITECTURE_ASSISTANT = "Architecture Assistant"
+DATABASE_ASSISTANT_AGENT = "Database Assistant"
 
 
 graph.add_node(CHAT_AGENT, ChatAgent() )
 graph.add_node(CANDIDATE_GENERATOR_AGENT_STR, CandidateGeneratorAgent())
-graph.add_node(SCHEMA_SELECTOR_AGENT_STR, schema_selector_agent)
-graph.add_node(INFORMATION_RETREIVER_AGENT, information_retriever_agent )
+graph.add_node(ARCHITECTURE_ASSISTANT, ArchitectureAssistantAgent())
+graph.add_node(SCHEMA_SELECTOR_AGENT_STR, SchemaSelectorAgent())
+graph.add_node(INFORMATION_RETREIVER_AGENT, InformationRetrieverAgent() )
 graph.add_node(EXECUTE_SQL_NODE_STR, execute_sql_node)
-graph.add_node(VALIDATE_RESULT_NODE_STR, fake_node)
-graph.add_node(GENERATE_FINAL_ANSWER_NODE_STR, answer_generator_agent)
+graph.add_node(VALIDATE_RESULT_NODE_STR, FakeAgent())
+graph.add_node(GENERATE_FINAL_ANSWER_NODE_STR, AnswerGeneratorAgent())
+graph.add_node(DATABASE_ASSISTANT_AGENT, DatabaseAssitantAgent())
 
 
 def route_by_state(state: ConversationState) -> str:
@@ -52,22 +58,32 @@ def route_by_state(state: ConversationState) -> str:
 
 # Edges
 # -------------------------------------------
-graph.add_conditional_edges(CHAT_AGENT, lambda state: state["command"],
+graph.add_conditional_edges(CHAT_AGENT, lambda state: state["context"],
     {
         "BUSINESS": INFORMATION_RETREIVER_AGENT, 
-        "IT-ENGINEER": END,
+        "DIAGRAM": ARCHITECTURE_ASSISTANT,
+        "IT-ENGINEER": INFORMATION_RETREIVER_AGENT,
         "OTHER":END,
         "CLARIFY":END
     }
 )
+
+graph.add_edge(ARCHITECTURE_ASSISTANT, END)
+
 graph.add_edge(INFORMATION_RETREIVER_AGENT, SCHEMA_SELECTOR_AGENT_STR)
-graph.add_conditional_edges(SCHEMA_SELECTOR_AGENT_STR, lambda state: state["command"],
+
+graph.add_conditional_edges(SCHEMA_SELECTOR_AGENT_STR, lambda state: (state["context"].strip().upper() + "_" + state["command"].strip().upper()),
     {
-        "NO-SCHEMA": END, 
-        "CONTINUE": CANDIDATE_GENERATOR_AGENT_STR,
+        ("BUSINESS_CONTINUE"): CANDIDATE_GENERATOR_AGENT_STR,
+        ("IT-ENGINEER_CONTINUE"): DATABASE_ASSISTANT_AGENT,
        
+        ("BUSINESS_NO-SCHEMA"): END,
+        ("IT-ENGINEER_NO-SCHEMA"): END,
     }
 )
+
+graph.add_edge(DATABASE_ASSISTANT_AGENT, END)
+
 graph.add_conditional_edges(CANDIDATE_GENERATOR_AGENT_STR, lambda state: state["command"],
     {
         "NO-QUERY": END, 
@@ -92,36 +108,51 @@ graph_png_bytes = compiled_graph.get_graph().draw_mermaid_png()
 # Define the state for LangGraph
 async def nl_to_sql(user_input: str, session_id: str, user_id: str, database: str = "default") -> Dict[str, str]:
     """
-    Orchestrate the entire NL-to-SQL workflow:
-      1. Embed the user question.
-      2. Retrieve few-shot examples.
-      3. Dynamically select relevant schema segments.
-      4. Build the GPT prompt.
-      5. Generate SQL using GPT-4.
-      6. Execute SQL.
-      7. Generate final natural language answer.
-    Returns (generated SQL, final answer, Chart Type, SQL Query).
+        Orchestrate the entire NL-to-SQL workflow
     """
     user_session = user_id + "-" + session_id
 
     if user_session not in user_sessions:
         user_sessions[user_session] = ConversationState.initialize()
 
+    # Retrieve the user conversation state
     state = user_sessions[user_session]
+    state = ConversationState.cleanOnNewQuestion(state)
+
+    # Append new questions
     index = len(state["history"])
     myContent = f"{index + 1}. {user_input}"
+    state["history"].append(HumanMessage(content= myContent ))
+
+    # Current question
     state["question"] = user_input
     
+    # Set the database name in the Conversation state
     databaseName = DBHelper.getDBName(database)
     if( not databaseName or databaseName == "default"):
         databaseName = DATABASE_NAME
+    state["database"] = databaseName
 
-    state["database"] = databaseName      
-    state["history"].append(HumanMessage(content= myContent ))
+
     state["user_session"] = user_session
+
+    # Execute the flow
     state = compiled_graph.invoke(state)
 
+    # Append the execution history to chat history: execution history is reset on each request , chat history is kept
+    state["chat_history"].append(state["execution_history"])
+
+    # Set the the user session wit the new state value
     user_sessions[user_session] = state
-    retval = {"answer":state["answer"],"sql_query": state["sql_query"], "response": state["query_result"], "chart_type": state["chart_type"]}
+
+    retval = {
+        "answer":state["answer"],
+        "sql_query": state["sql_query"],
+        "response": state["query_result"],
+        "chart_type": state["chart_type"],
+        "execution_history": state["execution_history"], 
+        "mermaid": state["mermaid"]
+        }
+    
     logger.warning(f"Final answer: {str(retval)}")
     return retval

@@ -10,6 +10,8 @@ import { QueryProvider } from './context/QueryContext';
 import { PublicClientApplication } from "@azure/msal-browser";
 import ThemeProvider from './theme/ThemeProvider';
 
+import './styles/rgl-placeholder.css'
+
 
 const msalInstance = new PublicClientApplication(msalConfig);
 

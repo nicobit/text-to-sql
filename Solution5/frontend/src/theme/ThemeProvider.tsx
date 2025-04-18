@@ -54,6 +54,16 @@ const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   theme = {
     ...theme,
     components: {
+      MuiCard: {
+        styleOverrides: {
+          root: {
+            borderRadius: 16, // Example: Set a custom border radius
+          
+            padding: theme.spacing(2), // Example: Add padding
+            backgroundColor: mode === 'light' ? 'whitesmoke' : '#1e1e1e', // Example: Different background for light/dark mode
+          },
+        },
+      },
       MuiDrawer: {
         styleOverrides: {
           paper: {

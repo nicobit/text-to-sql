@@ -1,7 +1,7 @@
 // src/components/YahooStockTrace.tsx
 import { API_BASE_URL } from '../../config/settings';
 // src/components/YahooStockTrace.tsx
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import {
   ResponsiveContainer,
   LineChart,

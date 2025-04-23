@@ -20,11 +20,14 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  
+  Tooltip,
   Box,
   SelectChangeEvent,
   LinearProgress
 } from '@mui/material';
+
+import EditIcon     from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { enqueueSnackbar } from 'notistack';
 import {
   getDatabases,
@@ -208,7 +211,7 @@ const QuestionQueryExample: React.FC<ExamplesManagerProps> = ({ msalInstance }) 
         <TableRow>
           <TableCell>Question</TableCell>
           <TableCell>SQL</TableCell>
-          <TableCell align="right">Actions</TableCell>
+            <TableCell align="center" colSpan={2}>Actions</TableCell>
         </TableRow>
         </TableHead>
         <TableBody>
@@ -216,23 +219,25 @@ const QuestionQueryExample: React.FC<ExamplesManagerProps> = ({ msalInstance }) 
           <TableRow key={example.doc_id}>
           <TableCell>{example.question}</TableCell>
           <TableCell>{example.sql}</TableCell>
-          <TableCell align="right">
-            <Button
-            variant="contained"
-            color="primary"
-            onClick={() => handleEditClick(example)}
-            sx={{ marginRight: 1 }}
-            >
-            Edit
-            </Button>
-            <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => handleDeleteClick(example.doc_id)}
-            >
-            Delete
-            </Button>
-          </TableCell>
+            <TableCell align="right" sx={{ minWidth: '36px' }}>
+              
+            <Tooltip title="Edit Example">
+              <EditIcon
+              color="primary"
+              sx={{ cursor: 'pointer', marginRight: 1 }}
+              onClick={() => handleEditClick(example)}
+              />
+            </Tooltip>
+            </TableCell>
+            <TableCell align="right" sx={{ minWidth: '36px' }}>
+            <Tooltip title="Delete Example">
+              <DeleteIcon
+              color="secondary"
+              sx={{ cursor: 'pointer' }}
+              onClick={() => handleDeleteClick(example.doc_id)}
+              />
+            </Tooltip>
+            </TableCell>
           </TableRow>
         ))}
         </TableBody>

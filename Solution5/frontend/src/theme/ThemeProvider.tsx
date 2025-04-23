@@ -57,9 +57,11 @@ const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       MuiCard: {
         styleOverrides: {
           root: {
-            borderRadius: 16, // Example: Set a custom border radius
+            borderRadius: 2, // Example: Set a custom border radius
           
-            padding: theme.spacing(2), // Example: Add padding
+            //padding: theme.spacing(2), // Example: Add padding
+            paddingLeft: theme.spacing(2),
+            paddingRight: theme.spacing(2),
             backgroundColor: mode === 'light' ? 'whitesmoke' : '#1e1e1e', // Example: Different background for light/dark mode
           },
         },
@@ -71,6 +73,35 @@ const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
           },
         },
       },
+      MuiCardContent: {
+        styleOverrides: {
+          root: {
+            padding: theme.spacing(2),
+            '&:last-child': {
+              paddingBottom: 0 , //theme.spacing(2),
+            },
+          },
+        }
+      },
+      MuiCardHeader: {
+        styleOverrides: {
+          root: {
+            paddingBottom: theme.spacing(1),
+            '& .MuiCardHeader-action': {
+              marginTop: theme.spacing(0.5),
+            },
+            fontSize: 14,
+          },
+           /* NEW – applies only to the title node inside the header */
+          title: {
+              fontSize: 14,
+              lineHeight: 1.4,                    // optional – pairs well with 14 px
+              fontWeight: theme.typography.fontWeightMedium,
+            },
+        },
+         // Removed invalid 'title' property. Apply styles via a custom class or directly in the component.
+      },
+
       MuiButton: {
         styleOverrides: {
           root: {
@@ -84,6 +115,17 @@ const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
           },
         },
       },
+      MuiTypography: {
+
+        styleOverrides: {
+          root: {
+            marginLeft: theme.spacing(1),
+            fontSize:'16px'
+          }
+          
+        },
+      },
+
       MuiTabs: {
         styleOverrides: {
           root: {

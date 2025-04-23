@@ -10,7 +10,7 @@ export async function submitQuery(instance: IPublicClientApplication, queryText:
     const tokenResponse = await instance.acquireTokenSilent(loginRequest);
     const token = tokenResponse.accessToken;
 
-    const response = await fetch(`${API_BASE_URL}/query`, {
+    const response = await fetch(`${API_BASE_URL}/texttosql/query`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

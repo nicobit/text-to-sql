@@ -1,5 +1,5 @@
 import React from 'react';
-import ContentTitle from '../components/ContentTitle';
+
 import WidgetManager from '../components/WidgetManager';
 
 
@@ -9,6 +9,7 @@ const Dashboard: React.FC = () => {
         <div style={{ height: '88vh', overflow: 'auto' }}>
         
          <WidgetManager />
+     
         </div>
      );
 }

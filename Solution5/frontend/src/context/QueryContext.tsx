@@ -14,6 +14,8 @@ interface Query {
   execution_history?: [];
   mermaid?: string;
   isExpanded?: boolean; // Added property to track expansion state
+  reasoning?: string; // Added property for reasoning
+  isReasoningExpanded?: boolean; // Added this property
 }
 
 interface QueryContextType {  
@@ -52,6 +54,7 @@ export function QueryProvider({ children }: QueryProviderProps) {
            chartType:resultData.chart_type, 
            error: null, 
            execution_history: resultData.execution_history, 
+           reasoning: resultData.reasoning,
            mermaid : resultData.mermaid};
         return [...prev, newEntry];
       });

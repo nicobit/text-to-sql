@@ -12,12 +12,15 @@ requests
 langchain
 langgraph
 azure.identity
+azure-mgmt-resource
 azure.keyvault.secrets
+azure.mgmt.network
 pydantic
 typing-extensions
 opencensus-ext-azure
 opencensus
 azure.storage.blob
+azure.data.tables
 dsnparse
 llama-index
 tiktoken

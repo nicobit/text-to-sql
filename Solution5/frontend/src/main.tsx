@@ -10,6 +10,8 @@ import { QueryProvider } from './context/QueryContext';
 import { PublicClientApplication } from "@azure/msal-browser";
 import ThemeProvider from './theme/ThemeProvider';
 
+/* src/main.tsx (or index.tsx) */
+import 'driver.js/dist/driver.css';     // spotlight / tooltip styles
 import './styles/rgl-placeholder.css'
 
 

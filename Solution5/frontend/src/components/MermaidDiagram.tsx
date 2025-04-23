@@ -1,47 +1,66 @@
-// MermaidDiagram.jsx
-import { useEffect, useRef } from 'react';
-import mermaid from 'mermaid';
+"use client";
 
-// Initialize Mermaid with any custom configuration if needed.
-mermaid.initialize({
-  startOnLoad: false, // We'll call render manually
-  htmlLabels: true,
-  theme: 'base',
+import { useEffect, useRef, useState } from "react";
+import mermaid from "mermaid";
   
-  securityLevel: 'loose',
-});
+
 
 interface MermaidDiagramProps {
-  chart: string; // Define the type of the 'chart' prop
+  chart: string;
+  sx?: React.CSSProperties;
 }
 
-const MermaidDiagram = ({ chart, sx }: MermaidDiagramProps & { sx?: React.CSSProperties }) => {
+const MermaidDiagram = ({ chart, sx }: MermaidDiagramProps) => {
   const chartRef = useRef<HTMLDivElement | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (chartRef.current && chart) {
-      // Generate a unique id for the diagram element
-      const diagramId = `mermaid-${Date.now()}`;
+    if (!chartRef.current || !chart) return;
 
-      // Use mermaid.render to convert the Mermaid code into an SVG string.
-      mermaid.render(diagramId, chart).then(({ svg }) => {
-        // Set the inner HTML of the target div to the generated SVG
+    const diagramId = `mermaid-${Date.now()}`;
+
+    mermaid.initialize({
+      startOnLoad: false,
+      htmlLabels: true,
+      theme: "base",
+      suppressErrorRendering: true,
+      securityLevel: "loose",
+    });
+
+    const formattedChart = chart.replace(/\\n/g, "\n");
+
+    try {
+      mermaid.parse(formattedChart); // Validates the Mermaid chart
+      mermaid.render(diagramId, formattedChart).then(({ svg }) => {
         if (chartRef.current) {
           chartRef.current.innerHTML = svg;
 
-          // Apply the styles defined in sx to the generated SVG element
-          const svgElement = chartRef.current.querySelector('svg');
+          const svgElement = chartRef.current.querySelector("svg");
           if (svgElement && sx) {
-        Object.assign(svgElement.style, sx);
+            Object.assign(svgElement.style, sx);
           }
         }
-      }).catch((error) => {
-        console.error('Error rendering Mermaid diagram:', error);
+        setError(null);
+      }).catch((renderError) => {
+        console.error("Render error:", renderError);
+        setError("Failed to render diagram.");
+        if (chartRef.current) chartRef.current.innerHTML = "";
       });
+    } catch (parseError) {
+      console.error("Parse error:", parseError);
+      setError("Invalid Mermaid syntax.");
+      if (chartRef.current) chartRef.current.innerHTML = "";
     }
-  }, [chart]);
+  }, [chart, sx]);
 
-  return <section ref={chartRef} style={sx} />;
+  return (
+    <>
+    <section ref={chartRef} style={sx}>
+     
+    </section>
+    {error && <label style={{ color: "red" }}>{error}</label>}
+    </>
+  );
 };
 
 export default MermaidDiagram;

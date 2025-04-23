@@ -7,6 +7,7 @@ const RequireAuth: React.FC<{ children: ReactNode }> = ({ children }) => {
 
   return isAuthenticated ? (
     <>{children}</>
+    
   ) : (
     <Navigate to="/login" replace />
   );

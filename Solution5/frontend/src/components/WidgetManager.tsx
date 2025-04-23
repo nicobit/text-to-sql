@@ -17,18 +17,20 @@ import {
   Tooltip,
 } from '@mui/material';
 
-import AddBoxIcon      from '@mui/icons-material/AddBox';
+
 import WidgetsIcon     from '@mui/icons-material/Widgets';
+import AddIcon from '@mui/icons-material/Add';
 import CheckIcon       from '@mui/icons-material/Check';
 import EditIcon        from '@mui/icons-material/Edit';
 import CloseIcon       from '@mui/icons-material/Close';
 import RenameIcon      from '@mui/icons-material/DriveFileRenameOutline';
-
+import DashboardTour from '../pages/tours/DashboardTours';
 import { v4 as uuid } from 'uuid';
 import { loadDashboard, saveDashboard } from '../api/dashboard';
 import { TabConfig, WidgetType } from '../types';
 import WidgetGrid from './WidgetGrid';
 import Palette    from './Palette';
+import { useMsal } from "@azure/msal-react";
 
 interface State {
   tabs: TabConfig[];
@@ -76,6 +78,8 @@ const reducer = (state: State, action: Action): State => {
 };
 
 const WidgetManager: React.FC = () => {
+
+  const { instance } = useMsal();
   /** ------------------ local state ------------------ **/
   const [state, dispatch] = useReducer(reducer, { tabs: [], active: 0 });
   const [editMode, setEditMode] = useState(false);
@@ -92,22 +96,30 @@ const WidgetManager: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        dispatch({ type: 'SET', tabs: await loadDashboard() });
+      await instance.initialize(); // Ensure MSAL instance is initialized
+      const tabs_response = await loadDashboard(instance);
+
+      if (!tabs_response) throw new Error('No tabs found');
+      dispatch({ type: 'SET', tabs: tabs_response });
       } catch {
-        dispatch({
-          type: 'SET',
-          tabs: [{
-            id: uuid(), name: 'Home', widgets: [], layouts: { lg: [] }
-          }]
-        });
+      dispatch({
+        type: 'SET',
+        tabs: [{
+        id: uuid(), name: 'Home', widgets: [], layouts: { lg: [] }
+        }]
+      });
       }
     })();
   }, []);
 
   // debounce‑save every 800 ms
   useEffect(() => {
-    const id = setTimeout(() => saveDashboard(state.tabs).catch(console.error), 800);
-    return () => clearTimeout(id);
+
+    if (editMode) {
+      const id = setTimeout(() => saveDashboard(instance, state.tabs).catch(console.error), 800);
+      return () => clearTimeout(id);
+    }
+    
   }, [state.tabs]);
 
   /** ------------------ rename helpers ------------------ **/
@@ -128,67 +140,119 @@ const WidgetManager: React.FC = () => {
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
 
       {/* ---------- Top Bar ---------- */}
-      <AppBar position="static" color="default" elevation={1}>
+      <AppBar position="static" color="primary" elevation={0}>
         <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>Dashboard</Typography>
+          <Typography variant="h5" component="h1" sx={{ flexGrow: 1 }}>Dashboard</Typography>
+         
 
+            {editMode && (
+            <Tooltip title="Add tab">
+              <IconButton color="inherit" edge="end" onClick={() => dispatch({ type: 'ADD_TAB' })}  sx={{
+              
+              outline: 'none',
+              '&:focus': { outline: 'none' },
+            }}>
+              <AddIcon />
+              </IconButton>
+            </Tooltip>
+            )}
+        {/* Divider */}
+        <Box sx={{ mx: 1, height: 24, borderLeft: '1px solid', borderColor: 'divider' }} />
           {/* Edit‑mode toggle */}
           <Tooltip title={editMode ? 'Finish editing' : 'Edit layout'}>
-            <IconButton edge="end" onClick={() => setEditMode(e => !e)}>
+            <IconButton  color="inherit" className='edit-toggle'  edge="end" onClick={() => setEditMode(e => !e)}   sx={{
+              
+              outline: 'none',
+              '&:focus': { outline: 'none' },
+            }}>
               {editMode ? <CheckIcon /> : <EditIcon />}
             </IconButton>
           </Tooltip>
-
+          <Box sx={{ mx: 1, height: 24, borderLeft: '1px solid', borderColor: 'divider' }} />
           {/* Add widget (only in edit‑mode) */}
           {editMode && currentTab && (
+            
             <Tooltip title="Add widget">
-              <IconButton edge="end" onClick={() => setPaletteOpen(true)}>
-                <AddBoxIcon />
+              <IconButton className='add-widget' color="inherit" edge="end" onClick={() => setPaletteOpen(true)}  sx={{
+              
+              outline: 'none',
+              '&:focus': { outline: 'none' },
+            }}>
+                <WidgetsIcon />
               </IconButton>
             </Tooltip>
           )}
+            <Box sx={{ mx: 1, height: 24, borderLeft: '1px solid', borderColor: 'divider' }} />
+            <DashboardTour/>
+           
         </Toolbar>
-      </AppBar>
-
-      {/* ---------- Tabs ---------- */}
+         {/* ---------- Tabs ---------- */}
       <Tabs
         value={state.active}
         onChange={(_e, v) => dispatch({ type: 'SET_ACTIVE', index: v })}
         variant="scrollable"
         scrollButtons="auto"
+        textColor="inherit"
+          
       >
         {state.tabs.map((t, i) => (
           <Tab
             key={t.id}
             wrapped
+            sx={{
+              
+              outline: 'none',
+              '&:focus': { outline: 'none' },
+            }}
             label={
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 , fontSize: '0.875rem',  
+                outline: 'none',
+                '&:focus': { outline: 'none' }}}>
                 {t.name}
                 {/* rename icon (span = not a <button>) */}
-                <IconButton
-                  component="span"
-                  size="small"
-                  disableRipple
-                  onClick={e => { e.stopPropagation(); openRename(i); }}
-                >
-                  <RenameIcon fontSize="inherit" />
-                </IconButton>
-                {/* remove tab */}
-                {state.tabs.length > 1 && (
-                  <IconButton
+                {editMode && (
+                  <IconButton color="inherit"
                     component="span"
+                    sx={{
+              
+                      outline: 'none',
+                      '&:focus': { outline: 'none' },
+                    }}
                     size="small"
                     disableRipple
-                    onClick={e => { e.stopPropagation(); dispatch({ type: 'REMOVE_TAB', index: i }); }}
+                    onClick={e => { e.stopPropagation(); openRename(i); }}
                   >
-                    <CloseIcon fontSize="inherit" />
+                    <RenameIcon fontSize="inherit" />
                   </IconButton>
+                )}
+                {/* remove tab */}
+                {editMode && state.tabs.length > 1 && (
+                    <IconButton color="inherit"
+                    component="span"
+                    size="small"
+                    sx={{
+                      outline: 'none',
+                      '&:focus': { outline: 'none' },
+                    }}
+                    disableRipple
+                    onClick={e => {
+                      e.stopPropagation();
+                      if (window.confirm('Are you sure you want to remove this tab?')) {
+                      dispatch({ type: 'REMOVE_TAB', index: i });
+                      }
+                    }}
+                    >
+                    <CloseIcon fontSize="inherit" />
+                    </IconButton>
                 )}
               </Box>
             }
           />
         ))}
       </Tabs>
+      </AppBar>
+
+     
 
       {/* ---------- Active tab content ---------- */}
       <Box sx={{ flex: 1, overflow: 'hidden' }}>

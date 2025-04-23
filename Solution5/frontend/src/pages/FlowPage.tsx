@@ -10,9 +10,9 @@ const FlowPage: React.FC = () => {
          <ContentTitle title="Natural Language To SQL FLow" />
          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
           <img 
-                     src={`${API_BASE_URL}/graph.png`} 
+                     src={`${API_BASE_URL}/texttosql/graph.png`} 
                      alt="Graph" 
-                     style={{ width: '150px', cursor: 'pointer' }} 
+                     style={{ width: '900px', cursor: 'pointer' }} 
                      onClick={() => {
                          const modal = document.createElement('div');
                          modal.style.position = 'fixed';
@@ -27,7 +27,7 @@ const FlowPage: React.FC = () => {
                          modal.style.zIndex = '1000';
          
                          const img = document.createElement('img');
-                         img.src = `${API_BASE_URL}/graph.png`;
+                         img.src = `${API_BASE_URL}/texttosql/graph.png`;
                          img.style.maxWidth = '90%';
                          img.style.maxHeight = '90%';
                          img.style.border = '2px solid white';

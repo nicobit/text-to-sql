@@ -14,7 +14,7 @@ export const msalConfig = {
     storeAuthStateInCookie: false,
   },
 };
-
+//scopes: ["openid", "profile","https://management.azure.com/.default"],
 export const loginRequest = {
-  scopes: ["openid", "profile"],
+  scopes: ["openid", "profile","https://management.azure.com/.default"],
 };

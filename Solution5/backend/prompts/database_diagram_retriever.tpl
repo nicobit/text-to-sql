@@ -1,23 +1,58 @@
-Based on the user's provided database schema and question (see sections below), generate a complete Mermaid diagram that represents the database schema.
+Here’s a cleaned‐up, ready‐to‐use prompt that you can feed to a Mermaid‐capable generator (like ChatGPT) to produce exactly the diagram and explanation you need:
 
-Schema:
+---
+Based on the user’s provided database schema and question (see below), generate a complete Mermaid diagram that represents the schema.
+
+Schema:  
+```
 {schema}
+```
 
-Question:
+Question:  
+```
 {question}
+```
 
-Requirements for the Mermaid diagram:
-- Start the output with "graph TD;" on the first line.
-- Create nodes for each table that display:
-  - The table name.
-  - A list of keys for the table, with primary keys annotated as "(PK)" and foreign keys annotated as "(FK)". For example, a node could look like:
-        TableName["TableName<br/>(PK) id<br/>(FK) user_id"]
-- Draw directed arrows between nodes to represent relationships, where an arrow goes from the table containing the foreign key to the table that is referenced by that foreign key. Use the full arrow syntax with "-->" (e.g., TableA --> TableB).
-- Use descriptive, unquoted identifiers for nodes and subgraphs, ensuring that parent elements (e.g., subgraphs) and child elements (e.g., tables) have distinct identifiers. The display label text provided inside the square brackets must be enclosed in double quotes, for example:
-        WebAppForAPP1["<i class='fa fa-laptop'></i> Web App for APP1"]
-- Do not include any comment lines (e.g., lines starting with `//`) in the output.
-- Remove any triple backticks (```mermaid and ```) from the generated output.
-- Wrap the final Mermaid diagram code within `<mermaid>` tags.
-- Additionally, provide an explanation of the diagram in markdown format that describes each table and relationship. Wrap the explanation within `<answer>` tags.
+Requirements for the Mermaid diagram output:
+1. Begin the diagram code on the first line with:
+```
+graph TD;
+```
+2. For each table in the schema, create a node with:
+- A simple, descriptive identifier (no spaces or special characters)  
+- A display label showing the table name and its keys, with `<br>` line breaks:
+```
+TableName["TableName<br>(PK) id<br>(FK) user_id"]
+```
+3. Draw directed arrows using `-->` from every foreign‐key node to the node representing the referenced primary key. For example:
+```
+orders --> customers
+```
+4. Do **not** quote the node identifiers, only the label text is in double quotes.
+5. Do **not** include any comment lines (no `//`), and remove any triple‐backtick fences.
+6. Wrap the entire Mermaid diagram code in `<mermaid>` tags.
+7. After the diagram, provide a written explanation in Markdown that:
+- Describes each table and its role.
+- Explains each relationship arrow.
+Wrap this explanation in `<answer>` tags.
 
-Please generate the complete Mermaid diagram code as required and include it inside `<mermaid>` tags and the explanation of the diagram, using markdown format, inside `<answer>` tags.
+
+Important: Add \\n at the end of each line of the Mermaid diagram code .
+
+
+Your output **must** look like this structure:
+
+```
+<mermaid>
+graph TD;
+…nodes and arrows…
+</mermaid>
+<answer>
+### Explanation
+
+- **Table1**: description…
+- **Table2**: description…
+- **Relationships**: …
+</answer>
+```
+

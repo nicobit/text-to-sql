@@ -27,8 +27,22 @@ function ResultsTable() {
     return <Typography color="error" sx={{ mt: 2 }}>Error: {error}</Typography>;
   }
 
+  const sqlQuery = currentEntry?.sql_query || 'No SQL query available';
+
   if (!data || data.length === 0) {
-    return <Typography sx={{ mt: 2 }}>No results to display.</Typography>;
+    return <> <Typography sx={{ mt: 2 }}>No results to display.</Typography>    <Paper sx={{ p: 2, backgroundColor: '#f5f5f5', mb: 2 }}>
+    <Typography 
+      variant="body2" 
+      component="pre" 
+      sx={{ 
+        whiteSpace: 'pre-wrap', 
+        wordBreak: 'break-word', 
+        fontFamily: 'monospace' 
+      }}
+    >
+      {sqlQuery}
+    </Typography>
+  </Paper> </>
   }
 
   // Determine table columns from keys of the first object
@@ -40,7 +54,7 @@ function ResultsTable() {
     setShowSql(prev => !prev);
   };
 
-  const sqlQuery = currentEntry?.sql_query || 'No SQL query available';
+  
 
   return (
     <>

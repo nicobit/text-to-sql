@@ -19,6 +19,7 @@ import ResultsTable from '../components/ResultsTable';
 import BarChart from '../components/BarChart';
 import MermaidDiagram from './MermaidDiagram';
 import Mermaid from './Mermaid';
+import Reasoning from './chat/Reasoning'
 
 
 function Chat() {
@@ -105,7 +106,7 @@ function Chat() {
                       }}
                     >
                       <Typography variant="body2" sx={{ flexGrow: 1 }}>
-                      Reasoned
+                      Reasoning:
                       </Typography>
                         <IconButton
                         sx={{
@@ -129,21 +130,11 @@ function Chat() {
                     </Box>
                     {queries[index].isExpanded  && (
                       <Typography variant="body2" sx={{ mt: 1 }}>
-                        {Array.isArray(entry.execution_history) ? (
-                          <List>
-                            {entry.execution_history.map((historyItem, idx) => (
-                              <ListItem key={idx} sx={{ display: 'block', mb: 1 }}>
-                                {Object.entries(historyItem).map(([key, value]) => (
-                                  <Typography key={key} variant="body2">
-                                    <strong>{key.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())}:</strong> {String(value)}
-                                  </Typography>
-                                ))}
-                              </ListItem>
-                            ))}
-                          </List>
-                        ) : (
-                          <Typography variant="body2">{entry.execution_history}</Typography>
-                        )}
+                          <ReactMarkdown>
+                            {entry.reasoning}
+                          </ReactMarkdown>
+                       
+                       
                       </Typography>
                     )}
                   </Box>
@@ -296,11 +287,13 @@ function Chat() {
           <Tab label="Results Table" />
           <Tab label="Chart" />
           <Tab label="Mermaid Diagram" />
+          <Tab label="Reasoning" />
         </Tabs>
         <Box sx={{ flexGrow: 1, overflow: 'auto', minHeight: 700 }}>
           {selectedTab === 0 && <ResultsTable />}
           {selectedTab === 1 && <BarChart />}
           {selectedTab === 2 && <Mermaid />}
+          {selectedTab === 3 && <Reasoning />}
         </Box>
           </Box>
         </DialogContent>

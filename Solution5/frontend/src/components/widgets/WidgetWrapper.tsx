@@ -1,6 +1,4 @@
-import ChartWidget from './ChartWidget';
-import TextWidget from './TextWidget';
-import TableWidget from './TableWidget';
+
 import React from 'react';
 import { Card, CardHeader, CardContent, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -8,7 +6,14 @@ import { WidgetConfig } from '../../types';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
-const registry = { chart: ChartWidget, text: TextWidget, table: TableWidget } as const;
+const registry = Object.fromEntries(
+    Object.entries(import.meta.glob('./*Widget.tsx', { eager: true }))
+        .map(([path, module]) => {
+            const name = path.match(/\.\/(.*)Widget\.tsx$/)?.[1]?.toLowerCase();
+            return name ? [name, (module as { default: React.ComponentType }).default] : null;
+        })
+        .filter((entry): entry is [string, React.ComponentType] => entry !== null)
+) as Record<string, React.ComponentType>;
 
 interface Props {
     widget: WidgetConfig;
@@ -30,8 +35,9 @@ interface Props {
     }) => void;
 }
 
-const WidgetWrapper: React.FC<Props> = ({ widget, editMode, onRemove, layout, onLayoutChange }) => {
+const WidgetWrapper: React.FC<Props> = ({ widget, editMode, onRemove, layout }) => {
     const Comp = registry[widget.type];
+    const showTitle = true;
 
     return (
         <div
@@ -43,24 +49,25 @@ const WidgetWrapper: React.FC<Props> = ({ widget, editMode, onRemove, layout, on
                 className={editMode ? 'drag-handle' : undefined}
                 sx={{
                     height: '100%',
-                    width: '100%', // Ensure the card matches the parent div's width
-                    display: 'flex',
-                    flexDirection: 'column',
-                    cursor: editMode ? 'move' : 'default',
-                }}
-            >
-                <CardHeader
-                    title={widget.type.toUpperCase()}
-                    sx={{ pb: 0 }}
-                    action={
-                        editMode && (
-                            <IconButton size="small" className="no-drag" onClick={onRemove}>
-                                <DeleteIcon fontSize="inherit" />
-                            </IconButton>
-                        )
-                    }
-                />
-                <CardContent sx={{ flex: 1, overflow: 'auto', pt: 1 }}>
+                    // Ensure the card matches the parent div's width
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        cursor: editMode ? 'move' : 'default',
+                                        }}
+                                        >
+                                        {showTitle && (
+                                            <CardHeader
+                                                title={widget.type.toUpperCase()} // Display the widget type in uppercase
+                                                sx={{ pb: 0, fontSize: '16px' }} // Reduced padding and font size for a compact header
+                                                action={
+                                                    editMode && (
+                                                        <IconButton size="small" className="no-drag" onClick={onRemove}>
+                                                            <DeleteIcon fontSize="inherit" /> {/* Small delete icon for removing the widget */}
+                                                        </IconButton>
+                                                    )
+                                                }
+                                            />
+                                        )}  <CardContent sx={{ flex: 1, overflow: 'auto', pt: 1 }}>
                     <Comp />
                 </CardContent>
             </Card>

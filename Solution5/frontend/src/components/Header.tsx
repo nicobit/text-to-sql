@@ -14,11 +14,12 @@ const Header: React.FC = () => {
   };
 
   return (
-    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+    <React.Fragment>
+    <AppBar position="sticky" color="primary" sx={{border:0, boxShadow: 0}}>
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           <img src="/logo.png" alt="Logo" onError={(e) => { e.currentTarget.style.display = 'none'; }} style={{ height: '30px', marginRight: '10px' }} />
-          <span>Admin Portal</span>
+          
         </Typography>
         <Box>
           <Switch checked={mode === 'dark'} onChange={toggleTheme} />
@@ -47,7 +48,9 @@ const Header: React.FC = () => {
                       
         )}
       </Toolbar>
+      
     </AppBar>
+    </React.Fragment>
   );
 };
 

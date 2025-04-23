@@ -13,7 +13,7 @@ export async function getDatabases(msalInstance: IPublicClientApplication): Prom
   try {
     const tokenResponse = await msalInstance.acquireTokenSilent(loginRequest);
     const token = tokenResponse.accessToken;
-    const response = await fetch(`${API_BASE_URL}/databases`, {
+    const response = await fetch(`${API_BASE_URL}/queryexamples/databases`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ export async function getExamples(msalInstance: IPublicClientApplication, databa
   try {
     const tokenResponse = await msalInstance.acquireTokenSilent(loginRequest);
     const token = tokenResponse.accessToken;
-    const response = await fetch(`${API_BASE_URL}/examples?database=${encodeURIComponent(database)}`, {
+    const response = await fetch(`${API_BASE_URL}/queryexamples/examples?database=${encodeURIComponent(database)}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ export async function deleteExample(msalInstance: IPublicClientApplication, doc_
     const tokenResponse = await msalInstance.acquireTokenSilent(loginRequest);
     const token = tokenResponse.accessToken;
     const response = await fetch(
-      `${API_BASE_URL}/delete_example?doc_id=${encodeURIComponent(doc_id)}&database=${encodeURIComponent(database)}`,
+      `${API_BASE_URL}/queryexamples/delete_example?doc_id=${encodeURIComponent(doc_id)}&database=${encodeURIComponent(database)}`,
       {
         method: 'DELETE',
         headers: {
@@ -90,7 +90,7 @@ export async function updateExample(
   try {
     const tokenResponse = await msalInstance.acquireTokenSilent(loginRequest);
     const token = tokenResponse.accessToken;
-    const response = await fetch(`${API_BASE_URL}/update_example`, {
+    const response = await fetch(`${API_BASE_URL}/queryexamples/update_example`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -124,7 +124,7 @@ export async function addExample(
   try {
     const tokenResponse = await msalInstance.acquireTokenSilent(loginRequest);
     const token = tokenResponse.accessToken;
-    const response = await fetch(`${API_BASE_URL}/add_example`, {
+    const response = await fetch(`${API_BASE_URL}/queryexamples/add_example`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

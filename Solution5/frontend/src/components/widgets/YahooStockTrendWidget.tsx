@@ -1,5 +1,5 @@
 // src/components/YahooStockTrace.tsx
-import { API_BASE_URL } from '../../config/settings';
+import { API_BASE_URL } from '../../constants';
 // src/components/YahooStockTrace.tsx
 import  { useState, useEffect } from 'react';
 import {

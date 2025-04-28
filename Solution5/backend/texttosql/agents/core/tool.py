@@ -3,8 +3,8 @@ import re
 import time
 from typing import Generic
 
-from texttosql.llm.prompt_menager import PromptManager
-from texttosql.llm.openai_service import OpenAIService
+from app.services.llm.openai_service import OpenAIService
+from app.services.llm.prompt_menager import PromptManager
 from texttosql.agents.core.system_state import T
 from app.utils.nb_logger import NBLogger
 

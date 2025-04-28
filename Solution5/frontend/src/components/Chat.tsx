@@ -220,17 +220,10 @@ function Chat() {
       </Box>
 
       {/* Input box */}
-      <Box
-        component="form"
+      
+      <form
         onSubmit={handleSubmit}
-        sx={{
-          display: 'flex',
-          borderRadius: '10px',
-          border: 1,
-          borderColor: 'divider',
-          p: 1,
-          boxShadow: '0px 6px 15px rgba(0, 0, 0, 0.3)',
-        }}
+        className="flex items-start p-2 border border-gray-300 rounded-lg shadow"
       >
         <TextField
           variant="outlined"
@@ -246,7 +239,7 @@ function Chat() {
             },
           }}
         />
-      </Box>
+      </form>
       <Dialog
         open={isDialogOpen}
         onClose={() => toggleDialog()}

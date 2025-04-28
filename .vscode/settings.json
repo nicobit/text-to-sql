@@ -1,5 +1,5 @@
 {
-    "azureFunctions.projectSubpath": "",
+    "azureFunctions.projectSubpath": "Solution5\\backend",
     "azureFunctions.deploySubpath": "",
     "azureFunctions.scmDoBuildDuringDeployment": true,
     "azureFunctions.pythonVenv": ".venv",

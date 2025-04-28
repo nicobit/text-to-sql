@@ -1,5 +1,5 @@
 import numpy as np
-from app.services import openai_service
+
 from app.services.db_service import DBHelper
 from app.utils.nb_logger import NBLogger
 import app.services.embedding_service as embedding_service
@@ -23,35 +23,50 @@ def initialize_schema_embeddings(database:str) -> dict:
 
         user_mschema = True
 
-        if user_mschema == False:
-            #------- VERSION 1 ------------------
-            schema =  DBHelper.getDBSchema(database)
-            
-            for table_name, columns in schema.items():
-                # Create a summary string for the table.
-                # Since there's no description, we only list table name and columns.
-                summary = f"Table: {table_name}. Columns: {', '.join(columns)}."
-                embedding = embedding_service.get_or_generate_embedding(table_name,summary)
-                retval[table_name] = {
-                "embedding": embedding,
-                    "columns": columns  # store the columns list
-                }
+        retval = embedding_service.load_from_blob(database) 
 
-        if user_mschema == True:
-            # ------------ VERSION 2 ---------------------
-
-            mschema = DBHelper.get_mschema_tables( database)
-
-            for table_name, table_info in mschema.items():
-                # Create a summary string for the table.
-                # Since there's no description, we only list table name and columns.
-                    
-                summary = "\n".join(table_info) #f"table: {table_name}. Table Info : {', '.join(columns)}."
-                embedding = embedding_service.get_or_generate_embedding("m_" + table_name,summary)
-                retval[table_name] = {
+        if retval is None:
+            retval = {}
+            if user_mschema == False:
+                #------- VERSION 1 ------------------
+                schema =  DBHelper.getDBSchema(database)
+                
+                for table_name, columns in schema.items():
+                    # Create a summary string for the table.
+                    # Since there's no description, we only list table name and columns.
+                    summary = f"Table: {table_name}. Columns: {', '.join(columns)}."
+                    embedding = embedding_service.get_or_generate_embedding(database,table_name,summary)
+                    retval[table_name] = {
                     "embedding": embedding,
-                    "columns": table_info  # store the columns list
-                }
+                        "columns": columns  # store the columns list
+                    }
+                logger.warning(f"Schema embeddings loaded from blob storage for database: {database}. STARTING TO SAVE...")
+                embedding_service.save_to_blob(database, retval)
+                logger.warning(f"Schema embeddings loaded from blob storage for database: {database}. SAVED...")
+              
+                    
+            if user_mschema == True:
+                # ------------ VERSION 2 ---------------------
+
+                mschema = DBHelper.get_mschema_tables( database)
+
+                for table_name, table_info in mschema.items():
+                    # Create a summary string for the table.
+                    # Since there's no description, we only list table name and columns.
+                        
+                    summary = "\n".join(table_info) #f"table: {table_name}. Table Info : {', '.join(columns)}."
+                    embedding = embedding_service.get_or_generate_embedding(database,"m_" + table_name,summary)
+                    retval[table_name] = {
+                        "embedding": embedding,
+                        "columns": table_info  # store the columns list
+                    }
+                logger.warning(f"Schema embeddings loaded from blob storage for database: {database}. STARTING TO SAVE...")
+                embedding_service.save_to_blob(database, retval)
+                logger.warning(f"Schema embeddings loaded from blob storage for database: {database}. SAVED...")
+        else:
+            # If the blob data is found, we can use it directly.
+            # This assumes that the blob data is already in the correct format.
+            logger.warning(f"Schema embeddings loaded from blob storage for database: {database}.")
 
 
         SCHEMA = retval

@@ -1,5 +1,4 @@
 from texttosql.agents.conversation_state import ConversationState
-from app.services.openai_service import get_embedding
 from texttosql.agents.core.tool import BaseTool
 
 

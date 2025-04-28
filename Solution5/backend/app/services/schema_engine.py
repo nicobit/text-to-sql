@@ -2,7 +2,8 @@ import json, os
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 from sqlalchemy import create_engine, MetaData, Table, Column, String, Integer, select, text
 from sqlalchemy.engine import Engine
-from llama_index.core import SQLDatabase
+
+from app.services.sql_database import SQLDatabase
 from app.utils.text_utils import read_json, write_json, save_raw_text, examples_to_str
 from app.services.m_schema import MSchema
 

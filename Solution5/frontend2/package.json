@@ -1,0 +1,44 @@
+{
+    "name": "nico-admin-portal",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "@azure/msal-react": "^3.0.10",
+        "@material-tailwind/react": "^2.1.10",
+        "@vitejs/plugin-react": "^4.4.1",
+        "classnames": "^2.4.0",
+        "clsx": "^2.1.1",
+        "driverjs-react": "^1.1.0",
+        "i18next": "^23.0.0",
+        "lucide-react": "^0.268.0",
+        "mermaid": "^11.6.0",
+        "notistack": "^3.0.2",
+        "react": "^18.3.0",
+        "react-dom": "^18.3.0",
+        "react-grid-layout": "^1.5.1",
+        "react-i18next": "^13.1.0",
+        "react-markdown": "^10.1.0",
+        "react-monaco-editor": "^0.58.0",
+        "react-router-dom": "^6.15.0",
+        "react-svg-worldmap": "^2.0.0-alpha.16",
+        "reactflow": "^11.11.4",
+        "recharts": "^2.15.3",
+        "tailwind-merge": "^3.2.0",
+        "uuid": "^11.1.0"
+    },
+    "devDependencies": {
+        "@types/react": "^19.1.2",
+        "@types/react-dom": "^19.1.2",
+        "@types/react-grid-layout": "^1.3.5",
+        "autoprefixer": "^10.4.15",
+        "postcss": "^8.4.30",
+        "tailwindcss": "^3.4.0",
+        "typescript": "^5.3.0",
+        "vite": "^4.5.0"
+    }
+}

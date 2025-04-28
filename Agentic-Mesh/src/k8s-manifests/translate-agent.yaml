@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: translate-agent
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: translate-agent } }
+  template:
+    metadata: { labels: { app: translate-agent } }
+    spec:
+      containers:
+      - name: translate
+        image: myregistry/translate-agent:latest
+        ports: [{ containerPort: 8080 }]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: translate-agent
+spec:
+  selector: { app: translate-agent }
+  ports: [{ port: 80, targetPort: 8080 }]
+  type: ClusterIP

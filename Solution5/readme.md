@@ -33,6 +33,28 @@ To work with this project, it is recommended to create a dedicated Python enviro
     pip install -r requirements.txt
     ```
 
+    In case of resolver issue , consider this script:
+    ```bash
+    pip install -r requirements.txt --prefer-binary --use-deprecated=legacy-resolver
+    ```
+
+    If you still see conflicts, you can check it with :
+    ```bash
+    pip install pipdeptree
+    ```
+    Then run:
+    ```bash
+    pipdeptree --warn conflict
+    ```
+
+
+
+6. **Reduce deployment size**
+    User the following command
+    ```bash
+    python -m pipreqs.pipreqs . --force --ignore .venv,.python_packages
+    ```
+
 Your Python environment is now ready for use.
 
 ## Generating Wheels for Faster Deployment
@@ -52,4 +74,10 @@ To optimize deployment, for example to an Azure Function, you can pre-build Pyth
     By including wheel references in `requirements.txt`, the deployment process becomes faster as pre-built wheels are quicker to install compared to source distributions.
 
 This step is particularly useful when deploying to environments like Azure Functions, where reducing deployment time is critical.
+
+## Authenticate and Retrieve Secrets in VS CODE
+
+
+
+
 

@@ -1,8 +1,9 @@
 import openai
 import json
 from azure.storage.blob import BlobServiceClient
-from app.settings import BLOB_STORAGE_CONNECTION_STRING
-import app.services.openai_service as openai_service
+from app.settings import BLOB_STORAGE_CONNECTION_STRING_SECRET_NAME, KEY_VAULT_CORE_URI
+from app.services.secret_service import SecretService
+from app.services.llm.openai_service import OpenAIService
 from app.utils.nb_logger import NBLogger
 
 logger = NBLogger().Log()
@@ -11,7 +12,7 @@ logger = NBLogger().Log()
 openai.api_key = "YOUR_OPENAI_API_KEY"
 
 # Azure Blob Storage configuration
-AZURE_CONNECTION_STRING = BLOB_STORAGE_CONNECTION_STRING
+AZURE_CONNECTION_STRING = SecretService.get_secret_value(KEY_VAULT_CORE_URI, BLOB_STORAGE_CONNECTION_STRING_SECRET_NAME)
 CONTAINER_NAME = "embeddings"
 
 # In-memory cache for embeddings
@@ -20,18 +21,36 @@ embedding_cache = {}
 # Initialize Azure Blob Service Client
 blob_service_client = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
 
-def get_key(name,text):
-    return f"{name}"
+def get_key(name,database):
+    name_lower = name.lower()
+    database_lower = database.lower()
+    return f"{database_lower}-{name_lower}"
 
-def generate_embedding(text):
-    """Generate embedding using OpenAI API."""
-    logger.info(f"Generating embedding for text: {text}")
-    return openai_service.get_embedding(text)
-    
+def load_from_blob(database:str):
+    """Load data from Azure Blob Storage."""
+    blob_name = f"{database}.json"
+    blob_client = blob_service_client.get_blob_client(container=CONTAINER_NAME, blob=blob_name)
+    try:
+        blob_data = blob_client.download_blob().readall()
+        data = json.loads(blob_data)
+        print(f"Data loaded from Azure Blob: {blob_name}")
+        return data
+    except Exception as e:
+        logger.warning(f"Data not found in blob storage:{blob_name}")
+        print(f"Data not found in blob storage: {blob_name} {e}")
+        return None
 
-def save_embedding_to_blob(name, text, embedding):
+def save_to_blob(database:str,data):
+    """Save data to Azure Blob Storage."""
+    blob_name = f"{database}.json"
+    blob_client = blob_service_client.get_blob_client(container=CONTAINER_NAME, blob=blob_name)
+    blob_client.upload_blob(json.dumps(data), overwrite=True)
+    print(f"Data saved to Azure Blob: {blob_name}")
+    logger.warning(f"Data saved to Azure Blob: {blob_name}")
+
+def save_embedding_to_blob(database,name, text, embedding):
     """Save embedding as a JSON file to Azure Blob Storage."""
-    key = get_key(name,text)
+    key = get_key(name,database)
     blob_name = f"{key}.json"
     blob_client = blob_service_client.get_blob_client(container=CONTAINER_NAME, blob=blob_name)
     data = {
@@ -41,42 +60,45 @@ def save_embedding_to_blob(name, text, embedding):
     blob_client.upload_blob(json.dumps(data), overwrite=True)
     print(f"Embedding saved to Azure Blob: {blob_name}")
 
-def get_embedding_from_blob(name:str,text:str):
+def get_embedding_from_blob(database:str,name:str):
     """Try to retrieve the embedding from Azure Blob Storage."""
-    key = get_key(name,text)
+
+    key = get_key(name,database)
     blob_name = f"{key}.json"
     logger.warning(f"Trying to retrieve embedding from Azure Blob: {blob_name}")
     blob_client = blob_service_client.get_blob_client(container=CONTAINER_NAME, blob=blob_name)
     try:
         blob_data = blob_client.download_blob().readall()
         data = json.loads(blob_data)
-        print(f"Embedding retrieved from Azure Blob: {blob_name}")
+        logger.warning(f"Embedding retrieved from Azure Blob: {blob_name}")
         return data['embedding']
     except Exception as e:
         logger.warning(f"Embedding not found in blob storage:{blob_name}")
         print(f"Embedding not found in blob storage: {blob_name} {e}")
         return None
 
-def get_or_generate_embedding(name:str,text:str):
+def get_or_generate_embedding(database:str,name:str,text:str):
     """Retrieve from cache, then from blob, or generate a new embedding."""
 
-    logger.info(f"Retrieving or generating embedding for text: {text}")
+    key = get_key(name,database)
+    logger.warning(f"Trying to retrieve embedding from cache: {key} - 1")
     # Check in-memory cache first
-    if text in embedding_cache:
+    if key in embedding_cache:
         print("Embedding found in memory cache.")
-        return embedding_cache[text]
-    
+        return embedding_cache[key]
+    logger.warning(f"Trying to retrieve embedding from cache: {key} - 2")
     # Check Azure Blob Storage
-    embedding = get_embedding_from_blob(name,text)
+    embedding = get_embedding_from_blob(database,name)
     if embedding is not None:
-        embedding_cache[text] = embedding
+        embedding_cache[key] = embedding
         return embedding
-    
+    logger.warning(f"Trying to retrieve embedding from cache: {key} - 3")
     # Generate a new embedding using OpenAI
     print("Generating new embedding using OpenAI...")
-    embedding = generate_embedding(text)
-    embedding_cache[text] = embedding
+    embedding = OpenAIService.get_embedding(text)
+    embedding_cache[key] = embedding
 
+    logger.warning(f"Trying to retrieve embedding from cache: {key} - 4")
     # Save to Azure Blob Storage for future use
-    save_embedding_to_blob(name,text, embedding)
+    save_embedding_to_blob(database,name,text, embedding)
     return embedding

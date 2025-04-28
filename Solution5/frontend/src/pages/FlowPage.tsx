@@ -1,6 +1,6 @@
 import React from 'react';
 import ContentTitle from '../components/ContentTitle';
-import { API_BASE_URL } from '../config/settings';
+import { API_BASE_URL } from '../constants';
 
 
 

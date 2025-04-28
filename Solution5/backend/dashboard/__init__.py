@@ -4,7 +4,8 @@ from pydantic import BaseModel
 from app.utils.nb_logger import NBLogger
 from app.utils.cors_helper import CORSHelper
 from dashboard.dashboard_service import DashboardService
-from app.settings import  BLOB_STORAGE_CONNECTION_STRING
+from app.settings import  BLOB_STORAGE_CONNECTION_STRING_SECRET_NAME, KEY_VAULT_CORE_URI
+from app.services.secret_service import SecretService
 from app.context import get_current_user
 import httpx
 import time
@@ -12,8 +13,9 @@ import time
 logger = NBLogger().Log()
 fast_app = FastAPI() 
 CORSHelper.set_CORS(fast_app)
+blob_connection_string = SecretService.get_secret_value(KEY_VAULT_CORE_URI, BLOB_STORAGE_CONNECTION_STRING_SECRET_NAME)
 dashbboard_service = DashboardService(
-    connection_string=BLOB_STORAGE_CONNECTION_STRING,
+    connection_string=blob_connection_string,
     table_name="dashboard"
 )
 

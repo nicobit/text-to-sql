@@ -10,8 +10,8 @@
     "AZURE_OPENAI_ENDPOINT": "",
     "AZURE_OPENAI_VERSION":"2025-01-01-preview",
 
-    "AZURE_AD_TENANT_ID": "",
-    "AZURE_AD_CLIENT_ID": "",
+    "AZURE_TENANT_ID": "",
+    "AZURE_CLIENT_ID": "",
 
     "USE_KEY_VAULT_TO_GET_CONNECTION_STRING": "false",
     "KEY_VAULT_URI" : "",

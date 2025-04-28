@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from texttosql.llm.openai_service import OpenAIService
-from texttosql.llm.prompt_menager import PromptManager
+from app.services.llm.openai_service import OpenAIService
+from app.services.llm.prompt_menager import PromptManager
 from typing import Generic
 import time
 from texttosql.agents.core.tool import BaseTool

@@ -1,5 +1,5 @@
 import  { useEffect, useState } from 'react';
-import { API_BASE_URL } from '../../config/settings';
+import { API_BASE_URL } from '../../constants';
 
 import NewspaperIcon     from '@mui/icons-material/Newspaper';
 

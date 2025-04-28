@@ -6,11 +6,12 @@ import Sidebar from './components/Sidebar';
 import Content from './components/Content';
 import { useMsal } from "@azure/msal-react";
 import Login from './pages/Login';
-import { SnackbarProvider} from 'notistack';
+
 import Box from '@mui/material/Box/Box';
 
 import 'driver.js/dist/driver.css';
-import './styles/driver-theme.css';  
+import './styles/driver-theme.css'; 
+import { SnackbarProvider} from 'notistack'; 
 import { DriverProvider } from 'driverjs-react'; 
 
 //import { DriverProvider, useDriver } from 'driverjs-react'; 

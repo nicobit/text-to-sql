@@ -1,0 +1,14 @@
+type: Microsoft.Web/containerApps
+apiVersion: 2023-10-01
+properties:
+  managedEnvironmentId: /subscriptions/<sub>/resourceGroups/agentic-mesh-rg/providers/Microsoft.Web/managedEnvironments/mesh-env
+  configuration:
+    dapr:
+      enabled: true
+      appId: sql-agent
+      appPort: 80
+  template:
+    containers:
+      - name: sql
+        image: myregistry/sql-agent:latest
+        resources: { cpu: 0.5, memory: "1Gi" }

@@ -1,8 +1,9 @@
 import uuid
 from azure.search.documents import SearchClient
 from azure.core.credentials import AzureKeyCredential
-from app.settings import SEARCH_SERVICE_ENDPOINT, SEARCH_API_KEY, SEARCH_INDEX_NAME
+from app.settings import SEARCH_SERVICE_ENDPOINT_SECRET_NAME, SEARCH_API_KEY_SECRET_NAME, SEARCH_INDEX_NAME, KEY_VAULT_CORE_URI
 from app.utils.nb_logger import NBLogger
+from app.services.secret_service import SecretService
 from azure.search.documents.indexes import SearchIndexClient
 from azure.search.documents.indexes.models import SearchIndex, SimpleField, SearchableField, VectorSearch, VectorSearchAlgorithmConfiguration
 
@@ -19,11 +20,14 @@ class AzureSearchService:
 
     @staticmethod
     def create_search_index(databaseName):
+
+        api_key = SecretService.get_secret_value(KEY_VAULT_CORE_URI, SEARCH_API_KEY_SECRET_NAME)
+        search_endpoint = SecretService.get_secret_value(KEY_VAULT_CORE_URI, SEARCH_SERVICE_ENDPOINT_SECRET_NAME)
         try:
             index_name = f"{SEARCH_INDEX_NAME}".lower()
             index_client = SearchIndexClient(
-                endpoint=SEARCH_SERVICE_ENDPOINT,
-                credential=AzureKeyCredential(SEARCH_API_KEY)
+                endpoint= search_endpoint,
+                credential=AzureKeyCredential(api_key)
             )
 
             # Check if the index already exists
@@ -84,11 +88,13 @@ class AzureSearchService:
         If it doesn't exist, create it and store it in the class variable.
         """
         index_name = f"{SEARCH_INDEX_NAME}".lower()
+        api_key = SecretService.get_secret_value(KEY_VAULT_CORE_URI, SEARCH_API_KEY_SECRET_NAME)
+        search_endpoint = SecretService.get_secret_value(KEY_VAULT_CORE_URI, SEARCH_SERVICE_ENDPOINT_SECRET_NAME)
         if index_name not in AzureSearchService.searchClients:
             AzureSearchService.searchClients[index_name] = SearchClient(
-                endpoint=SEARCH_SERVICE_ENDPOINT,
+                endpoint=search_endpoint,
                 index_name=index_name,
-                credential=AzureKeyCredential(SEARCH_API_KEY)
+                credential=AzureKeyCredential(api_key)
             )
         AzureSearchService.create_search_index(databaseName)  # Ensure the index is created before returning the client
         return AzureSearchService.searchClients[index_name]

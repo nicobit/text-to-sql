@@ -1,6 +1,6 @@
 import pyodbc
-from azure.identity import ManagedIdentityCredential
-from azure.keyvault.secrets import SecretClient
+
+from app.services.secret_service import SecretService
 from app.settings import (
     CONNECTION_STRING_RETRIEVER, 
     KEY_VAULT_URI, 
@@ -34,11 +34,7 @@ class DBHelper:
     _cached_connection_string = ""
     _mschemas = {}
 
-    @staticmethod
-    def credential():
-        """Create Managed Identity credential if using managed identity."""
-        return ManagedIdentityCredential()
-
+   
     @staticmethod
     def executeSQLQuery(database, sql_query,  *params: Any ):
         """
@@ -100,9 +96,8 @@ class DBHelper:
             if CONNECTION_STRING_RETRIEVER == "keyvault_connection_string":
                 try:
                     logger.info("Fetching SQL connection string from Azure Key Vault using Managed Identity.")
-                    client = SecretClient(vault_url=KEY_VAULT_URI, credential=DBHelper.credential())
-                    secret = client.get_secret(SQL_CONNECTION_STRING_SECRET_NAME)
-                    base_connection_string = secret.value
+                    
+                    base_connection_string = SecretService.get_secret_value(KEY_VAULT_URI, SQL_CONNECTION_STRING_SECRET_NAME)
                     DBHelper._cached_connection_string = base_connection_string
                     logger.info("Connection string retrieved successfully from Key Vault.")
                 except Exception as e:
@@ -118,10 +113,10 @@ class DBHelper:
             elif CONNECTION_STRING_RETRIEVER == "keyvault":
                 try:
                     logger.info("Fetching database credentials from Azure Key Vault using Managed Identity.")
-                    client = SecretClient(vault_url=KEY_VAULT_URI, credential=DBHelper.credential())
-                    database_dns = client.get_secret(DATABASE_DNS_SECRET_NAME).value
-                    username = client.get_secret(USERNAME_SECRET_NAME).value
-                    password = client.get_secret(PASSWORD_SECRET_NAME).value
+                    
+                    database_dns = SecretService.get_secret_value(KEY_VAULT_URI,DATABASE_DNS_SECRET_NAME) 
+                    username = SecretService.get_secret_value(KEY_VAULT_URI,USERNAME_SECRET_NAME)
+                    password = SecretService.get_secret_value(KEY_VAULT_URI,PASSWORD_SECRET_NAME) 
 
                     base_connection_string = (
                         f"Driver={ODBC_DRIVER};Server={database_dns};Database={DATABASE_NAME};"

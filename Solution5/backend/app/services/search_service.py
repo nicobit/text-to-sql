@@ -1,6 +1,6 @@
 from app.services.azure_search_service import AzureSearchService
 from app.services.db_service import DBHelper
-from app.services.embedding_service import generate_embedding
+from app.services.llm.openai_service import OpenAIService
 from app.utils.nb_logger import NBLogger
 
 logger = NBLogger().Log()
@@ -19,8 +19,8 @@ class SearchService:
         """
         logger.info(f"Adding example to database {database}: {question} -> {sql}")
         databaseName = DBHelper.getDBName(database)
-        question_embedding = generate_embedding(question)
-        sql_embedding = generate_embedding(sql)
+        question_embedding = OpenAIService.get_embedding(question)
+        sql_embedding = OpenAIService.get_embedding(sql)
 
         retval = AzureSearchService.add_example_to_search(
             databaseName, question, sql, question_embedding, sql_embedding

@@ -1,0 +1,17 @@
+{
+    "dashboard": "Tableau de bord",
+    "settings": "Paramètres",
+    "environment": "Environnement",
+    "logs": "Journaux",
+    "users": "Utilisateurs",
+    "active_users": "Utilisateurs Actifs",
+    "new_deployments": "Nouveaux Déploiements",
+    "pending_approvals": "Approbations en Attente",
+    "environment_status": "Statut de l'Environnement",
+    "system_logs": "Journaux du Système",
+    "language": "Langue",
+    "theme": "Thème",
+    "logout": "Déconnexion",
+    "admin_portal": "Portail d'Administration"
+  }
+  

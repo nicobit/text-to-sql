@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sql-agent
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: sql-agent } }
+  template:
+    metadata: { labels: { app: sql-agent } }
+    spec:
+      containers:
+      - name: sql
+        image: myregistry/sql-agent:latest
+        ports: [{ containerPort: 8080 }]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sql-agent
+spec:
+  selector: { app: sql-agent }
+  ports: [{ port: 80, targetPort: 8080 }]
+  type: ClusterIP

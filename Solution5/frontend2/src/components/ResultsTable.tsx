@@ -65,7 +65,7 @@ export default function ResultsTable() {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 p-4 rounded">
+    <div className="bg-red dark:bg-gray-900 p-4 rounded h-full flex flex-col">
       {/* Actions */}
       <div className="flex justify-end space-x-2 mb-2">
         <button
@@ -102,7 +102,7 @@ export default function ResultsTable() {
 
       {/* Data Table */}
       <div className="max-h-[60vh] overflow-auto border border-gray-200 dark:border-gray-700 rounded">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+        <table className="min-w-full min-h-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
           <thead className="bg-gray-50 dark:bg-gray-800 sticky top-0">
             <tr>
               {columns.map(col => (

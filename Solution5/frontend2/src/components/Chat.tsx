@@ -19,6 +19,9 @@ import {
   ChevronDown,
   Maximize2,
   Minimize2,
+  Speaker,
+  ArrowUp,
+  MessageCircle,
 } from 'lucide-react';
 
 export default function Chat() {
@@ -66,7 +69,7 @@ export default function Chat() {
   return (
     <div className="flex flex-col h-full">
       {/* Chat history */}
-      <ul className="flex-1 mb-4 overflow-y-auto space-y-4">
+      <ul className="flex-1 mb-4 overflow-y-auto space-y-4 overflow-y-scroll custom-scrollbar">
         {queries.map((entry, index) => (
           <li
             key={index}
@@ -161,12 +164,12 @@ export default function Chat() {
       {/* Input form */}
       <form
         onSubmit={handleSubmit}
-        className="flex items-start p-2 border border-gray-300  dark:border-gray-700 rounded-lg shadow"
+        className="flex items-start p-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg bg-transparent"
       >
         <textarea
           rows={2}
           placeholder="Ask anything"
-          className="flex-1 resize-none border-none focus:outline-none p-2 rounded-md dark:bg-gray-900 dark:text-white"
+          className="flex-1 resize-none border-none focus:outline-none p-2 rounded-md dark:bg-gray-900 dark:text-white bg-transparent"
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => {
@@ -175,82 +178,91 @@ export default function Chat() {
           handleSubmit(e as unknown as FormEvent);
         }
           }}
-          
         />
         <button
           type="submit"
-          className="ml-2 p-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none"
-          aria-label="send"
+          className={`ml-2 p-2 rounded-full focus:outline-none ${
+        loading
+          ? 'bg-gray-600 text-white hover:bg-gray-700 dark:bg-gray-500 dark:text-gray-200 dark:hover:bg-gray-600'
+          : input.trim()
+          ? 'bg-gray-600 text-white hover:bg-indigo-700 dark:bg-gray-500 dark:text-gray-200 dark:hover:bg-indigo-600'
+          : 'bg-gray-400 text-gray-500 hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:hover:bg-gray-500'
+          }`}
+          aria-label={loading ? 'stop' : input.trim() ? 'send' : 'speak'}
         >
           {loading ? (
-        <Loader2 className="w-6 h-6 animate-spin" />
+        <Loader2 className="w-6 h-6 animate-spin text-gray-100 dark:text-gray-100" />
+          ) : input.trim() ? (
+        <ArrowUp className="w-6 h-6 text-white dark:text-gray-200" />
           ) : (
-        'Send'
+        <MessageCircle className="w-6 h-6 text-gray-100 dark:text-gray-100" />
           )}
         </button>
       </form>
 
       {/* Modal */}
       {isDialogOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div
-            className={`bg-white overflow-auto rounded-lg shadow-lg flex flex-col ${
-              isFullScreen
-                ? 'w-full h-full m-0'
-                : 'max-w-4xl max-h-[80vh] m-4'
-            }`}
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 w-full">
+    <div
+      className={`overflow-auto rounded-lg shadow-lg flex flex-col ${
+        isFullScreen
+          ? 'w-full h-full m-0'
+          : 'w-[80%] max-h-[90vh] m-4' // Adjusted for 80% of the total page width
+      } bg-white dark:bg-gray-800`} // Light and dark mode backgrounds
+    >
+      <div className="flex justify-between items-center p-4 border-b border-gray-300 dark:border-gray-700">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          Results
+        </h3>
+        <div className="flex space-x-2">
+          <button
+            onClick={() => setIsFullScreen(prev => !prev)}
+            className="p-1 focus:outline-none"
+            aria-label="toggle fullscreen"
           >
-            <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-lg font-semibold">Results</h3>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => setIsFullScreen(prev => !prev)}
-                  className="p-1 focus:outline-none"
-                  aria-label="toggle fullscreen"
-                >
-                  {isFullScreen ? (
-                    <Minimize2 className="w-5 h-5 text-gray-500 hover:text-gray-700" />
-                  ) : (
-                    <Maximize2 className="w-5 h-5 text-gray-500 hover:text-gray-700" />
-                  )}
-                </button>
-                <button
-                  onClick={() => toggleDialog()}
-                  className="p-1 focus:outline-none"
-                  aria-label="close"
-                >
-                  <X className="w-5 h-5 text-gray-500 hover:text-gray-700" />
-                </button>
-              </div>
-            </div>
-            <nav className="border-b">
-              <ul className="flex">
-                {['Results Table', 'Chart', 'Mermaid Diagram', 'Reasoning'].map(
-                  (label, idx) => (
-                    <li
-                      key={idx}
-                      onClick={() => setSelectedTab(idx)}
-                      className={`cursor-pointer py-2 px-4 ${
-                        selectedTab === idx
-                          ? 'border-b-2 border-indigo-600 text-indigo-600'
-                          : 'text-gray-500 hover:text-gray-700'
-                      }`}
-                    >
-                      {label}
-                    </li>
-                  )
-                )}
-              </ul>
-            </nav>
-            <div className="flex-1 overflow-auto min-h-[700px] p-4">
-              {selectedTab === 0 && <ResultsTable />}
-              {selectedTab === 1 && <BarChart />}
-              {selectedTab === 2 && <Mermaid />}
-              {selectedTab === 3 && <Reasoning />}
-            </div>
-          </div>
+            {isFullScreen ? (
+              <Minimize2 className="w-5 h-5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" />
+            ) : (
+              <Maximize2 className="w-5 h-5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" />
+            )}
+          </button>
+          <button
+            onClick={() => toggleDialog()}
+            className="p-1 focus:outline-none"
+            aria-label="close"
+          >
+            <X className="w-5 h-5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" />
+          </button>
         </div>
-      )}
+      </div>
+      <nav className="border-b border-gray-300 dark:border-gray-700">
+        <ul className="flex">
+          {['Results Table', 'Chart', 'Mermaid Diagram', 'Reasoning'].map(
+            (label, idx) => (
+              <li
+                key={idx}
+                onClick={() => setSelectedTab(idx)}
+                className={`cursor-pointer py-2 px-4 ${
+                  selectedTab === idx
+                    ? 'border-b-2 border-indigo-600 text-indigo-600 dark:text-indigo-400'
+                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+                }`}
+              >
+                {label}
+              </li>
+            )
+          )}
+        </ul>
+      </nav>
+      <div className="flex-1 overflow-auto min-h-[700px] p-4 bg-gray-50 dark:bg-gray-900">
+        {selectedTab === 0 && <ResultsTable />}
+        {selectedTab === 1 && <BarChart />}
+        {selectedTab === 2 && <Mermaid />}
+        {selectedTab === 3 && <Reasoning />}
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }

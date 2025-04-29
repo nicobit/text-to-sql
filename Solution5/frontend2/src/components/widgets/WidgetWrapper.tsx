@@ -7,17 +7,24 @@ import Typography from '@material-tailwind/react/components/Typography';
 
 
 const registry = Object.fromEntries(
-    Object.entries(import.meta.glob('./*Widget.tsx', { eager: true }))
-        .map(([path, module]: [string, any]) => {
-            const match = path.match(/\.\/([^/]+)Widget\.tsx$/);
-            const name = match?.[1]?.toLowerCase();
-            const icon = module?.icon || null;
-            return name
-                ? [name, { component: (module as { default: React.ComponentType }).default, icon }]
-                : null;
-        })
-        .filter((entry): entry is [string, { component: React.ComponentType; icon: React.ReactNode | null }] => entry !== null)
-) as Record<string, { component: React.ComponentType; icon: React.ReactNode | null }>;
+  Object.entries(import.meta.glob('./*Widget.tsx', { eager: true }))
+    .map(([path, module]: [string, any]) => {
+      const match = path.match(/\.\/([^/]+)Widget\.tsx$/);
+      const name = match?.[1]?.toLowerCase();
+      const name1 = match?.[1]
+      const title = name1
+        ? name1
+          .replace(/([a-z])([A-Z])/g, '$1 $2')
+          .trim()
+          .replace(/^./, (str) => str.toUpperCase())
+        : '';
+      const icon = module?.icon || null;
+      return name
+        ? [name, { component: (module as { default: React.ComponentType }).default, icon, title }]
+        : null;
+    })
+    .filter((entry): entry is [string, { component: React.ComponentType; icon: React.ReactNode | null; title: string }] => entry !== null)
+) as Record<string, { component: React.ComponentType; icon: React.ReactNode | null; title: string }>;
 
 interface Props {
   widget: { id: string; type: string };
@@ -30,12 +37,8 @@ interface Props {
 const WidgetWrapper: React.FC<Props> = ({ widget, editMode, onRemove, layout }) => {
   const Component = registry[widget.type].component;
   const name = Component?.name || widget.type;
-  const title = name
-  ? name
-      .replace(/([a-z])([A-Z])/g, '$1 $2')
-      .trim()
-      .replace(/^./, (str) => str.toUpperCase())
-  : '';
+  const title = registry[widget.type].title || null;
+ 
   const icon = registry[widget.type].icon || null;
 
   return (

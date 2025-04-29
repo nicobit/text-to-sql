@@ -11,7 +11,7 @@ const QuestionQueryExamplePage: React.FC = () => {
   
     return (
          <div className="space-y-6">
-              <h2 className="text-2xl font-bold tracking-tight">Environment Status</h2>
+              <h2 className="text-2xl font-bold tracking-tight">Questions / SQL examples</h2>
              
               <ExampleManager msalInstance={msalInstance} />
              

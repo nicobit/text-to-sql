@@ -7,9 +7,9 @@ const menuItems = [
   { name: 'Chat',  icon: Bot,        path: '/chat' },
   { name: 'Questions',     icon: ShieldQuestion,          path: '/question' },
   { name: 'Settings',  icon: Settings,        path: '/settings' },
-  { name: 'Environment', icon: Server,        path: '/environment' },
-  { name: 'Logs',      icon: FileText,       path: '/logs' },
-  { name: 'Users',     icon: Users,          path: '/users' },
+  //{ name: 'Environment', icon: Server,        path: '/environment' },
+ // { name: 'Logs',      icon: FileText,       path: '/logs' },
+ // { name: 'Users',     icon: Users,          path: '/users' },
   
 ]
 

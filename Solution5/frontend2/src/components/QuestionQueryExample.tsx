@@ -5,6 +5,7 @@ import MonacoEditor from 'react-monaco-editor';
 import { enqueueSnackbar } from 'notistack';
 import { getDatabases, getExamples, deleteExample, updateExample, addExample, IExample } from '../api/example';
 import { Loader2, Edit2, Trash2, X } from 'lucide-react';
+import { useTailwindDarkMode } from '../hooks/useTailwindDarkMode';
 
 interface ExamplesManagerProps {
   msalInstance: IPublicClientApplication;
@@ -20,6 +21,8 @@ export default function QuestionQueryExample({ msalInstance }: ExamplesManagerPr
   const [createOpen, setCreateOpen] = useState<boolean>(false);
   const [current, setCurrent] = useState<IExample>({ doc_id: '', question: '', sql: '', sql_embedding: [] });
   const [newExample, setNewExample] = useState<IExample>({ doc_id: '', question: '', sql: '', sql_embedding: [] });
+
+  const isDark = useTailwindDarkMode();
 
   // Monaco config
   useEffect(() => {
@@ -135,37 +138,37 @@ export default function QuestionQueryExample({ msalInstance }: ExamplesManagerPr
       {/* Edit Modal */}
       {editOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-300 w-4/5 h-4/5 rounded shadow-lg overflow-auto">
+          <div className="bg-white dark:bg-gray-800 w-4/5 h-4/5 rounded shadow-lg overflow-auto">
             <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-500">Edit Example</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Edit Example</h3>
               <button onClick={() => setEditOpen(false)} className="p-1 focus:outline-none" aria-label="Close">
-                <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+          <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
               </button>
             </div>
             <div className="p-4 space-y-4 h-full flex flex-col" style={{ height: '80%' }}>
               <input
-                type="text"
-                className="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
-                value={current.question}
-                onChange={e => setCurrent(prev => ({ ...prev, question: e.target.value }))}
-                placeholder="Question"
+          type="text"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none"
+          value={current.question}
+          onChange={e => setCurrent(prev => ({ ...prev, question: e.target.value }))}
+          placeholder="Question"
               />
-              <div className="flex-1 border border-gray-300 dark:border-gray-600 rounded ">
-                <MonacoEditor
-                  language="sql"
-                  theme="vs-dark"
-                  value={current.sql}
-                  options={{ automaticLayout: true, minimap: { enabled: false } }}
-                  onChange={val => setCurrent(prev => ({ ...prev, sql: val || '' }))}
-                />
+              <div className="flex-1 border border-gray-300 dark:border-gray-600 rounded">
+          <MonacoEditor
+            language="sql"
+            theme={isDark ? 'vs-dark' : 'vs'} //
+            value={current.sql}
+            options={{ automaticLayout: true, minimap: { enabled: false } }}
+            onChange={val => setCurrent(prev => ({ ...prev, sql: val || '' }))}
+          />
               </div>
             </div>
             <div className="flex justify-end space-x-2 p-4 border-t border-gray-200 dark:border-gray-700">
               <button onClick={() => setEditOpen(false)} className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none">
-                Cancel
+          Cancel
               </button>
               <button onClick={saveEdit} className="px-4 py-2 rounded bg-indigo-600 dark:bg-indigo-500 text-white hover:bg-indigo-500 dark:hover:bg-indigo-400 focus:outline-none">
-                Save
+          Save
               </button>
             </div>
           </div>
@@ -175,38 +178,37 @@ export default function QuestionQueryExample({ msalInstance }: ExamplesManagerPr
       {/* Create Modal */}
       {createOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white dark:bg-gray-300 w-4/5 h-4/5 rounded shadow-lg overflow-auto">
-          <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-500">Create New Example</h3>
+          <div className="bg-white dark:bg-gray-800 w-4/5 h-4/5 rounded shadow-lg overflow-auto">
+            <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Create New Example</h3>
               <button onClick={() => setCreateOpen(false)} className="p-1 focus:outline-none" aria-label="Close">
-                <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+          <X className="w-5 h-5 text-gray-600 dark:text-gray-300" />
               </button>
             </div>
             <div className="p-4 space-y-4 h-full flex flex-col" style={{ height: '80%' }}>
               <input
-              type="text"
-              className="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none"
-              value={newExample.question}
-              onChange={e => setNewExample(prev => ({ ...prev, question: e.target.value }))}
-              placeholder="Question"
+          type="text"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded p-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none"
+          value={newExample.question}
+          onChange={e => setNewExample(prev => ({ ...prev, question: e.target.value }))}
+          placeholder="Question"
               />
-                <div className="flex-1 border border-gray-300 dark:border-gray-600 rounded ">
-                  <MonacoEditor
-                  language="sql"
-                  theme="vs-dark"
-                  value={newExample.sql}
-                  options={{ automaticLayout: true, minimap: { enabled: false } }}
-                  onChange={val => setNewExample(prev => ({ ...prev, sql: val || '' }))}
-                  />
-                </div>
+              <div className="flex-1 border border-gray-300 dark:border-gray-600 rounded">
+          <MonacoEditor
+            language="sql"
+            theme={isDark ? 'vs-dark' : 'vs'} //
+            value={newExample.sql}
+            options={{ automaticLayout: true, minimap: { enabled: false } }}
+            onChange={val => setNewExample(prev => ({ ...prev, sql: val || '' }))}
+          />
+              </div>
             </div>
-              
             <div className="flex justify-end space-x-2 p-4 border-t border-gray-200 dark:border-gray-700">
               <button onClick={() => setCreateOpen(false)} className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none">
-                Cancel
+          Cancel
               </button>
               <button onClick={saveCreate} className="px-4 py-2 rounded bg-indigo-600 dark:bg-indigo-500 text-white hover:bg-indigo-500 dark:hover:bg-indigo-400 focus:outline-none">
-                Save
+          Save
               </button>
             </div>
           </div>

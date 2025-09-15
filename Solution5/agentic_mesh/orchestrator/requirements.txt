@@ -1,0 +1,18 @@
+fastapi
+uvicorn[standard]
+semantic-kernel>=1.29.0
+httpx
+azure-search-documents
+azure-identity
+openai
+zeroconf
+
+
+mcp
+aiohttp
+python-dotenv
+# MCP & transport
+modelcontextprotocol          # aka "mcp-sdk" – high-level session API
+httpx-sse
+# Data validation / dotenv (optional but handy)
+pydantic

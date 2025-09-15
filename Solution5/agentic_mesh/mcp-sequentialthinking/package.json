@@ -1,0 +1,9 @@
+{
+    "name": "sequential-thinking-sse",
+    "version": "1.0.0",
+    "dependencies": {
+      "@modelcontextprotocol/server-sequential-thinking": "latest",
+      "supergateway": "latest"
+    }
+  }
+  

@@ -1,0 +1,17 @@
+{
+    "dashboard": "Tablero",
+    "settings": "Configuraciones",
+    "environment": "Entorno",
+    "logs": "Registros",
+    "users": "Usuarios",
+    "active_users": "Usuarios Activos",
+    "new_deployments": "Nuevos Despliegues",
+    "pending_approvals": "Aprobaciones Pendientes",
+    "environment_status": "Estado del Entorno",
+    "system_logs": "Registros del Sistema",
+    "language": "Idioma",
+    "theme": "Tema",
+    "logout": "Cerrar sesión",
+    "admin_portal": "Portal de Administración"
+  }
+  

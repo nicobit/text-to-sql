@@ -13,6 +13,7 @@
       "COG_SEARCH_KEY": "<SEARCH_KEY>",
       "COG_SEARCH_INDEX": "memory-index",
       "BLOB_CONN": "<BLOB_CONN>",
-      "BLOB_CONTAINER": "artifacts"
+      "BLOB_CONTAINER": "artifacts",
+      "PYTHONPATH": "../.." 
     }
   }

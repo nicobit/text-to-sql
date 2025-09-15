@@ -1,0 +1,47 @@
+# -------- build backend (PEP 517) ------------------------------------------
+[build-system]
+requires      = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+# -------- core package metadata -------------------------------------------
+[project]
+name        = "text-to-sql"
+version     = "0.1.0"
+description = "Multi-host FastAPI project (Functions, App Service, AKS)"
+readme      = "README.md"
+requires-python = ">=3.10"
+
+# single dependency list (same as requirements.txt)
+dependencies = [
+  # web framework
+  "fastapi>=0.110",
+  "uvicorn[standard]>=0.29",
+
+  # azure integration
+  "azure-functions>=1.16",         # runtime shim (harmless outside Functions)
+  "azure-identity>=1.16",          # MSI / DefaultAzureCredential
+  "azure-keyvault-secrets>=4.8",   # for Secrets-Toolkit key vault provider
+
+  # data / misc
+  "pydantic>=2.6",
+  "python-dotenv>=1.0",            # optional .env support for local dev
+]
+
+# -------- editable-install discovery (src/ layout) -------------------------
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# -------- optional dev extras (install with  ‘pip install .[dev]’) ---------
+[project.optional-dependencies]
+dev = [
+  "pytest>=8",
+  "pytest-asyncio>=0.23",
+  "httpx>=0.27",
+  "ruff>=0.4",          # linter / formatter
+  "pre-commit>=3.7",
+]
+
+# -------- dynamic classifiers (optional) ----------------------------------
+[project.urls]
+Homepage      = "https://github.com/your-org/myapi"
+Source        = "https://github.com/your-org/myapi"

@@ -1,0 +1,7 @@
+id: memory-agent
+name: MemoryAgent
+description: Stores and retrieves short-term memory
+capabilities:
+  - store_memory
+  - get_memory
+endpoint: http://localhost:8001/

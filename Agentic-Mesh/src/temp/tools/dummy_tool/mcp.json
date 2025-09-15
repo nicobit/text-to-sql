@@ -1,0 +1,12 @@
+{
+    "name": "dummy-tool",
+    "description": "Dummy tool for demonstration",
+    "version": "1.0.0",
+    "methods": [
+      {
+        "name": "echo",
+        "description": "Returns the input",
+        "params": ["text"]
+      }
+    ]
+  }

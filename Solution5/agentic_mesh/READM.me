@@ -1,0 +1,79 @@
+### Shared .venv
+
+To use shared .venv:
+
+- From agentic_mesh root in your terminal run :
+
+```bash
+python -m venv .venv
+```
+
+Then activate
+
+```bash
+.venv\Scripts\Activate
+```
+
+The install requirements for each service
+
+```bash
+pip install -r agent_registry/requirements.txt
+pip install -r orchestrator/requirements.txt
+pip install -r sample_agent/requirements.txt
+```
+
+
+##### Configure VS Code to use the shared .venv:
+Press Ctrl+Shift+P → Python: Select Interpreter → Choose the one from .venv
+
+Or create a .vscode/settings.json file:
+
+```bash
+{
+  "python.pythonPath": ".venv/bin/python"  // Use ".venv\\Scripts\\python.exe" on Windows
+}
+```
+
+
+
+### Build and Run
+From the root directory (agentic-mesh/):
+
+```bash
+docker compose up --build
+```
+or 
+
+```bash
+docker compose --env-file .env up --build
+```
+
+This will:
+
+Build each service's Docker image
+
+Register the agent with the registry
+
+Launch the orchestrator on http://localhost:8000
+
+
+### Rebuilding single service:
+
+1. Rebuild the Service Image: If you've made changes to the Dockerfile or the build context of a specific service, rebuild its image using:
+Docker Documentation
+
+```bash
+docker-compose build <service_name>
+Replace <service_name> with the name of the service as defined in your docker-compose.yml.
+```
+
+Restart the Service: After rebuilding, restart the service to apply the new image:
+
+```bash
+docker-compose up -d <service_name>
+The -d flag runs the container in detached mode.
+```
+
+### Update .env
+
+docker-compose up -d --build

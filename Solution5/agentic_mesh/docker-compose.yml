@@ -1,0 +1,109 @@
+
+services:
+
+  azure_mcp_server:
+    image: mcp/azure:latest
+    container_name: azure_mcp_server
+    ports:
+      - "3002:3002"
+    environment:
+      - AZURE_TENANT_ID=${AZURE_TENANT_ID}
+      - AZURE_CLIENT_ID=${AZURE_CLIENT_ID}
+      - AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET}
+      - AZMCP_TRANSPORT=sse
+      #- AZMCP_PORT=3002
+      - Kestrel__Endpoints__Http__Url=http://0.0.0.0:3002
+    restart: unless-stopped
+
+  
+  sequentialthinking:
+    build: ./mcp-sequentialthinking
+    ports:
+      - "3003:3003"
+    expose:
+      - "3003"       # Makes port 3000 available to other containers
+    
+   
+  my-azure-mcp-server:
+    build:
+      context: ./azure-mcp-main
+      dockerfile: Dockerfile
+    container_name: my-azure-mcp-server
+    ports:
+      - "3000:3000"
+    environment:
+      - AZURE_TENANT_ID=${AZURE_TENANT_ID}
+      - AZURE_CLIENT_ID=${AZURE_CLIENT_ID}
+      - AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET}
+      - AZMCP_TRANSPORT=sse
+      - Kestrel__Endpoints__Http__Url=http://0.0.0.0:3000
+    restart: unless-stopped    
+
+  azure-auth-app:
+    build:
+      context: ./azure-auth-app
+      dockerfile: Dockerfile
+    environment:
+      
+      - AZURE_TENANT_ID=${AZURE_TENANT_ID}
+      - AZURE_CLIENT_ID=${AZURE_CLIENT_ID}
+      - AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET}
+      
+    
+
+  azure_mcp_client:
+    build:
+      context: ./azure_mcp_client
+    container_name: mcp_client
+    depends_on: [my-azure-mcp-server] 
+    ports:
+      - "8081:8081"
+    environment:
+      MCP_SERVER_URL: http://my-azure-mcp-server:3000/sse
+   
+
+  agent_registry:
+    build: ./agent_registry
+    ports:
+      - "8001:8000"
+
+  orchestrator:
+    build: ./orchestrator
+    environment:
+      - AZURE_SUBSCRIPTION_ID=${AZURE_SUBSCRIPTION_ID}
+      - AZURE_TENANT_ID=${AZURE_TENANT_ID}
+      - AGENT_REGISTRY_URL=${AGENT_REGISTRY_URL}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_CHAT_MODEL=${OPENAI_CHAT_MODEL}
+      - OPENAI_EMBED_MODEL=${OPENAI_EMBED_MODEL}
+      - AZURE_SEARCH_ENDPOINT=${AZURE_SEARCH_ENDPOINT}
+      - AZURE_SEARCH_ADMIN_KEY=${AZURE_SEARCH_ADMIN_KEY}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT_A}
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY_A}
+      - AZURE_OPENAI_CHAT_DEPLOYMENT=${AZURE_OPENAI_CHAT_DEPLOYMENT_A}
+      - AZURE_SEARCH_CONVERSION_INDEX=${AZURE_SEARCH_CONVERSION_INDEX}
+      - AZURE_SEARCH_ENDPOINT_A=${AZURE_SEARCH_ENDPOINT_A}
+      - AZURE_OPENAI_EMBED_DEPLOYMENT=${AZURE_OPENAI_EMBED_DEPLOYMENT_A}
+      - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION_A}
+      - AZURE_OPENAI_EMBEDDING_API_VERSION=${AZURE_OPENAI_EMBEDDING_API_VERSION_A}
+      - AGENT_REGISTRY_LIST_URL=${AGENT_REGISTRY_LIST_URL}
+      - AGENT_REGISTRY_REGISTER_URL=${AGENT_REGISTRY_REGISTER_URL}
+      - USE_PLANNER=true
+      - LOGLEVEL=DEBUG
+      - MCP_SERVERS=azure-mcp|http://my-azure-mcp-server:3000|azure+tenant+subscription+cloud,thinking|http://sequentialthinking:3003|thinking+sequential
+    ports:
+      - "8000:8000"
+    depends_on:
+      - agent_registry
+
+  sample_agent:
+    build: ./sample_agent
+    environment:
+      - AGENT_REGISTRY_URL=${AGENT_REGISTRY_URL}
+      - AGENT_ENDPOINT=http://sample_agent:8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      - agent_registry
+
+

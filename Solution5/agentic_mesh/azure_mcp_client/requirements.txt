@@ -1,0 +1,16 @@
+mcp
+aiohttp
+python-dotenv
+
+# FastAPI + ASGI
+fastapi
+uvicorn[standard]
+
+# MCP & transport
+modelcontextprotocol          # aka "mcp-sdk" – high-level session API
+httpx
+httpx-sse
+
+# Data validation / dotenv (optional but handy)
+pydantic
+

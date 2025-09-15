@@ -24,3 +24,4 @@ azure.data.tables
 dsnparse
 llama-index
 tiktoken
+azure-identity-broker

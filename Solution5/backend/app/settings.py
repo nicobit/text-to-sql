@@ -1,7 +1,8 @@
 import os
 
-
-
+#-------------------------------------------------------------------------
+#  NEEDED FOR TEXT TO SQL 
+#--------------------------------------------------------------------------
 
 TENANT_ID = os.getenv("AZURE_TENANT_ID")
 CLIENT_ID = os.getenv("AZURE_CLIENT_ID")  # App ID of the backend API
@@ -44,7 +45,15 @@ CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:3000,
 APPLICATIONINSIGHTS_CONNECTION_STRING = os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING")
 
 
+#-------------------------------------------------------------------------
+#  NEEDED FOR AGENTIC MESH
+#--------------------------------------------------------------------------
 
+MEMORY_SEARCH_INDEX_NAME = os.getenv("MEMORY_SEARCH_INDEX_NAME", "memory-index")
+MEMORY_SEARCH_SERVICE_ENDPOINT_SECRET_NAME = os.getenv("MEMORY_SEARCH_SERVICE_ENDPOINT_SECRET_NAME", SEARCH_SERVICE_ENDPOINT_SECRET_NAME)
+MEMORY_SEARCH_API_KEY_SECRET_NAME = os.getenv("MEMORY_SEARCH_API_KEY_SECRET_NAME", SEARCH_API_KEY_SECRET_NAME)
+REDIS_COONECTION_STRING_SECRET_NAME = os.getenv("REDIS_COONECTION_STRING_SECRET_NAME","")
+ 
 
 
 

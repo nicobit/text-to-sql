@@ -1,0 +1,278 @@
+FROM node:20-alpine
+
+# Install ICU libraries for globalization support
+RUN apk add --no-cache icu-libs icu-data-full
+
+# Set environment variable to enable globalization features
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
+# Set working directory
+WORKDIR /app
+
+# Install Azure MCP globally
+RUN npm install -g @azure/mcp@latest
+
+# Expose the port used by Azure MCP
+EXPOSE 3000
+
+# Start the Azure MCP server
+CMD ["mcp", "server", "start"]
+
+-----------------------------------------------------
+
+FROM node:20-slim
+
+# Install ICU libraries for globalization support
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libicu-dev \
+ && rm -rf /var/lib/apt/lists/*
+
+# Set environment variable to enable globalization features
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
+# Set the working directory
+WORKDIR /app
+
+# Install Azure MCP globally
+RUN npm install -g @azure/mcp@latest
+
+# Expose the port the server will run on
+EXPOSE 3000
+
+# Start the Azure MCP Server
+CMD ["mcp", "server", "start"]
+
+-------------------------------------------------------------
+
+FROM node:20-slim
+
+WORKDIR /app
+
+# No need to install @azure/mcp globally
+EXPOSE 3000
+
+CMD ["npx", "-y", "@azure/mcp@latest", "server", "start"]
+
+
+-----------------------------------------------------------
+
+
+
+
+FROM node:20-alpine
+
+# Set the working directory
+WORKDIR /app
+
+# Install ICU libraries for globalization support
+RUN apk add --no-cache icu-libs icu-data-full
+
+# Set environment variable to enable globalization features
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
+# Expose the port the server will run on
+EXPOSE 3000
+
+# Start the Azure MCP Server using npx
+CMD ["npx", "-y", "@azure/mcp@latest", "server", "start"]
+
+
+-----------------------------------------------
+
+
+# ---------- Dockerfile ----------
+FROM node:20-slim                           # Debian-based for better compatibility
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends libicu-dev \
+ && rm -rf /var/lib/apt/lists/*
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false  # use installed ICU
+
+WORKDIR /app
+# Nothing to copy – we’ll run MCP straight from npm when the
+# container starts, keeping the image small and always up-to-date
+EXPOSE 3000
+CMD ["npx","-y","@azure/mcp@latest","server","start"]
+
+
+----------------------------------------------------
+
+
+
+# Dockerfile
+FROM node:20-slim
+RUN apt-get update && apt-get install -y --no-install-recommends libicu-dev \
+ && rm -rf /var/lib/apt/lists/*
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
+    MCP_SERVER_TRANSPORT=http \    # <-- keep alive
+    MCP_SERVER_HOST=0.0.0.0 \
+    MCP_SERVER_PORT=3000
+WORKDIR /app
+EXPOSE 3000
+CMD ["npx","-y","@azure/mcp@latest","server","start"]
+
+
+-------------------------------------------------------------
+
+
+FROM node:20-slim
+RUN apt-get update && apt-get install -y --no-install-recommends libicu-dev \
+ && rm -rf /var/lib/apt/lists/*
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
+    MCP_SERVER_TRANSPORT=http \          # keeps server running
+    MCP_SERVER_HOST=0.0.0.0 \
+    MCP_SERVER_PORT=3000
+WORKDIR /app
+EXPOSE 3000
+CMD ["npx","-y","@azure/mcp@latest","server","start"]
+
+
+-----------------------------------------------------------------
+
+
+# Dockerfile
+FROM node:20-slim
+RUN apt-get update && apt-get install -y --no-install-recommends libicu-dev \
+ && rm -rf /var/lib/apt/lists/*
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
+    MCP_SERVER_TRANSPORT=http \           # <-- keeps server alive
+    MCP_SERVER_HOST=0.0.0.0 \
+    MCP_SERVER_PORT=3000
+WORKDIR /app
+EXPOSE 3000
+CMD ["npx","-y","@azure/mcp@latest","server","start"]
+
+
+--------------------------------------------------------
+
+
+
+services:
+
+  azure_mcp_server:
+    build:
+      context: ./azure_mcp
+      dockerfile: Dockerfile
+    stdin_open: true      # -i  (interactive)
+    tty: true             # -t  (pseudo-tty)
+    ports:
+      - "3000:3000"
+    environment:
+      # Set your Azure credentials here
+      - AZURE_TENANT_ID=${AZURE_TENANT_ID}
+      - AZURE_CLIENT_ID=${AZURE_CLIENT_ID}
+      - AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET}
+    volumes:
+      - ~/.azure:/root/.azure:ro
+    restart: unless-stopped
+    healthcheck:                          
+      test: ["CMD", "curl", "-f", "http://localhost:3000/healthz"]
+      interval: 30s
+      retries: 3
+
+-----------------------------------------------------------------
+
+
+
+FROM node:20-slim
+
+# minimal deps for .NET globalization + curl for health-checks
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libicu-dev curl && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
+WORKDIR /app
+EXPOSE 3000
+
+# run MCP in HTTP mode on the desired port
+CMD ["npx","-y","@azure/mcp@latest","server","start","--transport","http","--host","0.0.0.0","--port","3000"]
+
+
+-----------------------------------------------------------------
+
+
+FROM node:20-slim
+
+# add curl for the HEALTHCHECK probe and ICU for .NET globalization
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libicu-dev curl && \
+    rm -rf /var/lib/apt/lists/*
+
+# let Kestrel listen on all interfaces
+ENV ASPNETCORE_URLS=http://0.0.0.0:3000 \
+    DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
+WORKDIR /app
+EXPOSE 3000
+
+# HTTP transport on the desired port, no --host flag
+CMD ["npx","-y","@azure/mcp@latest","server","start","--transport","http","--port","3000"]
+
+---------------------------------------------------------------
+
+
+FROM node:20-slim
+
+# Runtime deps + curl for health probes
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libicu-dev curl && \
+    rm -rf /var/lib/apt/lists/*
+
+# Make Kestrel listen on all interfaces/port 3000
+ENV ASPNETCORE_URLS=http://0.0.0.0:3000 \
+    DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
+WORKDIR /app
+EXPOSE 3000
+
+# Long-running SSE server
+CMD ["npx","-y","@azure/mcp@latest","server","start","--transport","sse","--port","3000"]
+
+
+---------------------------------------------------------------------
+
+
+azure_mcp_server:
+    build: ./azure_mcp
+    ports: ["3000:3000"]            # server listens on 0.0.0.0:3000
+    command: >
+      npx -y @azure/mcp@latest server start
+      --transport sse               # long-running transport
+      --port 3000
+  mcp_client:
+    build: ./mcp_client
+    depends_on: [azure_mcp_server]  # wait until the server is up
+    environment:
+      MCP_SERVER_URL: http://azure_mcp_server:3000/sse  # <-- key line
+      LOG_LEVEL: DEBUG
+
+--------------------------------------------------------------------
+
+
+# -------------------------------------------------------------
+# Azure MCP Server – minimal container image
+# -------------------------------------------------------------
+FROM node:20-slim                                                     #1
+
+# --- OS packages needed by the .NET bits of Azure-MCP ------------
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends libicu-dev curl        #2 \
+ && rm -rf /var/lib/apt/lists/*
+
+# --- Environment --------------------------------------------------
+ENV ASPNETCORE_URLS=http://0.0.0.0:3000                               #3 \
+    DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
+WORKDIR /app                                                          #4
+EXPOSE 3000                                                           #5
+
+# --- Start the server in long-running SSE mode --------------------
+CMD ["npx","-y","@azure/mcp@latest","server","start",                 #6
+     "--transport","sse","--port","3000"]
+
+
+
+
+
+

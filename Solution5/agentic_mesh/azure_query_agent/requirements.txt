@@ -1,0 +1,7 @@
+fastapi                     # web framework :contentReference[oaicite:0]{index=0}
+uvicorn[standard]            # ASGI server
+modelcontextprotocol          # installs package "mcp" (client helpers) :contentReference[oaicite:1]{index=1}
+httpx                      # async HTTP
+httpx-sse                     # SSE helper :contentReference[oaicite:2]{index=2}
+openai                       # function-calling / embeddings :contentReference[oaicite:3]{index=3}
+python-dotenv                 # optional .env loader

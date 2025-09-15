@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapi            # must match the selector in deployment.yaml
+  labels:
+    app: myapi
+spec:
+  # -------- choose service type --------
+  # type: ClusterIP          # ← internal-only (default). Good for AKS + Ingress.
+  type: LoadBalancer         # ← uncomment for public IP on AKS / CApps / minikube
+  # -------------------------------------
+
+  selector:                  # ← must equal deployment pod labels
+    app: myapi
+
+  ports:
+    - name: http
+      port: 80               # port the Service exposes *inside* the cluster
+      targetPort: 8000       # containerPort in the Deployment
+      protocol: TCP

@@ -1,0 +1,81 @@
+
+services:
+  azure_mcp_server:
+    build: ./azure_mcp
+    ports:
+      - "3000:3000"
+    environment:
+      AZURE_TENANT_ID: ${AZURE_TENANT_ID}
+      AZURE_CLIENT_ID:  ${AZURE_CLIENT_ID}
+      AZURE_CLIENT_SECRET: ${AZURE_CLIENT_SECRET}
+    volumes:
+      - ~/.azure:/root/.azure:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://azure_mcp_server:3000/health"]
+      interval: 30s
+      start_period: 20s   # give the server a moment to boot
+      retries: 3
+  
+  azure_mcp_server:
+    build: ./azure_mcp
+    ports: ["3000:3000"]
+    environment:
+      - AZURE_TENANT_ID=${AZURE_TENANT_ID}
+      - AZURE_CLIENT_ID=${AZURE_CLIENT_ID}
+      - AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET}
+      - Kestrel__Endpoints__Http__Url=http://0.0.0.0:3000
+    command: >
+      npx -y @azure/mcp@latest server start
+      --transport sse               # long-running transport
+      --port 3000
+
+  azure_mcp_client:
+    build:
+      context: ./azure_mcp_client
+    container_name: mcp_client
+    depends_on: [azure_mcp_server] 
+    environment:
+      MCP_SERVER_URL: http://azure_mcp_server:3000/sse
+    command: python client.py
+
+  agent_registry:
+    build: ./agent_registry
+    ports:
+      - "8001:8000"
+
+  orchestrator:
+    build: ./orchestrator
+    environment:
+      - AGENT_REGISTRY_URL=${AGENT_REGISTRY_URL}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_CHAT_MODEL=${OPENAI_CHAT_MODEL}
+      - OPENAI_EMBED_MODEL=${OPENAI_EMBED_MODEL}
+      - AZURE_SEARCH_ENDPOINT=${AZURE_SEARCH_ENDPOINT}
+      - AZURE_SEARCH_ADMIN_KEY=${AZURE_SEARCH_ADMIN_KEY}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
+      - AZURE_OPENAI_API_KEY=${AZURE_OPENAI_API_KEY}
+      - AZURE_OPENAI_CHAT_DEPLOYMENT=${AZURE_OPENAI_CHAT_DEPLOYMENT}
+      - AZURE_SEARCH_CONVERSION_INDEX=${AZURE_SEARCH_CONVERSION_INDEX}
+      - AZURE_SEARCH_ENDPOINT_A=${AZURE_SEARCH_ENDPOINT_A}
+      - AZURE_OPENAI_EMBED_DEPLOYMENT=${AZURE_OPENAI_EMBED_DEPLOYMENT}
+      - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION}
+      - AZURE_OPENAI_EMBEDDING_API_VERSION=${AZURE_OPENAI_EMBEDDING_API_VERSION}
+      - AGENT_REGISTRY_LIST_URL=${AGENT_REGISTRY_LIST_URL}
+      - AGENT_REGISTRY_REGISTER_URL=${AGENT_REGISTRY_REGISTER_URL}
+      - USE_PLANNER=true
+      - LOGLEVEL=DEBUG
+    ports:
+      - "8000:8000"
+    depends_on:
+      - agent_registry
+
+  sample_agent:
+    build: ./sample_agent
+    environment:
+      - AGENT_REGISTRY_URL=${AGENT_REGISTRY_URL}
+      - AGENT_ENDPOINT=http://sample_agent:8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      - agent_registry

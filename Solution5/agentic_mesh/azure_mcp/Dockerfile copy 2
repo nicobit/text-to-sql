@@ -1,0 +1,19 @@
+FROM node:20-slim
+ 
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive \
+    apt-get install -y --no-install-recommends \
+        libx11-6 libx11-xcb1 libxi6 libxtst6 libxrender1 libxss1 \
+        libsecret-1-0 ca-certificates curl && \
+    rm -rf /var/lib/apt/lists/*
+
+
+
+# Make Kestrel listen on all interfaces/port 3000
+ENV ASPNETCORE_URLS=http://0.0.0.0:3000 \
+    DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
+WORKDIR /app
+EXPOSE 3000
+
+# Long-running SSE server
+CMD ["npx","-y","@azure/mcp@latest","server","start","--transport","sse","--port","3000"]

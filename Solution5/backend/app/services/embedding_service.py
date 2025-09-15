@@ -11,15 +11,14 @@ logger = NBLogger().Log()
 # Set your OpenAI API key
 openai.api_key = "YOUR_OPENAI_API_KEY"
 
-# Azure Blob Storage configuration
-AZURE_CONNECTION_STRING = SecretService.get_secret_value(KEY_VAULT_CORE_URI, BLOB_STORAGE_CONNECTION_STRING_SECRET_NAME)
-CONTAINER_NAME = "embeddings"
 
 # In-memory cache for embeddings
 embedding_cache = {}
 
 # Initialize Azure Blob Service Client
-blob_service_client = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
+BLOB_CONNECTION_STRING = SecretService.get_secret_value(KEY_VAULT_CORE_URI, BLOB_STORAGE_CONNECTION_STRING_SECRET_NAME)
+CONTAINER_NAME = "embeddings"
+blob_service_client = BlobServiceClient.from_connection_string(BLOB_CONNECTION_STRING)
 
 def get_key(name,database):
     name_lower = name.lower()

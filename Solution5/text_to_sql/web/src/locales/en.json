@@ -1,0 +1,17 @@
+{
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "environment": "Environment",
+    "logs": "Logs",
+    "users": "Users",
+    "active_users": "Active Users",
+    "new_deployments": "New Deployments",
+    "pending_approvals": "Pending Approvals",
+    "environment_status": "Environment Status",
+    "system_logs": "System Logs",
+    "language": "Language",
+    "theme": "Theme",
+    "logout": "Logout",
+    "admin_portal": "Admin Portal"
+  }
+  

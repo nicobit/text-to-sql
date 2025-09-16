@@ -21,3 +21,6 @@ azure.storage.blob
 dsnparse
 llama-index
 tiktoken
+httpx
+azure-data-tables
+pydantic-settings

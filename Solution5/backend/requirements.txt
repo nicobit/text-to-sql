@@ -25,3 +25,6 @@ dsnparse
 llama-index
 tiktoken
 azure-identity-broker
+httpx
+azure-data-tables
+pydantic-settings

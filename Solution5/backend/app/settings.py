@@ -1,11 +1,11 @@
 import os
 
+TENANT_ID = os.getenv("AZURE_TENANT_ID")
+CLIENT_ID = os.getenv("AZURE_CLIENT_ID")  # App ID of the backend API
+
 #-------------------------------------------------------------------------
 #  NEEDED FOR TEXT TO SQL 
 #--------------------------------------------------------------------------
-
-TENANT_ID = os.getenv("AZURE_TENANT_ID")
-CLIENT_ID = os.getenv("AZURE_CLIENT_ID")  # App ID of the backend API
 
 CONNECTION_STRING_RETRIEVER = os.getenv("CONNECTION_STRING_RETRIEVER", "keyvault")  # Options: keyvault, connection_string, keyvault_connection_string
 KEY_VAULT_URI = os.getenv("KEY_VAULT_URI","")  # Key Vault URI for Azure Key Vault

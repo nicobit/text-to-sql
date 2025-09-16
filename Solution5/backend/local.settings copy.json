@@ -1,0 +1,63 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+
+    "VSCODE":"true",
+    
+    "____NEEDED_FOR_TEXT_TO_SQL_____": "---------------------------------------------------",
+
+    "AZURE_TENANT_ID": "",
+    "AZURE_CLIENT_ID": "",
+
+    "CONNECTION_STRING_RETRIEVER": "keyvault",
+    "KEY_VAULT_URI" : "",
+    "DATABASE_DNS_SECRET_NAME":"database-dns",
+    "USERNAME_SECRET_NAME":"database-uid",
+    "PASSWORD_SECRET_NAME":"database-password",
+    "DATABASE_NAME" : "AdventureWorksLT2017",
+    "SQL_CONNECTION_STRING_SECRET_NAME": "<user only with connection_string_retriever:keyvault_connection_string> ",
+    "SQL_CONNECTION_STRING": "<user only with connection_string_retriever:connection_string>",
+
+    "KEY_VAULT_CORE_URI" : "",
+    "AZURE_OPENAI_KEY_SECRET_NAME" : "azure-openai-key",
+    "AZURE_OPENAI_ENDPOINT_SECRET_NAME" : "azure-openai-endpoint",
+    "AZURE_OPENAI_VERSION_SECRET_NAME" : "azure-openai-version",
+    "EMDEDDING_MODEL": "text-embedding-ada-002",
+    "COMPLETION_MODEL": "gpt-4o",
+    
+    "BLOB_STORAGE_CONNECTION_STRING_SECRET_NAME" : "blob-storage-connection-string",
+    
+
+    "AZURE_SEARCH_SERVICE_ENDPOINT_SECRET_NAME": "azure-search-service-endpoint",
+    "AZURE_SEARCH_API_KEY_SECRET_NAME": "azure-search-api-key",
+    "AZURE_SEARCH_INDEX_NAME": "nl-to-sql",
+
+    "ROWS_LIMIT" : "100",
+
+
+    "CORS_ALLOWED_ORIGINS": "http://localhost:3000,http://localhost:5173,http://example.com",
+    
+    "APPLICATIONINSIGHTS_CONNECTION_STRING":"",
+
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
+    "PYTHON_ENABLE_INIT_INDEXING": "1",
+    "PYTHON_ISOLATE_WORKER_DEPENDENCIES": "1",
+    "PYTHON_ENABLE_WORKER_EXTENSIONS": "1",
+    "SCM_DO_BUILD_DURING_DEPLOYMENT" : "1",
+
+    "____NEEDED_FOR_AGENTIC_MESH_____": "---------------------------------------------------",
+
+    "MEMORY_SEARCH_INDEX_NAME": "memory-index",
+    "REDIS_COONECTION_STRING_SECRET_NAME": "redis-connection-string"
+
+
+    
+  },
+  "ConnectionStrings": {},
+  "Host": {
+    "CORS": "http://localhost:3000,http://localhost:5173,http://example.com",
+    "CORSCredentials": true
+  }
+}

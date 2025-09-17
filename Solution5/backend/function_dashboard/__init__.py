@@ -15,11 +15,7 @@ logger = NBLogger().Log()
 fast_app = FastAPI() 
 CORSHelper.set_CORS(fast_app)
 
-logger.error("Dashboard function initialized")
 
-os.system('echo test')
-os.system('echo KEY_VAULT_CORE_URI='+KEY_VAULT_CORE_URI)
-os.system('echo BLOB_STORAGE_CONNECTION_STRING_SECRET_NAME='+BLOB_STORAGE_CONNECTION_STRING_SECRET_NAME)
 blob_connection_string = SecretService.get_secret_value(KEY_VAULT_CORE_URI, BLOB_STORAGE_CONNECTION_STRING_SECRET_NAME)
 
 

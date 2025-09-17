@@ -24,3 +24,4 @@ tiktoken
 httpx
 azure-data-tables
 pydantic-settings
+pyjwt[crypto]

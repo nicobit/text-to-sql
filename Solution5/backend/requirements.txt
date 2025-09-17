@@ -28,3 +28,4 @@ azure-identity-broker
 httpx
 azure-data-tables
 pydantic-settings
+pyjwt[crypto]

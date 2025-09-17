@@ -1,41 +1,30 @@
-from typing import Optional
-from pydantic import AnyHttpUrl
-from pydantic_settings import BaseSettings, SettingsConfigDict
+# app/config.py
 import os
+from functools import lru_cache
+from app.settings import TENANT_ID, CLIENT_ID,  OPENAI_KEY_SECRET_NAME,EMBEDDING_MODEL,COMPLETION_MODEL,OPENAI_ENDPOINT_SECRET_NAME, OPENAI_VERSION_SECRET_NAME, KEY_VAULT_CORE_URI
+from app.utils.nb_logger import NBLogger
+from app.services.secret_service import SecretService
 
-class Settings(BaseSettings):
-    # FastAPI
-    APP_NAME: str = "Azure OpenAI LLM Proxy"
-    APP_VERSION: str = "0.1.1"
-    DEBUG: bool = False
+class Settings:
+    TENANT_ID: str = TENANT_ID
+    AUDIENCE: str = CLIENT_ID # This is the App ID of the backend API registered in AAD
+    ALLOWED_TENANTS: str = os.getenv("ALLOWED_TENANTS", "*")
 
-    # Entra ID (Azure AD)
-    TENANT_ID: str = os.getenv("AZURE_TENANT_ID")
-    AUDIENCE: str  = os.getenv("AZURE_CLIENT_ID")  # aka Client ID or App ID URI expected in 'aud'
-    ISSUER: Optional[str] = None  # If None, inferred from TENANT_ID
+    AZURE_OPENAI_ENDPOINT: str = SecretService.get_secret_value(KEY_VAULT_CORE_URI, OPENAI_ENDPOINT_SECRET_NAME)
+    AZURE_OPENAI_API_VERSION: str = SecretService.get_secret_value(KEY_VAULT_CORE_URI, OPENAI_VERSION_SECRET_NAME)
+    AZURE_OPENAI_API_KEY: str = SecretService.get_secret_value(KEY_VAULT_CORE_URI, OPENAI_KEY_SECRET_NAME)
+    AZURE_OPENAI_KEY_VIA_KV: bool = os.getenv("AZURE_OPENAI_KEY_VIA_KV", "false").lower() == "false" #orginal managed in different way now is taken from keyvault
+    KEY_VAULT_URI: str = KEY_VAULT_CORE_URI
+    KEY_VAULT_SECRET_NAME: str = OPENAI_KEY_SECRET_NAME
+    
+    STORAGE_ACCOUNT_NAME: str = os.getenv("STORAGE_ACCOUNT_NAME", "")
+    USAGE_TABLE_NAME: str = os.getenv("USAGE_TABLE_NAME", "UsageTokens")
+    AUDIT_BLOB_CONTAINER: str = os.getenv("AUDIT_BLOB_CONTAINER", "auditlogs")
+    ENABLE_BLOB_AUDIT: bool = os.getenv("ENABLE_BLOB_AUDIT", "false").lower() == "true"
 
-    # Azure OpenAI (upstream)
-    AZURE_OPENAI_ENDPOINT: AnyHttpUrl
-    AZURE_OPENAI_API_VERSION: str
-    AZURE_OPENAI_API_KEY: str  # service‑to‑service key held by the proxy
+    DEFAULT_DAILY_QUOTA: int = int(os.getenv("DEFAULT_DAILY_QUOTA", "200000"))
+    ENFORCE_QUOTA: bool = os.getenv("ENFORCE_QUOTA", "true").lower() == "true"
 
-    # Usage / quotas
-    DEFAULT_DAILY_TOKEN_LIMIT: int = 20_000
-    HARD_CAP_OUTPUT: bool = True
-
-    # Azure Table Storage (for usage ledger)
-    AZURE_STORAGE_ACCOUNT_NAME: str
-    AZURE_STORAGE_ACCOUNT_KEY: str
-    USAGE_TABLE_NAME: str = "UsageDaily"
-
-    # CORS
-    CORS_ORIGINS: str = "*"
-
-    # Pydantic v2 settings config
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
-
-    @property
-    def issuer(self) -> str:
-        return self.ISSUER or f"https://login.microsoftonline.com/{self.TENANT_ID}/v2.0"
-
-settings = Settings()
+@lru_cache()
+def get_settings() -> Settings:
+    return Settings()

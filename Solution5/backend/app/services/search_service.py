@@ -52,8 +52,8 @@ class SearchService:
         """
         logger.info(f"Updating example in database {database}: {doc_id} -> {new_question} -> {new_sql}")
         databaseName = DBHelper.getDBName(database)
-        new_question_embedding = generate_embedding(new_question)
-        new_sql_embedding = generate_embedding(new_sql)
+        new_question_embedding = OpenAIService.get_embedding(new_question)
+        new_sql_embedding = OpenAIService.get_embedding(new_sql)
         return AzureSearchService.update_example_in_search(
             databaseName, doc_id, new_question, new_sql, new_question_embedding, new_sql_embedding
         )

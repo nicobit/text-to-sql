@@ -6,3 +6,9 @@ tests/
 docs/
 *.log
 *.md
+infra/
+**/.venv/
+**/.env
+**/.mypy_cache/
+**/.pytest_cache/
+local.settings.json

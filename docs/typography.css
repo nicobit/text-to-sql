@@ -1,0 +1,137 @@
+/* ---------- Base text sizing & rhythm ---------- */
+
+:root {
+
+  /* Base body size: 16px; line height tuned for long-form reading */
+  --body-font-size: 1rem;        /* 16px */
+  --body-line-height: 1.65;
+
+
+
+  /* Code a touch smaller, but highly readable */
+
+  --code-font-size: 0.9375rem;   /* 15px */
+
+  --code-line-height: 1.55;
+
+
+
+  /* Comfortable line length (~70–80ch) */
+
+  --content-max-width: 78ch;
+
+}
+
+
+
+/* Apply base body sizing */
+
+.md-typeset {
+
+  font-size: var(--body-font-size);
+
+  line-height: var(--body-line-height);
+
+  max-width: var(--content-max-width);
+
+}
+
+
+
+/* Headings: clear hierarchy, not shouty */
+
+.md-typeset h1 { font-size: 2rem;   line-height: 1.25; margin-top: 0.6em; }
+
+.md-typeset h2 { font-size: 1.5rem; line-height: 1.35; margin-top: 1.2em; }
+
+.md-typeset h3 { font-size: 1.25rem; line-height: 1.4;  margin-top: 1.1em; }
+
+
+
+/* Paragraph spacing for scanability */
+
+.md-typeset p { margin: 0.6em 0 0.9em; }
+
+
+
+/* Lists: a bit more air */
+
+.md-typeset ul, .md-typeset ol { margin: 0.5em 0 1em; }
+
+
+
+/* Tables: improve readability */
+
+.md-typeset table { font-size: 0.95rem; }
+
+.md-typeset table th, .md-typeset table td { line-height: 1.5; }
+
+
+
+/* Code: enable ligatures, tune size & spacing */
+
+.md-typeset code,
+
+.md-typeset pre,
+
+.md-typeset .highlight code {
+
+  font-size: var(--code-font-size);
+
+  line-height: var(--code-line-height);
+
+  font-variant-ligatures: contextual common-ligatures;
+
+  text-rendering: optimizeLegibility;
+
+}
+
+
+
+/* Inline code: subtle background + padding */
+
+.md-typeset code {
+
+  padding: 0.125em 0.35em;
+
+  border-radius: 0.25rem;
+
+}
+
+
+
+/* Code blocks: comfortable reading width and spacing */
+
+.md-typeset pre code {
+
+  white-space: pre;
+
+}
+
+
+
+/* Navigation & meta text slightly smaller (utility text) */
+
+.md-nav, .md-typeset .md-meta {
+
+  font-size: 0.9375rem;
+
+}
+
+
+
+/* Mobile: bump body size for handheld distance */
+
+@media (max-width: 768px) {
+
+  :root {
+
+    --body-font-size: 1.0625rem;   /* ~17px */
+
+    --code-font-size: 1rem;        /* 16px for better tap targets */
+
+  }
+
+}
+
+

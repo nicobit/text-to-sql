@@ -32,17 +32,17 @@ def create_fastapi_app() -> FastAPI:
         except Exception as e:
             raise HTTPException(status_code=401, detail="Unauthorized")
 
-    @app.get("/healthz")
+    @app.get("/llm/healthz")
     async def healthz():
         return {"status": "ok", "time": datetime.utcnow().isoformat()}
 
     # ----- USAGE/QUOTA APIS -----
-    @app.get("/usage/today")
+    @app.get("/llm/usage/today")
     async def get_today(user=Depends(get_user)):
         row = usage.get_today(user["user_id"])
         return row
 
-    @app.get("/usage/range")
+    @app.get("/llm/usage/range")
     async def get_usage_range(from_date: str, to_date: str, user=Depends(get_user)):
         try:
             f = date.fromisoformat(from_date)
@@ -63,7 +63,7 @@ def create_fastapi_app() -> FastAPI:
             "daily": rows
         }
 
-    @app.put("/quota/{target_user_id}")
+    @app.put("/llm/quota/{target_user_id}")
     async def set_quota(target_user_id: str, quota: int, user=Depends(get_user)):
         # Simple allow-all for demo; in prod, restrict by role/claim
         usage.set_quota(target_user_id, quota)
@@ -72,7 +72,7 @@ def create_fastapi_app() -> FastAPI:
     # ----- OPENAI-COMPATIBLE ENDPOINTS -----
 
     # Chat Completions (Azure-style): /openai/deployments/{deployment}/chat/completions?api-version=...
-    @app.post("/openai/deployments/{deployment}/chat/completions")
+    @app.post("/llm/openai/deployments/{deployment}/chat/completions")
     async def chat_completions(deployment: str, request: Request, user=Depends(get_user)):
         # Enforce quota BEFORE call (approximate, using prompt estimate)
         body_json = await request.json()
@@ -130,7 +130,7 @@ def create_fastapi_app() -> FastAPI:
         return JSONResponse(aoai_resp)
 
     # Embeddings: /openai/deployments/{deployment}/embeddings?api-version=...
-    @app.post("/openai/deployments/{deployment}/embeddings")
+    @app.post("/llm/openai/deployments/{deployment}/embeddings")
     async def embeddings(deployment: str, request: Request, user=Depends(get_user)):
         body_json = await request.json()
         req = EmbeddingsRequest(**body_json)
@@ -150,7 +150,7 @@ def create_fastapi_app() -> FastAPI:
         return JSONResponse(aoai_resp)
 
     # Compatibility helper: a simple alias for "completions" (if needed)
-    @app.post("/v1/chat/completions")
+    @app.post("/llm/v1/chat/completions")
     async def openai_like_chat(request: Request, user=Depends(get_user)):
         # For SDKs that call OpenAI-style paths; route to your default deployment
         default_deployment = "gpt-4o-mini"  # adjust or read from env

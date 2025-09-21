@@ -1,0 +1,18 @@
+from typing import Optional, Dict, Any
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.secrets import SecretClient
+
+async def check_key_vault(vault_uri: Optional[str], test_secret: Optional[str]) -> Dict[str, Any]:
+    if not vault_uri:
+        return {"skipped": True, "reason": "KEY_VAULT_URI not set"}
+
+    credential = DefaultAzureCredential(exclude_visual_studio_code_credential=False)
+    client = SecretClient(vault_url=vault_uri, credential=credential)
+
+    if test_secret:
+        secret = await client.get_secret(test_secret)
+        return {"skipped": False, "method": "get_secret", "id": secret.id}
+    else:
+        pager = client.list_properties_of_secrets()
+        first = await pager.__anext__()
+        return {"skipped": False, "method": "list_properties", "first_secret_name": getattr(first, "name", None)}

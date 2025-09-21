@@ -11,10 +11,11 @@ import { useMsal } from "@azure/msal-react";
 import Environment from '@/pages/Environment';
 import ChatPage from '@/pages/ChatPage';
 import QuestionQueryExamplePage from '@/pages/QuestionQueryExamplePage';
+import StatusPage from '@/pages/StatusPage';
 
 
 import Logs from '@/pages/Logs';
-import Users from '@/pages/Users';
+import User from '@/pages/User';
 
 export default function App() {
 
@@ -58,7 +59,8 @@ export default function App() {
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/environment" element={<Environment />} />
                   <Route path="/logs" element={<Logs />} />
-                  <Route path="/users" element={<Users />} />
+                  <Route path="/User" element={<User />} />
+                  <Route path="/status" element={<StatusPage />} />
                 </Routes>
               </main>
             </div>

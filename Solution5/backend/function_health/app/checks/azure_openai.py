@@ -7,12 +7,13 @@ async def check_azure_openai(endpoint: Optional[str], api_version: str, live_cal
         return {"skipped": True, "reason": "AZURE_OPENAI_ENDPOINT not set"}
 
     credential = DefaultAzureCredential(exclude_visual_studio_code_credential=False)
-    token = (await credential.get_token("https://cognitiveservices.azure.com/.default")).token
+    token = credential.get_token("https://management.azure.com/.default").token
 
     async with httpx.AsyncClient(timeout=5.0) as client:
         if live_call:
             if not deployment:
                 return {"skipped": True, "reason": "AOAI_LIVE_CALL=True but AZURE_OPENAI_DEPLOYMENT not set"}
+            # https://nicbit-openai.openai.azure.com/openai/deployments/gpt-35-turbo/chat/completions?api-version=2025-01-01-preview
             url = f"{endpoint}/openai/deployments/{deployment}/chat/completions?api-version={api_version}"
             payload = {"messages": [{"role": "user", "content": "ping"}], "max_tokens": 1}
             r = await client.post(url, headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"}, json=payload)

@@ -8,15 +8,30 @@ from azure.keyvault.secrets.aio import SecretClient
 class ConfigResolutionError(Exception):
     pass
 
-async def _get_kv_secret(vault_uri: str, secret_name: str) -> str:
+
+from typing import Optional, Dict, Any
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.secrets import SecretClient
+
+
+async def _get_kv_secret1(vault_uri: str, secret_name: str) -> str:
     cred = DefaultAzureCredential(exclude_visual_studio_code_credential=False)
     client = SecretClient(vault_url=vault_uri, credential=cred)
     try:
-        secret = await client.get_secret(secret_name)
+        secret = client.get_secret(secret_name)
         return secret.value
     finally:
         await client.close()
         await cred.close()
+
+async def _get_kv_secret(vault_uri: str, secret_name: str) -> str:
+    cred = DefaultAzureCredential(exclude_visual_studio_code_credential=False)
+    client = SecretClient(vault_url=vault_uri, credential=cred)
+    
+    secret = client.get_secret(secret_name)
+    return secret.value
+    
+  
 
 async def resolve_field(field_spec: Dict[str, Any]) -> Any:
     if field_spec is None:

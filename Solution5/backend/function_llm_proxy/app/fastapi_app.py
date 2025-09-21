@@ -12,6 +12,9 @@ from function_llm_proxy.app.services.usage_service import UsageService
 from function_llm_proxy.app.services.openai_client import OpenAIClient
 from function_llm_proxy.app.models.schemas import ChatCompletionRequest, EmbeddingsRequest
 from function_llm_proxy.app.utils.token_counter import estimate_prompt_tokens
+from app.utils.nb_logger import NBLogger
+
+logger = NBLogger().Log()
 
 def create_fastapi_app() -> FastAPI:
     app = FastAPI(title="Azure OpenAI Proxy (Functions + FastAPI)")
@@ -30,6 +33,7 @@ def create_fastapi_app() -> FastAPI:
         except PermissionError as e:
             raise HTTPException(status_code=401, detail=str(e))
         except Exception as e:
+            logger.error(f"Unexpected auth error: {e}")
             raise HTTPException(status_code=401, detail="Unauthorized")
 
     @app.get("/llm/healthz")

@@ -5,6 +5,7 @@ import Profile from '../pages/Profile';
 import Settings from '../pages/Settings';
 import ChatPage from '../pages/ChatPage';
 import QuestionQueryExamplePage from '../pages/QuestionQueryExamplePage';
+
 import FlowPage from '../pages/FlowPage'; // Ensure the file exists at this path or update the path accordingly
 import Login from '../pages/Login';
 const Content: React.FC = () => {
@@ -15,6 +16,7 @@ const Content: React.FC = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Dashboard />} />
         <Route path="/chat" element={<ChatPage />} />
+        
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/settings" element={<h2>Profile Settings</h2>} />
         <Route path="/np/resources" element={<Profile />} />

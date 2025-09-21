@@ -20,6 +20,7 @@ typing-extensions
 opencensus-ext-azure
 opencensus
 azure.storage.blob
+azure-storage-blob[aio]
 azure.data.tables
 dsnparse
 llama-index

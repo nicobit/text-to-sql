@@ -21,7 +21,12 @@ class BlobConfigRepository(ConfigRepository):
             self._cred = DefaultAzureCredential(exclude_visual_studio_code_credential=False)
             bsc = BlobServiceClient(account_url=self.account_url, credential=self._cred)
         container_client = bsc.get_container_client(self.container)
-        await container_client.create_container(exist_ok=True)
+        try:
+            await container_client.create_container()
+        except Exception as e:
+            # Ignore error if container already exists
+            if "ContainerAlreadyExists" not in str(e):
+                raise
         return container_client.get_blob_client(self.blob_name)
 
     async def get_config(self) -> Tuple[Dict[str, Any], Optional[str]]:

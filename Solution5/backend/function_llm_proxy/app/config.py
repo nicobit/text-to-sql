@@ -7,7 +7,7 @@ from app.services.secret_service import SecretService
 
 class Settings:
     TENANT_ID: str = TENANT_ID
-    AUDIENCE: str = CLIENT_ID # This is the App ID of the backend API registered in AAD
+    AUDIENCE: str = "api://" + CLIENT_ID + "," + CLIENT_ID # This is the App ID of the backend API registered in AAD
     ALLOWED_TENANTS: str = os.getenv("ALLOWED_TENANTS", "*")
 
     AZURE_OPENAI_ENDPOINT: str = SecretService.get_secret_value(KEY_VAULT_CORE_URI, OPENAI_ENDPOINT_SECRET_NAME)

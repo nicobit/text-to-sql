@@ -1,7 +1,9 @@
-from fastapi import APIRouter, HTTPException, Header, Depends
+from fastapi import APIRouter, Body, HTTPException, Header, Depends
 from typing import Optional, Dict, Any, List
 from .repositories.factory import get_repository
 from .models import ServicesConfig, ServiceConfig, StoredConfig
+from pydantic import ValidationError
+from .models_strict import ServicesConfigStrict
 
 router = APIRouter()
 
@@ -79,3 +81,18 @@ async def delete_service(name: str, if_match: Optional[str] = Header(None, conve
         return
     except Exception as e:
         raise HTTPException(status_code=409, detail=str(e))
+    
+@router.get("/health/config/schema")
+async def get_config_schema():
+    # Pydantic v2 JSON Schema (Draft 2020-12)
+    return ServicesConfigStrict.model_json_schema()
+
+@router.post("/health/config/validate")
+async def validate_config(payload: dict = Body(...)):
+    try:
+        ServicesConfigStrict.model_validate(payload)
+        return {"ok": True, "errors": []}
+    except ValidationError as ve:
+        # shape as list of {loc, msg}
+        errs = [{"loc": list(err["loc"]), "msg": err["msg"]} for err in ve.errors()]
+        return {"ok": False, "errors": errs}

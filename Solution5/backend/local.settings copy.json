@@ -50,7 +50,16 @@
     "____NEEDED_FOR_AGENTIC_MESH_____": "---------------------------------------------------",
 
     "MEMORY_SEARCH_INDEX_NAME": "memory-index",
-    "REDIS_COONECTION_STRING_SECRET_NAME": "redis-connection-string"
+    "REDIS_COONECTION_STRING_SECRET_NAME": "redis-connection-string",
+
+    "HEALTH.CONFIG_REPOSITORY_KIND": "blob",
+    "HEALTH.SERVICES_CONFIG_PATH": "function_health/app/services.json",
+    "HEALTH.CONFIG_BLOB_ACCOUNT_URL": "",
+    "HEALTH.CONFIG_BLOB_CONTAINER": "config",
+    "HEALTH.CONFIG_BLOB_CONNECTION_STRING": ""
+
+
+    
 
 
     

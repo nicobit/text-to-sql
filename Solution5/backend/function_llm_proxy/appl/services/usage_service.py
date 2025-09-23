@@ -1,8 +1,8 @@
 # app/services/usage_service.py
 from datetime import datetime, timezone, date
 from typing import Optional, Tuple, Dict, Any, List
-from function_llm_proxy.app.config import get_settings
-from function_llm_proxy.app.repos.azure_table_repository import AzureTableUsageRepository
+from function_llm_proxy.appl.config import get_settings
+from function_llm_proxy.appl.repos.azure_table_repository import AzureTableUsageRepository
 
 class UsageService:
     def __init__(self):

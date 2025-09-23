@@ -5,13 +5,13 @@ from datetime import datetime, date
 from typing import Dict, Any, Optional
 from urllib.parse import urlencode
 
-from function_llm_proxy.app.middleware.correlation import CorrelationIdMiddleware
-from function_llm_proxy.app.config import get_settings
-from function_llm_proxy.app.auth.jwt import get_validator
-from function_llm_proxy.app.services.usage_service import UsageService
-from function_llm_proxy.app.services.openai_client import OpenAIClient
-from function_llm_proxy.app.models.schemas import ChatCompletionRequest, EmbeddingsRequest
-from function_llm_proxy.app.utils.token_counter import estimate_prompt_tokens
+from function_llm_proxy.appl.middleware.correlation import CorrelationIdMiddleware
+from function_llm_proxy.appl.config import get_settings
+from app.auth.jwt import get_validator
+from function_llm_proxy.appl.services.usage_service import UsageService
+from function_llm_proxy.appl.services.openai_client import OpenAIClient
+from function_llm_proxy.appl.models.schemas import ChatCompletionRequest, EmbeddingsRequest
+from function_llm_proxy.appl.utils.token_counter import estimate_prompt_tokens
 from app.utils.nb_logger import NBLogger
 
 logger = NBLogger().Log()

@@ -2,6 +2,7 @@ import os
 
 TENANT_ID = os.getenv("AZURE_TENANT_ID")
 CLIENT_ID = os.getenv("AZURE_CLIENT_ID")  # App ID of the backend API
+AUDIENCE = os.getenv("AUDIENCE")  # The expected audience in incoming tokens; usually the API's App ID or App URI
 
 #-------------------------------------------------------------------------
 #  NEEDED FOR TEXT TO SQL 

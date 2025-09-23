@@ -3,8 +3,8 @@ from datetime import date, timedelta
 from typing import Optional, List, Dict, Any
 from azure.data.tables import TableServiceClient, UpdateMode
 from azure.core.exceptions import ResourceNotFoundError
-from function_llm_proxy.app.repos.usage_repository import IUsageRepository
-from function_llm_proxy.app.config import get_settings
+from function_llm_proxy.appl.repos.usage_repository import IUsageRepository
+from function_llm_proxy.appl.config import get_settings
 import os
 from app.settings import BLOB_STORAGE_CONNECTION_STRING_SECRET_NAME, KEY_VAULT_CORE_URI
 from app.services.secret_service import SecretService

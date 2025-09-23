@@ -4,7 +4,7 @@ from typing import Dict, Any, Optional, AsyncIterator
 import httpx
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
-from function_llm_proxy.app.config import get_settings
+from function_llm_proxy.appl.config import get_settings
 
 class OpenAIClient:
     def __init__(self):

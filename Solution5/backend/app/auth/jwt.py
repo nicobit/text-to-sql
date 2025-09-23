@@ -5,8 +5,8 @@ import jwt
 from jwt import PyJWKClient, InvalidTokenError
 from typing import Dict, Any, Optional, Set, Iterable
 from functools import lru_cache
-from function_llm_proxy.app.config import get_settings
 from app.utils.nb_logger import NBLogger
+from app.settings import TENANT_ID, AUDIENCE
 
 logger = NBLogger().Log()
 
@@ -86,7 +86,7 @@ class AADValidator:
             logger.error(f"JWT unverified decode failed: {e}")
             raise PermissionError("Invalid token.") from e
 
-        tid = unverified.get("tid") or get_settings().TENANT_ID
+        tid = unverified.get("tid") or TENANT_ID
         iss_unverified = _rstrip_slash(unverified.get("iss"))
         ver_unverified = unverified.get("ver")  # '1.0' or '2.0'
         aud_unverified = unverified.get("aud")
@@ -159,6 +159,6 @@ class AADValidator:
 
 @lru_cache()
 def get_validator() -> AADValidator:
-    s = get_settings()
+    
     # s.AUDIENCE can be "api://<api-id-guid>" or "api://<custom-uri>", optionally CSV for multiple.
-    return AADValidator(s.TENANT_ID, s.AUDIENCE, s.ALLOWED_TENANTS)
+    return AADValidator(TENANT_ID, AUDIENCE, TENANT_ID)

@@ -22,6 +22,6 @@ export const apiScope = `api://${API_CLIENT_ID}/user_impersonation`;
 //scopes: ["openid", "profile","https://management.azure.com/.default"],
 // scopes: ["openid", "profile", apiScope],
 export const loginRequest = {
-  scopes: ["openid", "profile", apiScope],
+ scopes: ["openid", "profile", apiScope],
   //scopes: ["openid", "profile","https://management.azure.com/.default"],
 };

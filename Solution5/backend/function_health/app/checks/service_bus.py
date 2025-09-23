@@ -1,5 +1,6 @@
 from typing import Optional, Dict, Any
 import anyio
+from app.services.secret_service import SecretService
 
 async def _sync_service_bus_ping(namespace: Optional[str], entity: Optional[Dict[str, str]]) -> Dict[str, Any]:
     if not namespace:
@@ -7,7 +8,7 @@ async def _sync_service_bus_ping(namespace: Optional[str], entity: Optional[Dict
     from azure.identity import DefaultAzureCredential
     from azure.servicebus import ServiceBusClient
 
-    cred = DefaultAzureCredential(exclude_visual_studio_code_credential=False)
+    cred = SecretService.credential()
     sbc = ServiceBusClient(fully_qualified_namespace=namespace, credential=cred)
 
     etype = (entity or {}).get("type")

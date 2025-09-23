@@ -1,5 +1,6 @@
 from typing import Optional, Dict, Any
 import anyio
+from app.services.secret_service import SecretService
 
 async def _sync_table_ping(connection_string: Optional[str], endpoint: Optional[str], table_name: Optional[str]) -> Dict[str, Any]:
     from azure.identity import DefaultAzureCredential
@@ -11,7 +12,7 @@ async def _sync_table_ping(connection_string: Optional[str], endpoint: Optional[
     if connection_string:
         tsc = TableServiceClient.from_connection_string(conn_str=connection_string)
     else:
-        cred = DefaultAzureCredential(exclude_visual_studio_code_credential=False)
+        cred = SecretService.credential()
         tsc = TableServiceClient(endpoint=endpoint, credential=cred)
 
     if table_name:

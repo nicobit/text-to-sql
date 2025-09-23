@@ -1,5 +1,6 @@
 from typing import Optional, Dict, Any
 import anyio
+from app.services.secret_service import SecretService
 
 async def _sync_blob_ping(connection_string: Optional[str], endpoint: Optional[str], container: Optional[str]) -> Dict[str, Any]:
     from azure.identity import DefaultAzureCredential
@@ -11,7 +12,7 @@ async def _sync_blob_ping(connection_string: Optional[str], endpoint: Optional[s
     if connection_string:
         bsc = BlobServiceClient.from_connection_string(connection_string)
     else:
-        cred = DefaultAzureCredential(exclude_visual_studio_code_credential=False)
+        cred = SecretService.credential()
         bsc = BlobServiceClient(account_url=endpoint, credential=cred)
 
     if container:

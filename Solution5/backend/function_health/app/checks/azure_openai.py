@@ -1,12 +1,15 @@
 from typing import Optional, Dict, Any
 import httpx
 from azure.identity import DefaultAzureCredential
+from app.services.secret_service import SecretService
 
+
+# It needs refactoring to use openai key, and potentially the openai sdk
 async def check_azure_openai(endpoint: Optional[str], api_version: str, live_call: bool, deployment: Optional[str]) -> Dict[str, Any]:
     if not endpoint:
         return {"skipped": True, "reason": "AZURE_OPENAI_ENDPOINT not set"}
 
-    credential = DefaultAzureCredential(exclude_visual_studio_code_credential=False)
+    credential = SecretService.credential()
     token = credential.get_token("https://management.azure.com/.default").token
 
     async with httpx.AsyncClient(timeout=5.0) as client:

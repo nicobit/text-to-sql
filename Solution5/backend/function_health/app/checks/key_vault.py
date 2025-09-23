@@ -1,12 +1,13 @@
 from typing import Optional, Dict, Any
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
+from app.services.secret_service import SecretService
 
 async def check_key_vault(vault_uri: Optional[str], test_secret: Optional[str]) -> Dict[str, Any]:
     if not vault_uri:
         return {"skipped": True, "reason": "KEY_VAULT_URI not set"}
 
-    credential = DefaultAzureCredential(exclude_visual_studio_code_credential=False)
+    credential = SecretService.credential() 
     client = SecretClient(vault_url=vault_uri, credential=credential)
     
     if test_secret:

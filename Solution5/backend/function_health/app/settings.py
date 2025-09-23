@@ -6,21 +6,21 @@ class Settings:
     DEFAULT_TIMEOUT_SECONDS: float = float(os.getenv("DEFAULT_TIMEOUT_SECONDS", 3.0))
 
     # JSON-driven services list
-    SERVICES_CONFIG_JSON: Optional[str] = os.getenv("HEALTH.SERVICES_CONFIG_JSON")
-    SERVICES_CONFIG_PATH: Optional[str] = os.getenv("HEALTH.SERVICES_CONFIG_PATH")
+    SERVICES_CONFIG_JSON: Optional[str] = os.getenv("HEALTH_SERVICES_CONFIG_JSON")
+    SERVICES_CONFIG_PATH: Optional[str] = os.getenv("HEALTH_SERVICES_CONFIG_PATH")
 
     # Repository selection
-    CONFIG_REPOSITORY_KIND: Optional[str] = os.getenv("HEALTH.CONFIG_REPOSITORY_KIND")
+    CONFIG_REPOSITORY_KIND: Optional[str] = os.getenv("HEALTH_CONFIG_REPOSITORY_KIND")
     # Blob repo settings
-    CONFIG_BLOB_ACCOUNT_URL: Optional[str] = os.getenv("HEALTH.CONFIG_BLOB_ACCOUNT_URL")
-    CONFIG_BLOB_CONTAINER: Optional[str] = os.getenv("HEALTH.CONFIG_BLOB_CONTAINER")
-    CONFIG_BLOB_NAME: str = os.getenv("HEALTH.CONFIG_BLOB_NAME", "services.json")
-    CONFIG_BLOB_CONNECTION_STRING: Optional[str] = os.getenv("HEALTH.CONFIG_BLOB_CONNECTION_STRING")
+    CONFIG_BLOB_ACCOUNT_URL: Optional[str] = os.getenv("HEALTH_CONFIG_BLOB_ACCOUNT_URL")
+    CONFIG_BLOB_CONTAINER: Optional[str] = os.getenv("HEALTH_CONFIG_BLOB_CONTAINER")
+    CONFIG_BLOB_NAME: str = os.getenv("HEALTH_CONFIG_BLOB_NAME", "services.json")
+    CONFIG_BLOB_CONNECTION_STRING: Optional[str] = os.getenv("HEALTH_CONFIG_BLOB_CONNECTION_STRING")
     # File repo settings
-    CONFIG_FILE_PATH: Optional[str] = os.getenv("HEALTH.CONFIG_FILE_PATH")
+    CONFIG_FILE_PATH: Optional[str] = os.getenv("HEALTH_CONFIG_FILE_PATH")
 
     # Back-compat envs (only used if no repo+JSON provided)
-    ENABLED_CHECKS: str = os.getenv("HEALTH.ENABLED_CHECKS", "key_vault,ai_search,azure_openai,sql_db")
+    ENABLED_CHECKS: str = os.getenv("HEALTH_ENABLED_CHECKS", "key_vault,ai_search,azure_openai,sql_db")
 
     # Azure Identity (optional)
     AZURE_TENANT_ID: Optional[str] = os.getenv("AZURE_TENANT_ID")

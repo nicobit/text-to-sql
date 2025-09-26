@@ -1,0 +1,452 @@
+mkdocs.yml (essentials)
+
+
+
+site_name: Project X
+
+site_url: https://<your-group>.gitlab.io/<your-project>/
+
+repo_url: https://gitlab.com/<your-group>/<your-project>
+
+repo_name: GitLab
+
+copyright: © <Year> <Your Org>
+
+
+
+theme:
+
+  name: material
+
+  language: en
+
+  logo: assets/logo.svg
+
+  favicon: assets/favicon.png
+
+  palette:
+
+    - media: "(prefers-color-scheme: light)"
+
+      scheme: default
+
+      primary: blue
+
+      accent: light blue
+
+    - media: "(prefers-color-scheme: dark)"
+
+      scheme: slate
+
+      primary: blue
+
+      accent: light blue
+
+  features:
+
+    - navigation.instant
+
+    - navigation.tracking
+
+    - navigation.sections
+
+    - navigation.footer
+
+    - content.code.copy
+
+    - content.action.edit
+
+    - search.suggest
+
+    - search.highlight
+
+    - header.autohide
+
+    - toc.integrate
+
+
+
+extra:
+
+  social:
+
+    - icon: fontawesome/brands/gitlab
+
+      link: https://gitlab.com/<your-group>/<your-project>
+
+    - icon: fontawesome/brands/slack
+
+      link: https://<your-slack-channel>
+
+  analytics:  # optional
+
+    provider: google
+
+    property: G-XXXXXXX
+
+
+
+nav:
+
+  - Home: index.md
+
+  - Roadmap:
+
+      - Overview: roadmap/index.md
+
+      - Release notes: roadmap/releases.md
+
+  - Architecture:
+
+      - System overview: architecture/overview.md
+
+      - Components: architecture/components.md
+
+      - Deployment: architecture/deployment.md
+
+  - Docs:
+
+      - Getting started: docs/getting-started.md
+
+      - API: docs/api.md
+
+      - Dev environment: docs/dev-setup.md
+
+      - Runbooks: docs/runbooks.md
+
+  - Contributing:
+
+      - Guidelines: contributing/index.md
+
+      - Code style: contributing/style.md
+
+
+
+markdown_extensions:
+
+  - admonition
+
+  - attr_list
+
+  - def_list
+
+  - footnotes
+
+  - md_in_html
+
+  - pymdownx.details
+
+  - pymdownx.emoji
+
+  - pymdownx.superfences
+
+  - pymdownx.highlight
+
+  - pymdownx.inlinehilite
+
+  - pymdownx.magiclink
+
+  - pymdownx.tabbed:
+
+      alternate_style: true
+
+  - toc:
+
+      permalink: true
+
+
+
+plugins:
+
+  - search
+
+  - tags
+
+
+
+
+
+
+
+
+
+index.md (Azure-style landing page)
+
+
+
+
+
+Uses Material’s landing page template with hero + feature cards.
+
+---
+
+title: Project X
+
+template: home.html
+
+hide:
+
+  - toc
+
+  - navigation
+
+hero:
+
+  title: Build. Ship. Scale.
+
+  description: >
+
+    Project X is the platform for <strong>AI-powered advisory</strong>, designed to be secure, reliable,
+
+    and easy to extend. Explore the docs, follow the roadmap, and start building today.
+
+  actions:
+
+    - label: Get started
+
+      link: docs/getting-started/
+
+      variant: primary
+
+    - label: Architecture
+
+      link: architecture/overview/
+
+    - label: Roadmap
+
+      link: roadmap/
+
+features:
+
+  - icon: material-rocket-launch-outline
+
+    title: Quickstart in minutes
+
+    description: Clone the repo, run one command, and you're ready to develop locally.
+
+  - icon: material-api
+
+    title: First-class APIs
+
+    description: OpenAPI specs, typed clients, and examples for Python, JS, and CLI.
+
+  - icon: material-shield-check
+
+    title: Enterprise-ready
+
+    description: AAD auth, role-based access, and policy guardrails by default.
+
+  - icon: material-auto-fix
+
+    title: CI/CD automation
+
+    description: GitLab pipelines for tests, security scans, versioning, and releases.
+
+---
+
+
+
+<!-- Badges / status strip -->
+
+<div class="badges" markdown>
+
+[![CI](https://gitlab.com/<group>/<project>/badges/main/pipeline.svg)](https://gitlab.com/<group>/<project>/pipelines)
+
+[![Coverage](https://gitlab.com/<group>/<project>/badges/main/coverage.svg)](https://gitlab.com/<group>/<project>/-/graphs/master/charts)
+
+[![Release](https://img.shields.io/gitlab/v/release/<group>/<project>?logo=gitlab)](https://gitlab.com/<group>/<project>/-/releases)
+
+</div>
+
+
+
+---
+
+
+
+## Choose your path
+
+
+
+<div class="grid cards" markdown>
+
+-   :material-book-open-page-variant:{ .lg } **Documentation**  
+
+    Developer guides, API references, and runbooks.  
+
+    [Explore docs →](docs/){ .md-button }
+
+
+
+-   :material-lan: **Architecture**  
+
+    System overview, components, and deployment topologies.  
+
+    [See the architecture →](architecture/overview/){ .md-button }
+
+
+
+-   :material-timeline-clock-outline: **Roadmap**  
+
+    Milestones, releases, and priorities synced from GitLab.  
+
+    [View roadmap →](roadmap/){ .md-button }
+
+
+
+-   :material-shield-key: **Security & Access**  
+
+    AAD setup, roles, scopes, and secrets handling.  
+
+    [Read the guide →](docs/security.md){ .md-button }
+
+</div>
+
+
+
+---
+
+
+
+## What’s new
+
+
+
+!!! tip "Latest release — v1.2.3"
+
+    - **Enhancements:** Faster data ingestion, improved retry policy  
+
+    - **Fixes:** Resolved intermittent AAD token refresh issue  
+
+    - **Docs:** New Runbook for “API Rate Limits”
+
+
+
+[Release notes →](roadmap/releases/){ .md-button .md-button--primary }
+
+
+
+---
+
+
+
+## Architecture at a glance
+
+
+
+```mermaid
+
+flowchart LR
+
+  A[Clients: Web / API / Jobs] --> B[APIM / Gateway]
+
+  B --> C[Auth: AAD / App Roles]
+
+  B --> D[Functions / Microservices]
+
+  D --> E[Data: SQL / Storage / Event Hub]
+
+  D --> F[AI: Azure OpenAI / Prompt Orchestrator]
+
+  D --> G[Observability: App Insights / Log Analytics]
+
+Deep dive →
+
+
+
+
+
+
+
+
+
+Get started (dev)
+
+
+
+git clone git@gitlab.com:<group>/<project>.git
+
+cd <project>
+
+make dev   # or: uv run, rye, poetry, npm, etc.
+
+
+
+Local dev setup: Dev environment
+Runbooks: Operations & troubleshooting
+Contributing: How to propose changes
+
+
+
+
+
+
+
+
+
+
+For product & stakeholders
+
+
+
+
+
+Business context and decisions live in Confluence → source of truth for product requirements.
+Policies, templates, and org-wide docs live in SharePoint.
+This site focuses on technical implementation, roadmap sync, and operational runbooks.
+
+
+
+
+Go to Confluence • Go to SharePoint
+
+---
+
+
+
+# Minimal CSS polish (optional)
+
+
+
+Create `docs/styles/extra.css` and add to `mkdocs.yml`:
+
+
+
+```yaml
+
+extra_css:
+
+  - styles/extra.css
+
+/* Slightly larger hero like ai.azure.com */
+
+.md-main__inner > .md-content { padding-top: 0; }
+
+.badges img { margin-right: .5rem; }
+
+.grid.cards .md-button { margin-top: .4rem; }
+
+
+
+
+
+
+
+
+
+Notes & tips
+
+
+
+
+
+The landing page uses template: home.html with hero: and features: (supported in Material v9+).
+Use Material icons like material-rocket-launch-outline. Full list: material/*.
+The grid cards block uses simple Markdown + classes (grid cards)—works with the extensions configured above.
+Keep Roadmap auto-generated by your GitLab pipeline; link it from the home.
+Split audiences: Devs (this site) vs. Product/Org (Confluence/SharePoint). Cross-link, don’t duplicate.
+
+
+
+
+If you want, I can tailor the copy and navigation to your exact project names and wire the roadmap pages to your GitLab milestones job you already run.

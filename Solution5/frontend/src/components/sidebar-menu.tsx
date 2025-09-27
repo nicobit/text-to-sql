@@ -9,9 +9,11 @@ export type MenuItem = {
   badge?: string;
 };
 
-export const menuItems: MenuItem[] = [
+const includeIf = <T,>(condition: boolean, items: T[]): T[] => (condition ? items : []);
+
+export const getMenuItems = (isAdmin: boolean): MenuItem[] => [
   { name: "Dashboard", icon: LayoutDashboard, path: "/" },
-   {
+  {
     name: "NL to SQL",
     icon: Bot,
     children: [
@@ -19,19 +21,8 @@ export const menuItems: MenuItem[] = [
       { name: "Questions", path: "/question" },
     ],
   },
-  { name: "Account",icon: User, path: "/user"  },
-  {
-    name: "Settings",icon: Settings, path: "/settings"  },
+  { name: "Account", icon: User, path: "/user" },
+  ...includeIf(isAdmin, [{ name: "Settings", icon: Settings, path: "/settings" }]),
+  { name: "Costs", icon: Server, path: "/costs" },
   { name: "Status", icon: Heart, path: "/status" },
-
-  // Examples of more nested groups (optional):
-  // {
-  //   name: "Ops",
-  //   icon: Server,
-  //   children: [
-  //     { name: "Environment", path: "/environment" },
-  //     { name: "Logs", path: "/logs" },
-  //     { name: "Users", path: "/users" },
-  //   ],
-  // },
 ];

@@ -3,11 +3,15 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useSidebar } from "@/contexts/SidebarContext";
-import { menuItems, type MenuItem } from "./sidebar-menu";
+import { getMenuItems, type MenuItem } from "./sidebar-menu";
+import { useAuthZ, AdminOnly } from "@/auth/useAuthZ";
+import { useMsal } from "@azure/msal-react";
 
 export default function Sidebar() {
   const { sidebarOpen, toggleSidebar } = useSidebar();
   const { pathname } = useLocation();
+  const { instance } = useMsal();
+  const { isAdmin } = useAuthZ(instance);
 
   // Track which groups are expanded when the sidebar is open
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
@@ -30,7 +34,7 @@ export default function Sidebar() {
         }
       }
     };
-    markActives(menuItems);
+    markActives(getMenuItems(isAdmin));
     setOpenGroups((prev) => ({ ...prev, ...next }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
@@ -64,7 +68,7 @@ export default function Sidebar() {
 
       {/* Nav */}
       <nav className="flex-1 p-3 space-y-1">
-        {menuItems.map((item) => (
+        {getMenuItems(isAdmin).map((item) => (
           <SidebarItem
             key={item.name}
             item={item}

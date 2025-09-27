@@ -14,4 +14,4 @@ class SystemState(TypedDict):
     
 
 
-T = TypeVar(SystemState)
+T = TypeVar("SystemState", bound=SystemState)

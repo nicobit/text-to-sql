@@ -1,5 +1,5 @@
 import asyncio
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from .models import CheckResult, HealthResponse
 from .settings import settings
 from .utils import timed_call
@@ -11,6 +11,7 @@ from .checks.storage_blob import check_storage_blob
 from .checks.storage_table import check_storage_table
 from .checks.service_bus import check_service_bus
 from .config_loader import load_services_config, resolve_field
+from app.auth.roles import admin_only, auth_only
 
 router = APIRouter(tags=["health"])
 
@@ -94,7 +95,7 @@ async def _build_tasks_from_json():
 
     return tasks, timeout
 
-@router.get("/health/readyz", response_model=HealthResponse)
+@router.get("/health/readyz", response_model=HealthResponse, dependencies=[Depends(auth_only)])
 async def readyz():
     tasks, timeout = await _build_tasks_from_json()
     if not tasks:

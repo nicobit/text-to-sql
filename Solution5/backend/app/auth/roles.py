@@ -3,7 +3,7 @@ from fastapi import Depends, HTTPException, status
 from typing import Iterable, Dict, Any, Optional, Set, List
 #from app.fastapi_app import get_settings  # or wherever your settings live
 from fastapi import Request
-from function_llm_proxy.app.auth.jwt import get_validator
+from app.auth.jwt import get_validator
 
 #settings = get_settings()
 validator = get_validator()
@@ -38,6 +38,10 @@ def require_scopes(*scopes: str):
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden (missing scope)")
         return user
     return _dep
+
+
+admin_only = RoleChecker("Admin")  # this string must match the App Role name in Entra ID
+auth_only = RoleChecker()  # any authenticated user
 
 
 # Example usage:

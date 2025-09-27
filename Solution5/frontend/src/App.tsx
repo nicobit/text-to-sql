@@ -12,10 +12,15 @@ import Environment from '@/pages/Environment';
 import ChatPage from '@/pages/ChatPage';
 import QuestionQueryExamplePage from '@/pages/QuestionQueryExamplePage';
 import StatusPage from '@/pages/StatusPage';
+import CostsDashboardPage from '@/pages/CostDashboardPage';
 
 
 import Logs from '@/pages/Logs';
 import User from '@/pages/User';
+
+import { useAuthZ, AdminOnly } from "@/auth/useAuthZ";
+
+
 
 export default function App() {
 
@@ -56,11 +61,12 @@ export default function App() {
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/chat" element={<ChatPage />} />
                   <Route path="/question" element={<QuestionQueryExamplePage />} />
-                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/settings" element={<AdminOnly><Settings /></AdminOnly>} />
                   <Route path="/environment" element={<Environment />} />
                   <Route path="/logs" element={<Logs />} />
                   <Route path="/User" element={<User />} />
                   <Route path="/status" element={<StatusPage />} />
+                  <Route path="/costs" element={<CostsDashboardPage />} />
                 </Routes>
               </main>
             </div>

@@ -1,0 +1,448 @@
+docs/index.md
+
+
+
+# Project X
+
+
+
+<div class="hero">
+
+  <h1>Build. Ship. Scale.</h1>
+
+  <p>Project X — AI-powered advisory platform. Secure, reliable, easy to extend.</p>
+
+  <p class="cta-row">
+
+    <a class="md-button md-button--primary" href="docs/getting-started/">Get started</a>
+
+    <a class="md-button" href="architecture/overview/">Architecture</a>
+
+    <a class="md-button" href="roadmap/">Roadmap</a>
+
+  </p>
+
+</div>
+
+
+
+<div class="badges">
+
+  <!-- Replace with your real badge URLs -->
+
+  <a href="https://gitlab.com/<group>/<project>/pipelines"><img src="https://gitlab.com/<group>/<project>/badges/main/pipeline.svg" alt="CI"></a>
+
+  <a href="https://gitlab.com/<group>/<project>/-/graphs/main/charts"><img src="https://gitlab.com/<group>/<project>/badges/main/coverage.svg" alt="Coverage"></a>
+
+  <a href="https://gitlab.com/<group>/<project>/-/releases"><img src="https://img.shields.io/gitlab/v/release/<group>/<project>?logo=gitlab" alt="Release"></a>
+
+</div>
+
+
+
+## Quick links
+
+
+
+<div class="card-grid">
+
+  <div class="card">
+
+    <h3>Documentation</h3>
+
+    <p>Developer guides, API reference, runbooks.</p>
+
+    <p><a class="md-button" href="docs/">Explore docs →</a></p>
+
+  </div>
+
+  <div class="card">
+
+    <h3>Architecture</h3>
+
+    <p>System overview, services, deployments.</p>
+
+    <p><a class="md-button" href="architecture/overview/">See architecture →</a></p>
+
+  </div>
+
+  <div class="card">
+
+    <h3>Roadmap</h3>
+
+    <p>Milestones, epics, releases (synced from GitLab).</p>
+
+    <p><a class="md-button" href="roadmap/">View roadmap →</a></p>
+
+  </div>
+
+  <div class="card">
+
+    <h3>Runbooks</h3>
+
+    <p>Operations & troubleshooting guides.</p>
+
+    <p><a class="md-button" href="docs/runbooks/">Open runbooks →</a></p>
+
+  </div>
+
+  <div class="card">
+
+    <h3>Confluence</h3>
+
+    <p>Business context, decisions, product docs.</p>
+
+    <p><a class="md-button" href="https://confluence.company.tld/x/...">Go to Confluence →</a></p>
+
+  </div>
+
+  <div class="card">
+
+    <h3>SharePoint</h3>
+
+    <p>Policies, templates, compliance artifacts.</p>
+
+    <p><a class="md-button" href="https://sharepoint.company.tld/sites/...">Go to SharePoint →</a></p>
+
+  </div>
+
+  <div class="card">
+
+    <h3>Reports</h3>
+
+    <p>KPI dashboards, reliability, cost, security.</p>
+
+    <p><a class="md-button" href="reports/">Open reports →</a></p>
+
+  </div>
+
+</div>
+
+
+
+## Scrum teams
+
+
+
+<div class="teams-grid">
+
+  <div class="team">
+
+    <h4>External Integration</h4>
+
+    <p>APIs, partner integrations, data ingestion.</p>
+
+    <p><a href="https://gitlab.com/<group>/team-external-integration/pages">Team site →</a></p>
+
+  </div>
+
+  <div class="team">
+
+    <h4>Data Processing</h4>
+
+    <p>Pipelines, enrichment, quality checks.</p>
+
+    <p><a href="https://gitlab.com/<group>/team-data-processing/pages">Team site →</a></p>
+
+  </div>
+
+  <div class="team">
+
+    <h4>Client Presentation</h4>
+
+    <p>SPA/UX, API gateway, presentation services.</p>
+
+    <p><a href="https://gitlab.com/<group>/team-client-presentation/pages">Team site →</a></p>
+
+  </div>
+
+  <div class="team">
+
+    <h4>Cloud Platform</h4>
+
+    <p>Infra, CI/CD, security, SRE, FinOps.</p>
+
+    <p><a href="https://gitlab.com/<group>/team-cloud-platform/pages">Team site →</a></p>
+
+  </div>
+
+  <div class="team">
+
+    <h4>AI/ML</h4>
+
+    <p>Models, agents, evaluation, feature stores.</p>
+
+    <p><a href="https://gitlab.com/<group>/team-aiml/pages">Team site →</a></p>
+
+  </div>
+
+</div>
+
+
+
+## What’s new
+
+
+
+!!! tip "Latest release — vX.Y.Z (YYYY-MM-DD)"
+
+    - **Enhancements:** …
+
+    - **Fixes:** …
+
+    - **Docs:** …
+
+    - **Ops:** …
+
+
+
+[Release notes →](roadmap/releases/)
+
+
+
+## Architecture at a glance
+
+
+
+```plantuml
+
+@startuml
+
+skinparam shadowing false
+
+skinparam rectangle {
+
+  BackgroundColor white
+
+  BorderColor #999999
+
+}
+
+actor User
+
+rectangle "Web SPA" as SPA
+
+rectangle "API Gateway" as G
+
+rectangle "Auth (AAD)" as AAD
+
+rectangle "Services" as S {
+
+  [Functions] as F
+
+  [Workers] as W
+
+}
+
+rectangle "Data" as D {
+
+  [SQL]
+
+  [Storage]
+
+  [Event Hub]
+
+}
+
+rectangle "Observability" as O {
+
+  [App Insights]
+
+  [Log Analytics]
+
+}
+
+rectangle "AI" as AI {
+
+  [Azure OpenAI]
+
+  [Prompt Orchestrator]
+
+}
+
+
+
+User --> SPA
+
+SPA --> G
+
+G --> AAD
+
+G --> F
+
+F --> W
+
+F --> D
+
+W --> D
+
+F --> AI
+
+F --> O
+
+@enduml
+
+
+
+Get started
+
+
+
+git clone git@gitlab.com:<group>/<project>.git
+
+cd <project>
+
+make dev   # or: poetry run mkdocs serve
+
+
+
+Dev environment: docs/dev-setup.md
+Security & access: docs/security.md
+Runbooks: docs/runbooks/
+Contributing: contributing/
+
+
+---
+
+
+
+# `docs/styles/extra.css`
+
+
+
+```css
+
+/* Hero */
+
+.hero {
+
+  padding: 2.5rem 1rem 1rem;
+
+  text-align: center;
+
+}
+
+.hero h1 {
+
+  margin: 0 0 .4rem;
+
+  font-size: clamp(2rem, 4vw, 3rem);
+
+}
+
+.hero p { margin: .35rem 0; }
+
+.cta-row .md-button { margin: .25rem .25rem; }
+
+
+
+/* Badges */
+
+.badges { margin: .5rem 0 1rem; text-align: center; }
+
+.badges img { margin: 0 .35rem; vertical-align: middle; }
+
+
+
+/* Cards */
+
+.card-grid {
+
+  display: grid;
+
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+
+  gap: .9rem;
+
+  margin: 1rem 0 2rem;
+
+}
+
+.card {
+
+  border: 1px solid var(--md-default-fg-color--lightest);
+
+  border-radius: .4rem;
+
+  padding: 1rem;
+
+  background: var(--md-default-bg-color);
+
+}
+
+.card h3 { margin: 0 0 .25rem; }
+
+.card .md-button { margin-top: .4rem; }
+
+
+
+/* Teams */
+
+.teams-grid {
+
+  display: grid;
+
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+
+  gap: .9rem;
+
+  margin-bottom: 1.5rem;
+
+}
+
+.team {
+
+  border-left: 3px solid var(--md-accent-fg-color);
+
+  padding: .6rem .9rem;
+
+  background: var(--md-default-bg-color);
+
+}
+
+.team h4 { margin: 0 0 .25rem; }
+
+
+
+
+
+
+
+
+
+mkdocs.yml
+
+ additions (keep your current config)
+
+
+
+extra_css:
+
+  - styles/extra.css
+
+
+
+nav:
+
+  - Home: index.md
+
+  - Roadmap:
+
+      - Overview: roadmap/index.md
+
+      - Releases: roadmap/releases.md
+
+  - Architecture:
+
+      - Overview: architecture/overview.md
+
+  - Docs:
+
+      - Getting started: docs/getting-started.md
+
+      - Runbooks: docs/runbooks.md
+
+  - Reports: reports/index.md
+
+  - Contributing: contributing/index.md
+

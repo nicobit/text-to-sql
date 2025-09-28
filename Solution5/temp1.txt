@@ -317,3 +317,293 @@ Hard refresh (cache!) after changing JS/CSS.
 [data-md-color-scheme="slate"] .mermaid .label,
 
 [data-md-color-scheme="slate"] .mermaid .label * { color: rgba(255,255,255,0.92) !important; }
+
+
+#################################################################
+#################################################################
+
+
+
+// extra.js (o app.js)
+
+(function () {
+
+  mermaid.initialize({
+
+    startOnLoad: true,
+
+    theme: "base",
+
+    securityLevel: "loose",      // per i link: click id href "..."
+
+    gantt: {
+
+      topAxis: true,             // mesi+giorni in alto
+
+      axisFormat: "%d %b",       // 29 Sep
+
+      barHeight: 18,
+
+      barGap: 4,
+
+      gridLineStartPadding: 60,
+
+      tickInterval: 1,
+
+      todayMarker: "stroke-width:2"
+
+    },
+
+    // piccolo CSS inline per casi minimi (il grosso lo metti in extra.css)
+
+    themeCSS: ".tick text{font-weight:600}.grid .tick line{opacity:.7}"
+
+  });
+
+})();
+
+
+
+2) Solo CSS (override completo “ai.azure”)
+
+
+
+
+
+Metti tutto in extra.css (o stylesheet del sito). Questo non usa themeVariables, ma selettori CSS delle shape generate da Mermaid.
+
+/* Contenitore “card” in stile ai.azure */
+
+.ai-azure-card{
+
+  background:#fff;
+
+  border:1px solid #E5E7EB;
+
+  border-radius:12px;
+
+  box-shadow:0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.1);
+
+  padding:16px 20px;
+
+  overflow-x:auto;
+
+}
+
+
+
+/* Tipografia e leggibilità di tutto il diagramma */
+
+.ai-azure-card .mermaid text,
+
+.ai-azure-card .mermaid .tick text{
+
+  font-family: Segoe UI, system-ui, -apple-system, Roboto, Arial, sans-serif !important;
+
+  fill:#111827 !important;           /* testo scuro leggibile */
+
+  font-size:12.5px;
+
+  letter-spacing:.1px;
+
+  font-weight:600;                   /* asse più marcato */
+
+}
+
+
+
+/* Griglia e bordi */
+
+.ai-azure-card .mermaid .grid .tick line{ stroke:#E5E7EB !important; opacity:.8; }
+
+.ai-azure-card .mermaid .grid path{ stroke:#E5E7EB !important; }
+
+.ai-azure-card .mermaid .section{ fill:#F9FAFB !important; }
+
+.ai-azure-card .mermaid .section:nth-of-type(even){ fill:#F3F4F6 !important; }
+
+.ai-azure-card .mermaid .titleText{ fill:#111827 !important; font-weight:700; }
+
+
+
+/* Barre dei task (stato normale) */
+
+.ai-azure-card .mermaid .task rect,
+
+.ai-azure-card .mermaid .task .task-bar{
+
+  fill:#E8F0FE !important;           /* azzurro molto chiaro */
+
+  stroke:#93C5FD !important;
+
+  stroke-width:1px;
+
+}
+
+.ai-azure-card .mermaid .task .taskText{ fill:#111827 !important; }
+
+
+
+/* Task attivo */
+
+.ai-azure-card .mermaid .active rect,
+
+.ai-azure-card .mermaid .active .task-bar{
+
+  fill:#0F6CBD !important;           /* Azure/Fluent blue */
+
+  stroke:#0B4F8A !important;
+
+}
+
+.ai-azure-card .mermaid .active .taskText{ fill:#ffffff !important; }
+
+
+
+/* Task completato */
+
+.ai-azure-card .mermaid .done rect,
+
+.ai-azure-card .mermaid .done .task-bar{
+
+  fill:#E5E7EB !important;
+
+  stroke:#D1D5DB !important;
+
+}
+
+
+
+/* Task critico */
+
+.ai-azure-card .mermaid .critical rect,
+
+.ai-azure-card .mermaid .critical .task-bar{
+
+  fill:#FDE68A !important;           /* ambra */
+
+  stroke:#F59E0B !important;
+
+}
+
+
+
+/* Milestone (diamante) */
+
+.ai-azure-card .mermaid .milestone,
+
+.ai-azure-card .mermaid .milestone rect,
+
+.ai-azure-card .mermaid .milestone polygon{
+
+  fill:#7C3AED !important;           /* viola Fluent */
+
+  stroke:#5B21B6 !important;
+
+  stroke-width:1.5px;
+
+}
+
+.ai-azure-card .mermaid .milestoneText{ fill:#ffffff !important; }
+
+
+
+/* Linea “oggi” */
+
+.ai-azure-card .mermaid .today{
+
+  stroke:#DC2626 !important;
+
+  stroke-width:2px !important;
+
+}
+
+
+
+/* Link cliccabili dentro il grafico */
+
+.ai-azure-card .mermaid a,
+
+.ai-azure-card .mermaid [data-link]{ cursor:pointer; text-decoration:none; }
+
+
+
+/* Evita tagli dell’SVG in temi vecchi */
+
+.ai-azure-card .mermaid svg{ overflow:visible; }
+
+
+
+/* Dark mode (opzionale) */
+
+@media (prefers-color-scheme: dark){
+
+  .ai-azure-card{
+
+    background:#0B0B0C;
+
+    border-color:#1F2937;
+
+    box-shadow:none;
+
+  }
+
+  .ai-azure-card .mermaid text,
+
+  .ai-azure-card .mermaid .tick text{ fill:#E5E7EB !important; }
+
+  .ai-azure-card .mermaid .grid .tick line,
+
+  .ai-azure-card .mermaid .grid path{ stroke:#1F2937 !important; }
+
+  .ai-azure-card .mermaid .section{ fill:#0B0B0C !important; }
+
+  .ai-azure-card .mermaid .section:nth-of-type(even){ fill:#111317 !important; }
+
+  .ai-azure-card .mermaid .task rect,
+
+  .ai-azure-card .mermaid .task .task-bar{
+
+    fill:#0B4F8A !important; stroke:#2563EB !important;
+
+  }
+
+  .ai-azure-card .mermaid .done rect,
+
+  .ai-azure-card .mermaid .done .task-bar{
+
+    fill:#111827 !important; stroke:#374151 !important;
+
+  }
+
+  .ai-azure-card .mermaid .today{ stroke:#F87171 !important; }
+
+}
+
+Uso:
+
+<div class="ai-azure-card">
+
+  <pre class="mermaid">
+
+gantt
+
+dateFormat  YYYY-MM-DD
+
+title       Two Weeks View
+
+section 6.8.0 - WS013 - Wave 3.1
+
+Sub-Submit for Change Request Approval :ms1, milestone, 2025-09-29, 1d
+
+click ms1 href "https://link-cr" _blank "Apri Change Request"
+
+section 6.8.x - WS008 - Prospect Changes
+
+Sub-Regression Test start :ms2, milestone, 2025-09-29, 1d
+
+click ms2 href "https://link-reg" _blank "Apri dettaglio"
+
+  </pre>
+
+</div>

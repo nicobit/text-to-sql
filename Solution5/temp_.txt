@@ -969,3 +969,374 @@ gantt
   Architecture :active, a1, 2025-10-01, 2025-10-20
 
 …will render with the new theme and rounded-card look. If you want dark-mode to re-theme on toggle later, we can add a 5-line observer—but this is the **minimum** to get the style.
+
+
+#####################################################################
+#####################################################################
+
+
+1) 
+
+mkdocs.yml
+
+
+
+
+
+Make sure these are loaded (our init comes after Mermaid):
+
+extra_javascript:
+
+  - https://unpkg.com/mermaid@10/dist/mermaid.min.js
+
+  - assets/js/mermaid-init.js
+
+
+
+extra_css:
+
+  - assets/styles/extra.css
+
+
+
+
+
+
+
+
+
+2) 
+
+docs/assets/js/mermaid-init.js
+
+
+
+
+
+Azure-flavored theme variables + auto re-theme on light/dark toggle.
+
+(Works with any Mermaid blocks—focus tuned for gantt.)
+
+(function () {
+
+  const isDark = () => document.body.getAttribute('data-md-color-scheme') === 'slate';
+
+
+
+  function vars(dark) {
+
+    const text = dark ? "rgba(255,255,255,0.92)" : "rgba(15,23,42,0.95)";
+
+    return {
+
+      /* base */
+
+      fontFamily: "Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+
+      textColor: text,
+
+      primaryColor: "#4f46e5",               // Indigo 600
+
+      lineColor: dark ? "rgba(255,255,255,.45)" : "rgba(2,6,23,.45)",
+
+      background: "transparent",
+
+      mainBkg: "transparent",
+
+      clusterBkg: "transparent",
+
+      clusterBorder: dark ? "rgba(255,255,255,.14)" : "rgba(2,6,23,.10)",
+
+      borderRadius: 8,
+
+
+
+      /* gantt look */
+
+      ganttAxisFontSize: "12px",
+
+      ganttTaskHeight: 26,
+
+      ganttBarCornerRadius: 7,
+
+      ganttGridLineColor: dark ? "rgba(255,255,255,.12)" : "rgba(2,6,23,.10)",
+
+      ganttWeekdayColor: "transparent",
+
+      ganttTodayLineColor: dark ? "#38bdf8" : "#2563eb",
+
+
+
+      /* task state colors */
+
+      taskTextColor: text,
+
+      taskBkgColor: dark ? "rgba(99,102,241,.35)" : "rgba(99,102,241,.18)",    // default
+
+      taskBorderColor: dark ? "rgba(99,102,241,.85)" : "rgba(99,102,241,.55)",
+
+      taskDoneColor:   dark ? "rgba(16,185,129,.35)" : "rgba(16,185,129,.20)",  // green
+
+      taskLateColor:   dark ? "rgba(239,68,68,.35)"  : "rgba(239,68,68,.22)",   // red
+
+      taskCriticalColor: dark ? "rgba(245,158,11,.35)" : "rgba(245,158,11,.22)" // amber
+
+    };
+
+  }
+
+
+
+  function configure() {
+
+    mermaid.initialize({
+
+      startOnLoad: false,   // we’ll run manually to avoid double inits
+
+      theme: "base",
+
+      themeVariables: vars(isDark()),
+
+      securityLevel: "loose",
+
+      gantt: {
+
+        leftPadding: 90,
+
+        rightPadding: 24,
+
+        topPadding: 36,
+
+        barGap: 6,
+
+        useWidth: 1000
+
+      }
+
+    });
+
+  }
+
+
+
+  async function render() {
+
+    if (!window.mermaid) return;
+
+    configure();
+
+    const nodes = Array.from(document.querySelectorAll(".mermaid"));
+
+    nodes.forEach(n => n.removeAttribute("data-processed"));
+
+    await mermaid.run({ nodes });
+
+  }
+
+
+
+  // first render
+
+  if (document.readyState === "loading") {
+
+    document.addEventListener("DOMContentLoaded", render);
+
+  } else {
+
+    render();
+
+  }
+
+
+
+  // re-render on theme toggle (Material)
+
+  const obs = new MutationObserver(muts => {
+
+    for (const m of muts) {
+
+      if (m.type === "attributes" && m.attributeName === "data-md-color-scheme") {
+
+        render();
+
+        break;
+
+      }
+
+    }
+
+  });
+
+  obs.observe(document.body, { attributes: true });
+
+
+
+  // re-render on instant navigation
+
+  document.addEventListener("DOMContentLoaded", () => {
+
+    const main = document.querySelector("main");
+
+    if (!main) return;
+
+    new MutationObserver(() => render()).observe(main, { childList: true, subtree: true });
+
+  });
+
+})();
+
+
+
+
+
+
+
+
+
+3) 
+
+docs/assets/styles/extra.css
+
+
+
+
+
+Card wrapper + a couple of legibility tweaks.
+
+/* Mermaid "ai.azure" card */
+
+.mermaid {
+
+  background: #fff;
+
+  border: 1px solid rgba(0,0,0,.06);
+
+  border-radius: 14px;
+
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+
+  padding: 12px;
+
+  margin: 1rem 0;
+
+  overflow: auto; /* horizontal scroll if needed */
+
+}
+
+[data-md-color-scheme="slate"] .mermaid {
+
+  background: rgba(17,24,39,.70);
+
+  border: 1px solid rgba(255,255,255,.10);
+
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+
+}
+
+
+
+/* Stronger "today" marker visibility */
+
+.mermaid .today {
+
+  stroke-width: 2.5;
+
+}
+
+
+
+/* Round the bar ends even if theme vars fail */
+
+.mermaid .task { rx: 7px; ry: 7px; }
+
+
+
+/* Section titles + axis ticks slightly bolder */
+
+.mermaid .sectionTitle,
+
+.mermaid .grid .tick text {
+
+  font-weight: 600;
+
+  letter-spacing: .01em;
+
+}
+
+
+
+
+
+
+
+
+
+4) Example Markdown (copy-paste)
+
+
+
+
+
+Shows milestones, active/done/crit styles, a legend, and the today marker.
+
+# Roadmap (Q4)
+
+
+
+<!-- optional legend (works because securityLevel is 'loose') -->
+
+<div style="display:flex;gap:.75rem;align-items:center;margin:.25rem 0 .5rem 0;font-size:.9rem;opacity:.9">
+
+  <span style="display:inline-block;width:.9rem;height:.9rem;border-radius:.3rem;background:rgba(99,102,241,.35);border:1px solid rgba(99,102,241,.65)"></span> Default
+
+  <span style="display:inline-block;width:.9rem;height:.9rem;border-radius:.3rem;background:rgba(16,185,129,.35);border:1px solid rgba(16,185,129,.55)"></span> Done
+
+  <span style="display:inline-block;width:.9rem;height:.9rem;border-radius:.3rem;background:rgba(245,158,11,.35);border:1px solid rgba(245,158,11,.55)"></span> Critical
+
+  <span style="display:inline-block;width:.9rem;height:.9rem;border-radius:.3rem;background:rgba(239,68,68,.35);border:1px solid rgba(239,68,68,.55)"></span> Late
+
+</div>
+
+
+
+```mermaid
+
+gantt
+
+    title Product Milestones (Q4 2025)
+
+    dateFormat  YYYY-MM-DD
+
+    axisFormat  %d %b
+
+    todayMarker stroke-width:2,stroke:#2563eb
+
+
+
+    section Core
+
+    Kickoff           :milestone, m1, 2025-10-03, 0d
+
+    Architecture      :active,    a1, 2025-10-01, 2025-10-20
+
+    Beta Freeze       :milestone, m2, 2025-11-12, 0d
+
+
+
+    section Delivery
+
+    Feature A         :done,      f1, 2025-10-05, 2025-10-25
+
+    Feature B         :           f2, 2025-10-15, 2025-11-15
+
+    Hardening         :crit,      h1, 2025-11-16, 2025-12-10
+
+---
+
+
+
+### That’s it
+
+Just these three files and your current Gantt blocks will render with a clean, Azure-ish professional look (rounded card, indigo accents, dark-mode aware). If you want badges, per-section tints, or inline links on bars, say the word and I’ll add the minimal snippets.
+
+

@@ -607,3 +607,303 @@ click ms2 href "https://link-reg" _blank "Apri dettaglio"
   </pre>
 
 </div>
+
+
+##################################################################
+
+
+NEW 1
+
+JS (es. 
+
+docs/javascripts/extra.js
+
+)
+
+
+
+(function () {
+
+  if (!window.mermaid) return;
+
+  mermaid.initialize({
+
+    startOnLoad: true,
+
+    theme: "base",
+
+    securityLevel: "loose",
+
+    gantt: {
+
+      topAxis: true,
+
+      axisFormat: "%d %b",
+
+      barHeight: 18,
+
+      barGap: 4,
+
+      gridLineStartPadding: 60,
+
+      tickInterval: 1,
+
+      todayMarker: "stroke-width:2"
+
+    },
+
+    themeCSS: ".tick text{font-weight:600}.grid .tick line{opacity:.7}"
+
+  });
+
+})();
+
+In mkdocs.yml:
+
+extra_javascript:
+
+  - javascripts/extra.js
+
+
+
+
+
+
+
+CSS (es. 
+
+docs/stylesheets/extra.css
+
+)
+
+
+
+/* Prende TUTTI i blocchi Mermaid in Material */
+
+.md-typeset :is(div.mermaid, pre.mermaid) svg{ overflow:visible; }
+
+.md-typeset :is(div.mermaid, pre.mermaid) text,
+
+.md-typeset :is(div.mermaid, pre.mermaid) .tick text{
+
+  font-family: Segoe UI, system-ui, -apple-system, Roboto, Arial, sans-serif !important;
+
+  fill:#111827 !important;
+
+  font-size:12.5px; letter-spacing:.1px; font-weight:600;
+
+}
+
+
+
+/* Griglia e sezioni */
+
+.md-typeset :is(div.mermaid, pre.mermaid) .grid .tick line{ stroke:#E5E7EB !important; opacity:.8; }
+
+.md-typeset :is(div.mermaid, pre.mermaid) .grid path{ stroke:#E5E7EB !important; }
+
+.md-typeset :is(div.mermaid, pre.mermaid) .section{ fill:#F9FAFB !important; }
+
+.md-typeset :is(div.mermaid, pre.mermaid) .section:nth-of-type(even){ fill:#F3F4F6 !important; }
+
+.md-typeset :is(div.mermaid, pre.mermaid) .titleText{ fill:#111827 !important; font-weight:700; }
+
+
+
+/* Task */
+
+.md-typeset :is(div.mermaid, pre.mermaid) .task rect,
+
+.md-typeset :is(div.mermaid, pre.mermaid) .task .task-bar{
+
+  fill:#E8F0FE !important; stroke:#93C5FD !important; stroke-width:1px;
+
+}
+
+.md-typeset :is(div.mermaid, pre.mermaid) .task .taskText{ fill:#111827 !important; }
+
+
+
+/* Attivo */
+
+.md-typeset :is(div.mermaid, pre.mermaid) .active rect,
+
+.md-typeset :is(div.mermaid, pre.mermaid) .active .task-bar{
+
+  fill:#0F6CBD !important; stroke:#0B4F8A !important;
+
+}
+
+.md-typeset :is(div.mermaid, pre.mermaid) .active .taskText{ fill:#fff !important; }
+
+
+
+/* Completato */
+
+.md-typeset :is(div.mermaid, pre.mermaid) .done rect,
+
+.md-typeset :is(div.mermaid, pre.mermaid) .done .task-bar{
+
+  fill:#E5E7EB !important; stroke:#D1D5DB !important;
+
+}
+
+
+
+/* Critico */
+
+.md-typeset :is(div.mermaid, pre.mermaid) .critical rect,
+
+.md-typeset :is(div.mermaid, pre.mermaid) .critical .task-bar{
+
+  fill:#FDE68A !important; stroke:#F59E0B !important;
+
+}
+
+
+
+/* Milestone (diamante viola) */
+
+.md-typeset :is(div.mermaid, pre.mermaid) .milestone,
+
+.md-typeset :is(div.mermaid, pre.mermaid) .milestone rect,
+
+.md-typeset :is(div.mermaid, pre.mermaid) .milestone polygon{
+
+  fill:#7C3AED !important; stroke:#5B21B6 !important; stroke-width:1.5px;
+
+}
+
+.md-typeset :is(div.mermaid, pre.mermaid) .milestoneText{ fill:#fff !important; }
+
+
+
+/* Linea "oggi" */
+
+.md-typeset :is(div.mermaid, pre.mermaid) .today{ stroke:#DC2626 !important; stroke-width:2px !important; }
+
+
+
+/* Dark mode */
+
+@media (prefers-color-scheme: dark){
+
+  .md-typeset :is(div.mermaid, pre.mermaid) text,
+
+  .md-typeset :is(div.mermaid, pre.mermaid) .tick text{ fill:#E5E7EB !important; }
+
+  .md-typeset :is(div.mermaid, pre.mermaid) .grid .tick line,
+
+  .md-typeset :is(div.mermaid, pre.mermaid) .grid path{ stroke:#1F2937 !important; }
+
+  .md-typeset :is(div.mermaid, pre.mermaid) .section{ fill:#0B0B0C !important; }
+
+  .md-typeset :is(div.mermaid, pre.mermaid) .section:nth-of-type(even){ fill:#111317 !important; }
+
+  .md-typeset :is(div.mermaid, pre.mermaid) .task rect,
+
+  .md-typeset :is(div.mermaid, pre.mermaid) .task .task-bar{ fill:#0B4F8A !important; stroke:#2563EB !important; }
+
+  .md-typeset :is(div.mermaid, pre.mermaid) .done rect,
+
+  .md-typeset :is(div.mermaid, pre.mermaid) .done .task-bar{ fill:#111827 !important; stroke:#374151 !important; }
+
+  .md-typeset :is(div.mermaid, pre.mermaid) .today{ stroke:#F87171 !important; }
+
+}
+
+In mkdocs.yml:
+
+extra_css:
+
+  - stylesheets/extra.css
+
+
+
+
+
+Usa normalmente i blocchi:
+
+```mermaid
+
+%%{init:{ "theme":"base", "gantt": { "topAxis": true, "axisFormat":"%d %b", "todayMarker":"stroke-width:2" }, "securityLevel":"loose" }}%%
+
+gantt
+
+dateFormat  YYYY-MM-DD
+
+title       Two Weeks View
+
+section 6.8.0 - WS013 - Wave 3.1
+
+Sub-Submit for Change Request Approval :ms1, milestone, 2025-09-29, 1d
+
+click ms1 href "https://link-cr" _blank "Apri Change Request"
+
+section 6.8.x - WS008 - Prospect Changes
+
+Sub-Regression Test start :ms2, milestone, 2025-09-29, 1d
+
+click ms2 href "https://link-reg" _blank "Apri dettaglio"
+
+```
+
+
+
+
+
+
+
+
+
+B) (Facoltativo) Wrapper “via Markdown” con 
+
+attr_list
+
+
+
+
+
+Se vuoi un wrapper per alcuni grafici (senza HTML crudo), abilita in mkdocs.yml:
+
+markdown_extensions:
+
+  - attr_list
+
+  - pymdownx.superfences
+
+Poi subito dopo il blocco:
+
+```mermaid
+
+...diagramma...
+
+```
+
+{: .ai-azure-card }  <!-- aggiunge la classe al blocco precedente -->
+
+E nel CSS aggiungi (riusa quello sopra, opzionale):
+
+.ai-azure-card{
+
+  background:#fff; border:1px solid #E5E7EB; border-radius:12px;
+
+  box-shadow:0 1px 2px rgba(16,24,40,.06), 0 1px 3px rgba(16,24,40,.1);
+
+  padding:16px 20px; overflow-x:auto;
+
+}
+
+@media (prefers-color-scheme: dark){
+
+  .ai-azure-card{ background:#0B0B0C; border-color:#1F2937; box-shadow:none; }
+
+}
+
+
+
+
+
+
+
+Con l’opzione A ottieni subito lo stile “ai.azure” su tutti i Gantt; con l’opzione B puoi “incardare” solo quelli che vuoi—sempre senza <div> scritto a mano.

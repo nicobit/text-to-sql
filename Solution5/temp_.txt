@@ -446,3 +446,645 @@ nav:
 
   - Contributing: contributing/index.md
 
+------------------------------------------------------------
+
+
+
+* ===== Azure-glass tables for MkDocs Material ===== */
+
+
+
+/* Card-like container (Material wraps tables in this div) */
+
+.md-typeset__table {
+
+  background: var(--card-bg-light);
+
+  border: var(--border);
+
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow);
+
+  backdrop-filter: blur(6px);
+
+  overflow: hidden;           /* lets the radius clip the table */
+
+  margin: 1rem 0;
+
+}
+
+/* Dark scheme */
+
+[data-md-color-scheme="slate"] .md-typeset__table {
+
+  background: var(--card-bg-dark);
+
+  border: var(--border-dark);
+
+  box-shadow: var(--shadow-dark);
+
+}
+
+
+
+/* Smooth edge fade when horizontally scrolling wide tables */
+
+.md-typeset__table {
+
+  -webkit-mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
+
+  mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
+
+}
+
+
+
+/* Table base */
+
+.md-typeset table:not([class]) {
+
+  width: 100%;
+
+  border-collapse: separate;
+
+  border-spacing: 0;
+
+  font-size: 0.95rem;
+
+}
+
+
+
+/* Cells */
+
+.md-typeset table:not([class]) th,
+
+.md-typeset table:not([class]) td {
+
+  padding: 12px 14px;
+
+  border: 0;                  /* borders handled by striping + separators */
+
+  vertical-align: middle;
+
+}
+
+
+
+/* Header (sticky + subtle backdrop) */
+
+.md-typeset table:not([class]) thead th {
+
+  position: sticky;
+
+  top: calc(var(--md-header-height, 3.2rem) + 8px);  /* sit below the header */
+
+  z-index: 2;
+
+  background: color-mix(in oklab, var(--md-default-bg-color) 78%, transparent);
+
+  font-weight: 600;
+
+  text-transform: none;
+
+  letter-spacing: .01em;
+
+  border-bottom: 1px solid rgba(0,0,0,.08);
+
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) thead th {
+
+  background: color-mix(in oklab, var(--md-default-bg-color) 82%, transparent);
+
+  border-bottom: 1px solid rgba(255,255,255,.08);
+
+}
+
+
+
+/* Row striping + separators */
+
+.md-typeset table:not([class]) tbody tr:nth-child(odd) td {
+
+  background: color-mix(in oklab, var(--md-default-bg-color) 96%, transparent);
+
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr:nth-child(odd) td {
+
+  background: rgba(255,255,255,0.02);
+
+}
+
+
+
+.md-typeset table:not([class]) tbody tr td {
+
+  border-top: 1px solid rgba(0,0,0,.05);
+
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr td {
+
+  border-top: 1px solid rgba(255,255,255,.05);
+
+}
+
+
+
+/* Hover highlight */
+
+.md-typeset table:not([class]) tbody tr:hover td {
+
+  background: color-mix(in oklab, var(--md-default-bg-color) 90%, transparent);
+
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr:hover td {
+
+  background: rgba(255,255,255,0.05);
+
+}
+
+
+
+/* Compact / dense variants via utility classes */
+
+.ai-table.table--compact td,
+
+.ai-table.table--compact th { padding: 8px 10px; font-size: .92rem; }
+
+.ai-table.table--dense td,
+
+.ai-table.table--dense th    { padding: 6px 8px;  font-size: .9rem;  }
+
+
+
+/* Numeric alignment helper (optional) */
+
+.ai-num { text-align: right; font-variant-numeric: tabular-nums; }
+
+
+
+/* Status pills (optional, for nice state badges) */
+
+.pill {
+
+  display: inline-block; padding: 2px 8px; border-radius: 999px;
+
+  font-size: .8rem; line-height: 1.4; border: 1px solid transparent;
+
+}
+
+.pill.ok    { background: rgba(16,185,129,.12); border-color: rgba(16,185,129,.25); }
+
+.pill.warn  { background: rgba(245,158,11,.12); border-color: rgba(245,158,11,.25); }
+
+.pill.block { background: rgba(239,68,68,.12);  border-color: rgba(239,68,68,.25); }
+
+
+
+/* Make markdown tables inside admonitions/expanders match */
+
+.md-typeset .admonition .md-typeset__table,
+
+.md-typeset details .md-typeset__table { margin: .5rem 0; }
+
+-------------------------------------------------------------------------------------
+
+
+1) 
+
+mkdocs.yml
+
+
+
+
+
+Add a small init script for Mermaid and keep your extra CSS.
+
+extra_javascript:
+
+  - https://unpkg.com/mermaid@10/dist/mermaid.min.js
+
+  - assets/js/mermaid-init.js
+
+
+
+extra_css:
+
+  - assets/styles/extra.css
+
+
+
+
+
+
+
+
+
+2) 
+
+docs/assets/styles/extra.css
+
+
+
+
+
+Card-style container + responsive scroll, matching your existing variables.
+
+/* ---- Mermaid Gantt: glass card wrapper ---- */
+
+.mermaid {
+
+  background: var(--card-bg-light);
+
+  border: var(--border);
+
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow);
+
+  backdrop-filter: blur(6px);
+
+  padding: 12px;                 /* breathing room so labels don't touch edges */
+
+  overflow: auto;                /* allow horizontal scroll when needed */
+
+  margin: 1rem 0;
+
+  -webkit-mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
+
+  mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
+
+}
+
+[data-md-color-scheme="slate"] .mermaid {
+
+  background: var(--card-bg-dark);
+
+  border: var(--border-dark);
+
+  box-shadow: var(--shadow-dark);
+
+}
+
+
+
+/* Make section labels a bit bolder and improve legibility */
+
+.mermaid .sectionTitle, .mermaid .grid .tick text {
+
+  font-weight: 600;
+
+  letter-spacing: .01em;
+
+}
+
+
+
+/* Slightly round task bars for a modern look */
+
+.mermaid .task {
+
+  rx: 6px; ry: 6px;
+
+}
+
+
+
+/* Finer gridlines */
+
+.mermaid .grid .tick line {
+
+  opacity: .35;
+
+}
+
+
+
+/* Improve milestone diamond visibility */
+
+.mermaid .milestone {
+
+  stroke-width: 2;
+
+}
+
+
+
+/* Optional: tighter layout variant */
+
+.ai-gantt--compact .mermaid { padding: 8px; }
+
+
+
+
+
+
+
+
+
+3) 
+
+docs/assets/js/mermaid-init.js
+
+
+
+
+
+Theme variables tuned for “Azure” feel in both schemes. Mermaid v10 supports themeVariables below.
+
+(function () {
+
+  // Read current scheme from Material (updates on toggle)
+
+  function currentScheme() {
+
+    const body = document.body;
+
+    const dark = body.getAttribute('data-md-color-scheme') === 'slate';
+
+    return dark ? 'dark' : 'light';
+
+  }
+
+
+
+  function themeVars(scheme) {
+
+    const isDark = scheme === 'dark';
+
+
+
+    // Base palette (indigo/azure accents)
+
+    const base = {
+
+      fontFamily: "Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+
+      primaryColor: isDark ? "#4f46e5" : "#4f46e5",
+
+      primaryTextColor: "#ffffff",
+
+      lineColor: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)",
+
+      textColor: isDark ? "rgba(255,255,255,0.92)" : "rgba(0,0,0,0.84)",
+
+      background: "transparent",         // card background handled by CSS
+
+      mainBkg: "transparent",
+
+      clusterBkg: "transparent",
+
+      clusterBorder: isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)",
+
+      borderRadius: 8
+
+    };
+
+
+
+    // Gantt specifics
+
+    const gantt = {
+
+      ganttAxisFontSize: "12px",
+
+      ganttTaskHeight: 24,
+
+      ganttBarCornerRadius: 6,
+
+      ganttSectionBkgColor: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.025)",
+
+      ganttSectionBkgColor2: "transparent",
+
+      ganttGridLineColor: isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)",
+
+      ganttTodayLineColor: isDark ? "#38bdf8" : "#4f46e5",
+
+    };
+
+
+
+    // Task states
+
+    const tasks = {
+
+      taskTextColor: base.textColor,
+
+      taskBkgColor: isDark ? "rgba(99,102,241,0.35)" : "rgba(99,102,241,0.18)",   // default
+
+      taskBorderColor: isDark ? "rgba(99,102,241,0.9)" : "rgba(99,102,241,0.65)",
+
+      taskDoneColor: isDark ? "rgba(16,185,129,0.35)" : "rgba(16,185,129,0.18)",
+
+      taskDoneTextColor: base.textColor,
+
+      taskLateColor: isDark ? "rgba(239,68,68,0.35)" : "rgba(239,68,68,0.2)",
+
+      taskLateTextColor: base.textColor,
+
+      taskCriticalColor: isDark ? "rgba(245,158,11,0.35)" : "rgba(245,158,11,0.22)",
+
+      taskCriticalTextColor: base.textColor,
+
+      activeTaskBorderColor: isDark ? "#93c5fd" : "#2563eb"
+
+    };
+
+
+
+    return Object.assign({}, base, gantt, tasks);
+
+  }
+
+
+
+  function initMermaid() {
+
+    const scheme = currentScheme();
+
+    mermaid.initialize({
+
+      startOnLoad: true,
+
+      theme: "base",               // use 'base' to fully control via themeVariables
+
+      themeVariables: themeVars(scheme),
+
+      gantt: {
+
+        useWidth: 1000,            // allow wide charts; container scrolls
+
+        leftPadding: 85,
+
+        rightPadding: 20,
+
+        topPadding: 30,
+
+        barGap: 6,
+
+        // tickInterval can be '1 week', '1 day', etc.  Keep default auto here.
+
+      },
+
+      securityLevel: "loose"       // allow HTML in labels (safe in docs)
+
+    });
+
+  }
+
+
+
+  // Initialize now
+
+  if (window.mermaid) initMermaid();
+
+
+
+  // Re-init when Material toggles color scheme
+
+  document.addEventListener("DOMContentLoaded", () => {
+
+    const observer = new MutationObserver((muts) => {
+
+      for (const m of muts) {
+
+        if (m.type === "attributes" && m.attributeName === "data-md-color-scheme") {
+
+          if (window.mermaid) initMermaid();
+
+        }
+
+      }
+
+    });
+
+    observer.observe(document.body, { attributes: true });
+
+  });
+
+})();
+
+
+
+
+
+
+
+
+
+4) Example usage in 
+
+docs/milestones.md
+
+
+
+
+
+Add the class .ai-gantt--compact to the page (optional), then your Mermaid block.
+
+# Roadmap (Q4)
+
+
+
+<div class="ai-gantt--compact">
+
+
+
+```mermaid
+
+gantt
+
+    title Product Milestones (Q4 2025)
+
+    dateFormat  YYYY-MM-DD
+
+    axisFormat  %d %b
+
+
+
+    %% Today marker
+
+    todayMarker stroke-width:2,stroke-dasharray: 3 3
+
+
+
+    section Core
+
+    Kickoff           :milestone, m1, 2025-10-03, 0d
+
+    Architecture      :active, a1, 2025-10-01, 2025-10-20
+
+    Beta Freeze       :milestone, m2, 2025-11-12, 0d
+
+    GA Release        :crit, milestone, m3, 2025-12-15, 0d
+
+
+
+    section Delivery
+
+    Feature A         :done,   f1, 2025-10-05, 2025-10-25
+
+    Feature B         :        f2, 2025-10-15, 2025-11-15
+
+    Hardening         :crit,   h1, 2025-11-16, 2025-12-10
+
+</div>
+
+```
+
+Notes
+
+
+
+:done, :crit, :active pick up the green / amber / accent tones you saw in tables.
+The container manages the rounded glass card; Mermaid itself is set to theme: base and themed with variables for light/dark.
+If your chart is very wide, it will scroll horizontally inside the rounded card.
+
+
+
+
+
+
+
+
+
+
+5) Optional: color “tags” per section
+
+
+
+
+
+If you want sections tinted differently (e.g., Core vs Delivery), add directives:
+
+gantt
+
+    title Tinted Sections
+
+    dateFormat  YYYY-MM-DD
+
+    %% Section colors (Mermaid v10 supports themeVariables but not per-section vars;
+
+    %% we can emulate with a subtle background task)
+
+    section Core
+
+    %% background strip (0 height visually but paints strip)
+
+    Core BG :done, corebg, 2025-10-01, 1d
+
+    Task 1  : a, 2025-10-01, 10d
+
+    section Delivery
+
+    Delivery BG :done, delbg, 2025-10-01, 1d
+
+    Task 2      : b, 2025-10-15, 8d
+
+(For stronger per-section hues, you can add small CSS overrides targeting gantt .section:nth-of-type(n).)
+

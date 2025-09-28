@@ -246,3 +246,74 @@ gantt
 
 
 Hard refresh (cache!) after changing JS/CSS.
+
+########################################################
+
+
+/* === FIX: ensure Mermaid text is visible and above overlays === */
+
+.mermaid { position: relative; }
+
+.mermaid::before { z-index: 0; }          /* your tinted sidebar stays behind */
+
+.mermaid svg { position: relative; z-index: 1; overflow: visible; }
+
+
+
+/* Force text colors (light & dark) */
+
+.mermaid text,
+
+.mermaid .taskText,
+
+.mermaid .sectionTitle,
+
+.mermaid .grid .tick text,
+
+.mermaid .titleText,
+
+.mermaid .milestoneText {
+
+  fill: rgba(15,23,42,0.92) !important;   /* dark gray on light */
+
+  opacity: 1 !important;
+
+}
+
+[data-md-color-scheme="slate"] .mermaid text,
+
+[data-md-color-scheme="slate"] .mermaid .taskText,
+
+[data-md-color-scheme="slate"] .mermaid .sectionTitle,
+
+[data-md-color-scheme="slate"] .mermaid .grid .tick text,
+
+[data-md-color-scheme="slate"] .mermaid .titleText,
+
+[data-md-color-scheme="slate"] .mermaid .milestoneText {
+
+  fill: rgba(255,255,255,0.92) !important; /* white on dark */
+
+  opacity: 1 !important;
+
+}
+
+
+
+/* Readable sizes (works with small base font-size too) */
+
+.mermaid .grid .tick text        { font-size: 12px !important; }
+
+.mermaid .sectionTitle           { font-size: 13px !important; font-weight: 600; }
+
+.mermaid .taskText, .mermaid .titleText { font-size: 12px !important; }
+
+
+
+/* If you use HTML labels via foreignObject, also set color */
+
+.mermaid .label, .mermaid .label * { color: rgba(15,23,42,0.92) !important; }
+
+[data-md-color-scheme="slate"] .mermaid .label,
+
+[data-md-color-scheme="slate"] .mermaid .label * { color: rgba(255,255,255,0.92) !important; }

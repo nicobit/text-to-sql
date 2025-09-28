@@ -1,460 +1,14 @@
-docs/index.md
+/* =========================================================
 
+   Azure-glass Tables for MkDocs Material (small base font-size)
 
+   Target: sites where body font-size ≈ 0.7 (e.g., 0.7rem)
 
-# Project X
+   ========================================================= */
 
 
 
-<div class="hero">
-
-  <h1>Build. Ship. Scale.</h1>
-
-  <p>Project X — AI-powered advisory platform. Secure, reliable, easy to extend.</p>
-
-  <p class="cta-row">
-
-    <a class="md-button md-button--primary" href="docs/getting-started/">Get started</a>
-
-    <a class="md-button" href="architecture/overview/">Architecture</a>
-
-    <a class="md-button" href="roadmap/">Roadmap</a>
-
-  </p>
-
-</div>
-
-
-
-<div class="badges">
-
-  <!-- Replace with your real badge URLs -->
-
-  <a href="https://gitlab.com/<group>/<project>/pipelines"><img src="https://gitlab.com/<group>/<project>/badges/main/pipeline.svg" alt="CI"></a>
-
-  <a href="https://gitlab.com/<group>/<project>/-/graphs/main/charts"><img src="https://gitlab.com/<group>/<project>/badges/main/coverage.svg" alt="Coverage"></a>
-
-  <a href="https://gitlab.com/<group>/<project>/-/releases"><img src="https://img.shields.io/gitlab/v/release/<group>/<project>?logo=gitlab" alt="Release"></a>
-
-</div>
-
-
-
-## Quick links
-
-
-
-<div class="card-grid">
-
-  <div class="card">
-
-    <h3>Documentation</h3>
-
-    <p>Developer guides, API reference, runbooks.</p>
-
-    <p><a class="md-button" href="docs/">Explore docs →</a></p>
-
-  </div>
-
-  <div class="card">
-
-    <h3>Architecture</h3>
-
-    <p>System overview, services, deployments.</p>
-
-    <p><a class="md-button" href="architecture/overview/">See architecture →</a></p>
-
-  </div>
-
-  <div class="card">
-
-    <h3>Roadmap</h3>
-
-    <p>Milestones, epics, releases (synced from GitLab).</p>
-
-    <p><a class="md-button" href="roadmap/">View roadmap →</a></p>
-
-  </div>
-
-  <div class="card">
-
-    <h3>Runbooks</h3>
-
-    <p>Operations & troubleshooting guides.</p>
-
-    <p><a class="md-button" href="docs/runbooks/">Open runbooks →</a></p>
-
-  </div>
-
-  <div class="card">
-
-    <h3>Confluence</h3>
-
-    <p>Business context, decisions, product docs.</p>
-
-    <p><a class="md-button" href="https://confluence.company.tld/x/...">Go to Confluence →</a></p>
-
-  </div>
-
-  <div class="card">
-
-    <h3>SharePoint</h3>
-
-    <p>Policies, templates, compliance artifacts.</p>
-
-    <p><a class="md-button" href="https://sharepoint.company.tld/sites/...">Go to SharePoint →</a></p>
-
-  </div>
-
-  <div class="card">
-
-    <h3>Reports</h3>
-
-    <p>KPI dashboards, reliability, cost, security.</p>
-
-    <p><a class="md-button" href="reports/">Open reports →</a></p>
-
-  </div>
-
-</div>
-
-
-
-## Scrum teams
-
-
-
-<div class="teams-grid">
-
-  <div class="team">
-
-    <h4>External Integration</h4>
-
-    <p>APIs, partner integrations, data ingestion.</p>
-
-    <p><a href="https://gitlab.com/<group>/team-external-integration/pages">Team site →</a></p>
-
-  </div>
-
-  <div class="team">
-
-    <h4>Data Processing</h4>
-
-    <p>Pipelines, enrichment, quality checks.</p>
-
-    <p><a href="https://gitlab.com/<group>/team-data-processing/pages">Team site →</a></p>
-
-  </div>
-
-  <div class="team">
-
-    <h4>Client Presentation</h4>
-
-    <p>SPA/UX, API gateway, presentation services.</p>
-
-    <p><a href="https://gitlab.com/<group>/team-client-presentation/pages">Team site →</a></p>
-
-  </div>
-
-  <div class="team">
-
-    <h4>Cloud Platform</h4>
-
-    <p>Infra, CI/CD, security, SRE, FinOps.</p>
-
-    <p><a href="https://gitlab.com/<group>/team-cloud-platform/pages">Team site →</a></p>
-
-  </div>
-
-  <div class="team">
-
-    <h4>AI/ML</h4>
-
-    <p>Models, agents, evaluation, feature stores.</p>
-
-    <p><a href="https://gitlab.com/<group>/team-aiml/pages">Team site →</a></p>
-
-  </div>
-
-</div>
-
-
-
-## What’s new
-
-
-
-!!! tip "Latest release — vX.Y.Z (YYYY-MM-DD)"
-
-    - **Enhancements:** …
-
-    - **Fixes:** …
-
-    - **Docs:** …
-
-    - **Ops:** …
-
-
-
-[Release notes →](roadmap/releases/)
-
-
-
-## Architecture at a glance
-
-
-
-```plantuml
-
-@startuml
-
-skinparam shadowing false
-
-skinparam rectangle {
-
-  BackgroundColor white
-
-  BorderColor #999999
-
-}
-
-actor User
-
-rectangle "Web SPA" as SPA
-
-rectangle "API Gateway" as G
-
-rectangle "Auth (AAD)" as AAD
-
-rectangle "Services" as S {
-
-  [Functions] as F
-
-  [Workers] as W
-
-}
-
-rectangle "Data" as D {
-
-  [SQL]
-
-  [Storage]
-
-  [Event Hub]
-
-}
-
-rectangle "Observability" as O {
-
-  [App Insights]
-
-  [Log Analytics]
-
-}
-
-rectangle "AI" as AI {
-
-  [Azure OpenAI]
-
-  [Prompt Orchestrator]
-
-}
-
-
-
-User --> SPA
-
-SPA --> G
-
-G --> AAD
-
-G --> F
-
-F --> W
-
-F --> D
-
-W --> D
-
-F --> AI
-
-F --> O
-
-@enduml
-
-
-
-Get started
-
-
-
-git clone git@gitlab.com:<group>/<project>.git
-
-cd <project>
-
-make dev   # or: poetry run mkdocs serve
-
-
-
-Dev environment: docs/dev-setup.md
-Security & access: docs/security.md
-Runbooks: docs/runbooks/
-Contributing: contributing/
-
-
----
-
-
-
-# `docs/styles/extra.css`
-
-
-
-```css
-
-/* Hero */
-
-.hero {
-
-  padding: 2.5rem 1rem 1rem;
-
-  text-align: center;
-
-}
-
-.hero h1 {
-
-  margin: 0 0 .4rem;
-
-  font-size: clamp(2rem, 4vw, 3rem);
-
-}
-
-.hero p { margin: .35rem 0; }
-
-.cta-row .md-button { margin: .25rem .25rem; }
-
-
-
-/* Badges */
-
-.badges { margin: .5rem 0 1rem; text-align: center; }
-
-.badges img { margin: 0 .35rem; vertical-align: middle; }
-
-
-
-/* Cards */
-
-.card-grid {
-
-  display: grid;
-
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-
-  gap: .9rem;
-
-  margin: 1rem 0 2rem;
-
-}
-
-.card {
-
-  border: 1px solid var(--md-default-fg-color--lightest);
-
-  border-radius: .4rem;
-
-  padding: 1rem;
-
-  background: var(--md-default-bg-color);
-
-}
-
-.card h3 { margin: 0 0 .25rem; }
-
-.card .md-button { margin-top: .4rem; }
-
-
-
-/* Teams */
-
-.teams-grid {
-
-  display: grid;
-
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-
-  gap: .9rem;
-
-  margin-bottom: 1.5rem;
-
-}
-
-.team {
-
-  border-left: 3px solid var(--md-accent-fg-color);
-
-  padding: .6rem .9rem;
-
-  background: var(--md-default-bg-color);
-
-}
-
-.team h4 { margin: 0 0 .25rem; }
-
-
-
-
-
-
-
-
-
-mkdocs.yml
-
- additions (keep your current config)
-
-
-
-extra_css:
-
-  - styles/extra.css
-
-
-
-nav:
-
-  - Home: index.md
-
-  - Roadmap:
-
-      - Overview: roadmap/index.md
-
-      - Releases: roadmap/releases.md
-
-  - Architecture:
-
-      - Overview: architecture/overview.md
-
-  - Docs:
-
-      - Getting started: docs/getting-started.md
-
-      - Runbooks: docs/runbooks.md
-
-  - Reports: reports/index.md
-
-  - Contributing: contributing/index.md
-
-------------------------------------------------------------
-
-
-
-* ===== Azure-glass tables for MkDocs Material ===== */
-
-
-
-/* Card-like container (Material wraps tables in this div) */
+/* ---- Card-like wrapper that Material uses for tables ---- */
 
 .md-typeset__table {
 
@@ -468,13 +22,17 @@ nav:
 
   backdrop-filter: blur(6px);
 
-  overflow: hidden;           /* lets the radius clip the table */
+  overflow: hidden;                 /* clip corners for the inner table */
 
   margin: 1rem 0;
 
-}
+  /* edge fade for horizontal scroll */
 
-/* Dark scheme */
+  -webkit-mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
+
+  mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
+
+}
 
 [data-md-color-scheme="slate"] .md-typeset__table {
 
@@ -488,21 +46,17 @@ nav:
 
 
 
-/* Smooth edge fade when horizontally scrolling wide tables */
+/* Smooth horizontal scrolling on very wide tables */
 
-.md-typeset__table {
-
-  -webkit-mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
-
-  mask-image: linear-gradient(to right, transparent 0, black 20px, black calc(100% - 20px), transparent 100%);
-
-}
+.md-typeset__table table { width: 100%; }
 
 
 
-/* Table base */
+/* ---- Base table styles (plain markdown tables and .ai-table) ---- */
 
-.md-typeset table:not([class]) {
+.md-typeset table:not([class]),
+
+.md-typeset table.ai-table {
 
   width: 100%;
 
@@ -510,7 +64,13 @@ nav:
 
   border-spacing: 0;
 
-  font-size: 0.95rem;
+  /* Slightly larger than site base (≈0.7) to keep readability */
+
+  font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+
+  line-height: 1.45;
+
+  table-layout: auto;
 
 }
 
@@ -520,13 +80,21 @@ nav:
 
 .md-typeset table:not([class]) th,
 
-.md-typeset table:not([class]) td {
+.md-typeset table:not([class]) td,
 
-  padding: 12px 14px;
+.md-typeset table.ai-table th,
 
-  border: 0;                  /* borders handled by striping + separators */
+.md-typeset table.ai-table td {
+
+  /* Use em so padding scales with the local font-size */
+
+  padding: 0.75em 0.9em;   /* ≈ 10–12px at 0.9–1.0rem */
+
+  border: 0;
 
   vertical-align: middle;
+
+  word-break: normal;
 
 }
 
@@ -534,19 +102,21 @@ nav:
 
 /* Header (sticky + subtle backdrop) */
 
-.md-typeset table:not([class]) thead th {
+.md-typeset table:not([class]) thead th,
+
+.md-typeset table.ai-table thead th {
 
   position: sticky;
 
-  top: calc(var(--md-header-height, 3.2rem) + 8px);  /* sit below the header */
+  /* offset to sit below Material header; adjust if needed */
+
+  top: calc(var(--md-header-height, 3.2rem) + 0.5rem);
 
   z-index: 2;
 
-  background: color-mix(in oklab, var(--md-default-bg-color) 78%, transparent);
+  background: color-mix(in oklab, var(--md-default-bg-color, #fff) 78%, transparent);
 
   font-weight: 600;
-
-  text-transform: none;
 
   letter-spacing: .01em;
 
@@ -554,9 +124,11 @@ nav:
 
 }
 
-[data-md-color-scheme="slate"] .md-typeset table:not([class]) thead th {
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) thead th,
 
-  background: color-mix(in oklab, var(--md-default-bg-color) 82%, transparent);
+[data-md-color-scheme="slate"] .md-typeset table.ai-table thead th {
+
+  background: color-mix(in oklab, var(--md-default-bg-color, #111) 82%, transparent);
 
   border-bottom: 1px solid rgba(255,255,255,.08);
 
@@ -564,15 +136,19 @@ nav:
 
 
 
-/* Row striping + separators */
+/* Row striping */
 
-.md-typeset table:not([class]) tbody tr:nth-child(odd) td {
+.md-typeset table:not([class]) tbody tr:nth-child(odd) td,
 
-  background: color-mix(in oklab, var(--md-default-bg-color) 96%, transparent);
+.md-typeset table.ai-table tbody tr:nth-child(odd) td {
+
+  background: color-mix(in oklab, var(--md-default-bg-color, #fff) 96%, transparent);
 
 }
 
-[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr:nth-child(odd) td {
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr:nth-child(odd) td,
+
+[data-md-color-scheme="slate"] .md-typeset table.ai-table tbody tr:nth-child(odd) td {
 
   background: rgba(255,255,255,0.02);
 
@@ -580,13 +156,19 @@ nav:
 
 
 
-.md-typeset table:not([class]) tbody tr td {
+/* Row separators */
+
+.md-typeset table:not([class]) tbody tr td,
+
+.md-typeset table.ai-table tbody tr td {
 
   border-top: 1px solid rgba(0,0,0,.05);
 
 }
 
-[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr td {
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr td,
+
+[data-md-color-scheme="slate"] .md-typeset table.ai-table tbody tr td {
 
   border-top: 1px solid rgba(255,255,255,.05);
 
@@ -594,47 +176,123 @@ nav:
 
 
 
-/* Hover highlight */
+/* Stronger hover highlight (indigo wash) + smooth transitions */
 
-.md-typeset table:not([class]) tbody tr:hover td {
+.md-typeset table:not([class]) tbody tr td,
 
-  background: color-mix(in oklab, var(--md-default-bg-color) 90%, transparent);
+.md-typeset table.ai-table tbody tr td {
 
-}
-
-[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr:hover td {
-
-  background: rgba(255,255,255,0.05);
+  transition: background-color .15s ease, color .15s ease;
 
 }
 
+.md-typeset table:not([class]) tbody tr:hover td,
+
+.md-typeset table.ai-table tbody tr:hover td {
+
+  background: color-mix(in oklab, #4f46e5 18%, var(--md-default-bg-color, #fff));
+
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr:hover td,
+
+[data-md-color-scheme="slate"] .md-typeset table.ai-table tbody tr:hover td {
+
+  background: color-mix(in oklab, #60a5fa 28%, var(--md-default-bg-color, #111));
+
+}
 
 
-/* Compact / dense variants via utility classes */
+
+/* Keyboard focus within a row */
+
+.md-typeset table tr:focus-within td {
+
+  outline: 0;
+
+  background: color-mix(in oklab, #4f46e5 20%, var(--md-default-bg-color, #fff));
+
+}
+
+[data-md-color-scheme="slate"] .md-typeset table tr:focus-within td {
+
+  background: color-mix(in oklab, #60a5fa 30%, var(--md-default-bg-color, #111));
+
+}
+
+
+
+/* ---- Compact / Dense variants (apply via attr_list) ----
+
+   Usage after the table:
+
+   {: .ai-table .table--compact}
+
+   or
+
+   {: .ai-table .table--dense}
+
+---------------------------------------------------------- */
 
 .ai-table.table--compact td,
 
-.ai-table.table--compact th { padding: 8px 10px; font-size: .92rem; }
+.ai-table.table--compact th {
+
+  padding: 0.55em 0.7em;           /* tighter */
+
+  font-size: clamp(0.82rem, 1.1vw, 0.9rem);
+
+}
 
 .ai-table.table--dense td,
 
-.ai-table.table--dense th    { padding: 6px 8px;  font-size: .9rem;  }
+.ai-table.table--dense th {
+
+  padding: 0.45em 0.6em;           /* densest */
+
+  font-size: clamp(0.8rem, 1vw, 0.88rem);
+
+}
 
 
 
-/* Numeric alignment helper (optional) */
+/* ---- Numeric alignment helper (optional) ----
 
-.ai-num { text-align: right; font-variant-numeric: tabular-nums; }
+   Use <td class="ai-num">123</td> or add via Markdown HTML.
+
+------------------------------------------------ */
+
+.ai-num {
+
+  text-align: right;
+
+  font-variant-numeric: tabular-nums;
+
+}
 
 
 
-/* Status pills (optional, for nice state badges) */
+/* ---- Status pills (optional) ----
+
+   Use: <span class="pill ok">On track</span>
+
+------------------------------------------------ */
 
 .pill {
 
-  display: inline-block; padding: 2px 8px; border-radius: 999px;
+  display: inline-block;
 
-  font-size: .8rem; line-height: 1.4; border: 1px solid transparent;
+  padding: 0.15em 0.55em;
+
+  border-radius: 999px;
+
+  font-size: 0.85em;               /* scale with table font */
+
+  line-height: 1.4;
+
+  border: 1px solid transparent;
+
+  white-space: nowrap;
 
 }
 
@@ -646,36 +304,84 @@ nav:
 
 
 
-/* Make markdown tables inside admonitions/expanders match */
+/* ---- Tables inside admonitions / tabs: keep sticky header visible ---- */
 
-.md-typeset .admonition .md-typeset__table,
+.md-typeset .admonition,
 
-.md-typeset details .md-typeset__table { margin: .5rem 0; }
+.md-typeset details,
 
--------------------------------------------------------------------------------------
+.md-typeset .tabbed-set { overflow: visible; }
+
+
+
+/* ---- Optional: disable sticky header on very small screens ---- */
+
+/*
+
+@media (max-width: 480px) {
+
+  .md-typeset table:not([class]) thead th,
+
+  .md-typeset table.ai-table thead th { position: static; }
+
+}
+
+*/
+
+
+
+/* =========================================================
+
+   End Azure-glass Tables
+
+   ========================================================= */
+
+Notes
+
+
+
+This assumes you already have the shared variables in your theme (--card-bg-light/dark, --border, --radius, --shadow, etc.).
+If your sticky header sits too low/high under your site header, adjust:
+
+
+.md-typeset table.ai-table thead th { top: calc(var(--md-header-height) + 0.25rem); }
+
+
+
+
+Remember to enable attr_list in mkdocs.yml if you use the per-table modifiers.
+
+
+-----------------------------------------------------------
+------------------------------------------------------------
+
 
 
 1) 
 
 mkdocs.yml
 
+ (keep Mermaid, add our init after it)
 
 
 
 
-Add a small init script for Mermaid and keep your extra CSS.
+
+Make sure our init loads after Mermaid:
 
 extra_javascript:
 
   - https://unpkg.com/mermaid@10/dist/mermaid.min.js
 
-  - assets/js/mermaid-init.js
+  - assets/js/mermaid-init.js   # <-- new
 
 
 
 extra_css:
 
   - assets/styles/extra.css
+
+If you had another custom Mermaid init script, remove it to prevent conflicts.
 
 
 
@@ -687,15 +393,299 @@ extra_css:
 
 2) 
 
-docs/assets/styles/extra.css
+docs/assets/js/mermaid-init.js
 
 
 
 
 
-Card-style container + responsive scroll, matching your existing variables.
+This file integrates the theme variables + safe re-init:
 
-/* ---- Mermaid Gantt: glass card wrapper ---- */
+(function () {
+
+  // ---- helpers ----
+
+  const isDark = () => document.body.getAttribute('data-md-color-scheme') === 'slate';
+
+
+
+  const themeVars = (dark) => {
+
+    const baseText = dark ? "rgba(255,255,255,0.92)" : "rgba(0,0,0,0.84)";
+
+    return {
+
+      /* base */
+
+      fontFamily: "Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+
+      primaryColor: "#4f46e5",
+
+      primaryTextColor: "#ffffff",
+
+      secondaryColor: dark ? "rgba(99,102,241,0.35)" : "rgba(99,102,241,0.18)",
+
+      tertiaryColor: "transparent",
+
+      lineColor: dark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)",
+
+      textColor: baseText,
+
+      background: "transparent",
+
+      mainBkg: "transparent",
+
+      clusterBkg: "transparent",
+
+      clusterBorder: dark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)",
+
+      borderRadius: 8,
+
+
+
+      /* gantt specifics */
+
+      ganttAxisFontSize: "12px",
+
+      ganttTaskHeight: 24,
+
+      ganttBarCornerRadius: 6,
+
+      ganttSectionBkgColor: dark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.025)",
+
+      ganttSectionBkgColor2: "transparent",
+
+      ganttGridLineColor: dark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)",
+
+      ganttTodayLineColor: dark ? "#38bdf8" : "#4f46e5",
+
+
+
+      /* task states */
+
+      taskTextColor: baseText,
+
+      taskBkgColor: dark ? "rgba(99,102,241,0.35)" : "rgba(99,102,241,0.18)",
+
+      taskBorderColor: dark ? "rgba(99,102,241,0.9)" : "rgba(99,102,241,0.65)",
+
+      taskDoneColor: dark ? "rgba(16,185,129,0.35)" : "rgba(16,185,129,0.18)",
+
+      taskDoneTextColor: baseText,
+
+      taskLateColor: dark ? "rgba(239,68,68,0.35)" : "rgba(239,68,68,0.2)",
+
+      taskLateTextColor: baseText,
+
+      taskCriticalColor: dark ? "rgba(245,158,11,0.35)" : "rgba(245,158,11,0.22)",
+
+      taskCriticalTextColor: baseText,
+
+      activeTaskBorderColor: dark ? "#93c5fd" : "#2563eb",
+
+    };
+
+  };
+
+
+
+  function configureMermaid() {
+
+    const dark = isDark();
+
+    mermaid.initialize({
+
+      startOnLoad: false,          // we render manually to avoid double init
+
+      theme: "base",
+
+      themeVariables: themeVars(dark),
+
+      gantt: {
+
+        useWidth: 1000,
+
+        leftPadding: 85,
+
+        rightPadding: 20,
+
+        topPadding: 30,
+
+        barGap: 6
+
+      },
+
+      securityLevel: "loose"
+
+    });
+
+  }
+
+
+
+  // Render all .mermaid blocks, safely (clean data-processed)
+
+  async function renderAll() {
+
+    if (!window.mermaid) return;
+
+    configureMermaid();
+
+
+
+    const blocks = Array.from(document.querySelectorAll(".mermaid"));
+
+    // Unprocess if already rendered (so we can re-render on theme toggle)
+
+    blocks.forEach(el => {
+
+      el.removeAttribute('data-processed');
+
+      // If Mermaid replaced the element contents with <svg>, restore original text if stored
+
+      if (el.__original) el.textContent = el.__original;
+
+      else el.__original = el.textContent;
+
+    });
+
+
+
+    try {
+
+      await mermaid.run({ nodes: blocks });
+
+    } catch (e) {
+
+      // Fallback: render one by one to isolate errors
+
+      for (const el of blocks) {
+
+        try { await mermaid.run({ nodes: [el] }); } catch (err) { console.error(err); }
+
+      }
+
+    }
+
+  }
+
+
+
+  function init() {
+
+    if (!window.mermaid) return;
+
+    renderAll();
+
+  }
+
+
+
+  // Initial load
+
+  if (document.readyState === "loading") {
+
+    document.addEventListener("DOMContentLoaded", init);
+
+  } else {
+
+    init();
+
+  }
+
+
+
+  // Re-render on Material theme toggle (light/dark)
+
+  const obs = new MutationObserver((muts) => {
+
+    for (const m of muts) {
+
+      if (m.type === "attributes" && m.attributeName === "data-md-color-scheme") {
+
+        renderAll();
+
+        break;
+
+      }
+
+    }
+
+  });
+
+  obs.observe(document.body, { attributes: true });
+
+
+
+  // Re-render when navigating between pages with instant navigation enabled
+
+  document.addEventListener("DOMContentLoaded", () => {
+
+    const main = document.querySelector("main");
+
+    if (!main) return;
+
+    const navObs = new MutationObserver(() => renderAll());
+
+    navObs.observe(main, { childList: true, subtree: true });
+
+  });
+
+})();
+
+
+
+
+
+
+
+
+
+3) Keep your existing Mermaid in Markdown
+
+
+
+
+
+No changes needed in your .md files—your blocks like:
+
+```mermaid
+
+gantt
+
+  title Product Milestones (Q4 2025)
+
+  dateFormat  YYYY-MM-DD
+
+  axisFormat  %d %b
+
+  section Core
+
+  Kickoff :milestone, m1, 2025-10-03, 0d
+
+  Architecture :active, a1, 2025-10-01, 2025-10-20
+
+  section Delivery
+
+  Feature A :done, f1, 2025-10-05, 2025-10-25
+
+  Feature B : f2, 2025-10-15, 2025-11-15
+
+…will render using the new theme and will auto-repaint when the user toggles dark mode.
+
+
+
+---
+
+
+
+# 4) (Optional) Keep the “glass card” look
+
+If you haven’t added this yet, include the wrapper styles in your `extra.css`:
+
+
+
+```css
 
 .mermaid {
 
@@ -709,9 +699,9 @@ Card-style container + responsive scroll, matching your existing variables.
 
   backdrop-filter: blur(6px);
 
-  padding: 12px;                 /* breathing room so labels don't touch edges */
+  padding: 12px;
 
-  overflow: auto;                /* allow horizontal scroll when needed */
+  overflow: auto;
 
   margin: 1rem 0;
 
@@ -733,358 +723,8 @@ Card-style container + responsive scroll, matching your existing variables.
 
 
 
-/* Make section labels a bit bolder and improve legibility */
 
-.mermaid .sectionTitle, .mermaid .grid .tick text {
 
-  font-weight: 600;
 
-  letter-spacing: .01em;
 
-}
-
-
-
-/* Slightly round task bars for a modern look */
-
-.mermaid .task {
-
-  rx: 6px; ry: 6px;
-
-}
-
-
-
-/* Finer gridlines */
-
-.mermaid .grid .tick line {
-
-  opacity: .35;
-
-}
-
-
-
-/* Improve milestone diamond visibility */
-
-.mermaid .milestone {
-
-  stroke-width: 2;
-
-}
-
-
-
-/* Optional: tighter layout variant */
-
-.ai-gantt--compact .mermaid { padding: 8px; }
-
-
-
-
-
-
-
-
-
-3) 
-
-docs/assets/js/mermaid-init.js
-
-
-
-
-
-Theme variables tuned for “Azure” feel in both schemes. Mermaid v10 supports themeVariables below.
-
-(function () {
-
-  // Read current scheme from Material (updates on toggle)
-
-  function currentScheme() {
-
-    const body = document.body;
-
-    const dark = body.getAttribute('data-md-color-scheme') === 'slate';
-
-    return dark ? 'dark' : 'light';
-
-  }
-
-
-
-  function themeVars(scheme) {
-
-    const isDark = scheme === 'dark';
-
-
-
-    // Base palette (indigo/azure accents)
-
-    const base = {
-
-      fontFamily: "Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
-
-      primaryColor: isDark ? "#4f46e5" : "#4f46e5",
-
-      primaryTextColor: "#ffffff",
-
-      lineColor: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)",
-
-      textColor: isDark ? "rgba(255,255,255,0.92)" : "rgba(0,0,0,0.84)",
-
-      background: "transparent",         // card background handled by CSS
-
-      mainBkg: "transparent",
-
-      clusterBkg: "transparent",
-
-      clusterBorder: isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)",
-
-      borderRadius: 8
-
-    };
-
-
-
-    // Gantt specifics
-
-    const gantt = {
-
-      ganttAxisFontSize: "12px",
-
-      ganttTaskHeight: 24,
-
-      ganttBarCornerRadius: 6,
-
-      ganttSectionBkgColor: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.025)",
-
-      ganttSectionBkgColor2: "transparent",
-
-      ganttGridLineColor: isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)",
-
-      ganttTodayLineColor: isDark ? "#38bdf8" : "#4f46e5",
-
-    };
-
-
-
-    // Task states
-
-    const tasks = {
-
-      taskTextColor: base.textColor,
-
-      taskBkgColor: isDark ? "rgba(99,102,241,0.35)" : "rgba(99,102,241,0.18)",   // default
-
-      taskBorderColor: isDark ? "rgba(99,102,241,0.9)" : "rgba(99,102,241,0.65)",
-
-      taskDoneColor: isDark ? "rgba(16,185,129,0.35)" : "rgba(16,185,129,0.18)",
-
-      taskDoneTextColor: base.textColor,
-
-      taskLateColor: isDark ? "rgba(239,68,68,0.35)" : "rgba(239,68,68,0.2)",
-
-      taskLateTextColor: base.textColor,
-
-      taskCriticalColor: isDark ? "rgba(245,158,11,0.35)" : "rgba(245,158,11,0.22)",
-
-      taskCriticalTextColor: base.textColor,
-
-      activeTaskBorderColor: isDark ? "#93c5fd" : "#2563eb"
-
-    };
-
-
-
-    return Object.assign({}, base, gantt, tasks);
-
-  }
-
-
-
-  function initMermaid() {
-
-    const scheme = currentScheme();
-
-    mermaid.initialize({
-
-      startOnLoad: true,
-
-      theme: "base",               // use 'base' to fully control via themeVariables
-
-      themeVariables: themeVars(scheme),
-
-      gantt: {
-
-        useWidth: 1000,            // allow wide charts; container scrolls
-
-        leftPadding: 85,
-
-        rightPadding: 20,
-
-        topPadding: 30,
-
-        barGap: 6,
-
-        // tickInterval can be '1 week', '1 day', etc.  Keep default auto here.
-
-      },
-
-      securityLevel: "loose"       // allow HTML in labels (safe in docs)
-
-    });
-
-  }
-
-
-
-  // Initialize now
-
-  if (window.mermaid) initMermaid();
-
-
-
-  // Re-init when Material toggles color scheme
-
-  document.addEventListener("DOMContentLoaded", () => {
-
-    const observer = new MutationObserver((muts) => {
-
-      for (const m of muts) {
-
-        if (m.type === "attributes" && m.attributeName === "data-md-color-scheme") {
-
-          if (window.mermaid) initMermaid();
-
-        }
-
-      }
-
-    });
-
-    observer.observe(document.body, { attributes: true });
-
-  });
-
-})();
-
-
-
-
-
-
-
-
-
-4) Example usage in 
-
-docs/milestones.md
-
-
-
-
-
-Add the class .ai-gantt--compact to the page (optional), then your Mermaid block.
-
-# Roadmap (Q4)
-
-
-
-<div class="ai-gantt--compact">
-
-
-
-```mermaid
-
-gantt
-
-    title Product Milestones (Q4 2025)
-
-    dateFormat  YYYY-MM-DD
-
-    axisFormat  %d %b
-
-
-
-    %% Today marker
-
-    todayMarker stroke-width:2,stroke-dasharray: 3 3
-
-
-
-    section Core
-
-    Kickoff           :milestone, m1, 2025-10-03, 0d
-
-    Architecture      :active, a1, 2025-10-01, 2025-10-20
-
-    Beta Freeze       :milestone, m2, 2025-11-12, 0d
-
-    GA Release        :crit, milestone, m3, 2025-12-15, 0d
-
-
-
-    section Delivery
-
-    Feature A         :done,   f1, 2025-10-05, 2025-10-25
-
-    Feature B         :        f2, 2025-10-15, 2025-11-15
-
-    Hardening         :crit,   h1, 2025-11-16, 2025-12-10
-
-</div>
-
-```
-
-Notes
-
-
-
-:done, :crit, :active pick up the green / amber / accent tones you saw in tables.
-The container manages the rounded glass card; Mermaid itself is set to theme: base and themed with variables for light/dark.
-If your chart is very wide, it will scroll horizontally inside the rounded card.
-
-
-
-
-
-
-
-
-
-
-5) Optional: color “tags” per section
-
-
-
-
-
-If you want sections tinted differently (e.g., Core vs Delivery), add directives:
-
-gantt
-
-    title Tinted Sections
-
-    dateFormat  YYYY-MM-DD
-
-    %% Section colors (Mermaid v10 supports themeVariables but not per-section vars;
-
-    %% we can emulate with a subtle background task)
-
-    section Core
-
-    %% background strip (0 height visually but paints strip)
-
-    Core BG :done, corebg, 2025-10-01, 1d
-
-    Task 1  : a, 2025-10-01, 10d
-
-    section Delivery
-
-    Delivery BG :done, delbg, 2025-10-01, 1d
-
-    Task 2      : b, 2025-10-15, 8d
-
-(For stronger per-section hues, you can add small CSS overrides targeting gantt .section:nth-of-type(n).)
-
+That’s it. Replace your old init with this mermaid-init.js and you’ll have the Azure-style Gantt theme, dark-mode sync, and safe re-renders without duplication.

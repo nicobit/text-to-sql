@@ -822,3 +822,150 @@ That’s it. Replace your old init with this mermaid-init.js and you’ll have t
   color: #ffffff;
 
 }
+
+################################################################################################
+
+
+1) 
+
+mkdocs.yml
+
+ – load Mermaid + a small init
+
+
+
+extra_javascript:
+
+  - https://unpkg.com/mermaid@10/dist/mermaid.min.js
+
+  - assets/js/mermaid-init.js      # << add this
+
+
+
+extra_css:
+
+  - assets/styles/extra.css         # if you already have it, keep it
+
+
+
+2) 
+
+docs/assets/js/mermaid-init.js
+
+ – tiny themed init
+
+
+
+// Minimal Azure-ish theme for Mermaid (works for Gantt too)
+
+(function () {
+
+  const dark = document.body.getAttribute('data-md-color-scheme') === 'slate';
+
+
+
+  mermaid.initialize({
+
+    startOnLoad: true,
+
+    theme: "base",
+
+    themeVariables: {
+
+      fontFamily: "Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+
+      textColor: dark ? "rgba(255,255,255,0.92)" : "rgba(0,0,0,0.84)",
+
+      lineColor: dark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)",
+
+      primaryColor: "#4f46e5",
+
+      /* Gantt specifics (subtle, readable) */
+
+      ganttAxisFontSize: "12px",
+
+      ganttTaskHeight: 24,
+
+      ganttBarCornerRadius: 6,
+
+      ganttGridLineColor: dark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)",
+
+      ganttTodayLineColor: dark ? "#38bdf8" : "#4f46e5",
+
+      taskBkgColor: dark ? "rgba(99,102,241,0.35)" : "rgba(99,102,241,0.18)",
+
+      taskBorderColor: dark ? "rgba(99,102,241,0.9)"  : "rgba(99,102,241,0.65)",
+
+      taskDoneColor:   dark ? "rgba(16,185,129,0.35)" : "rgba(16,185,129,0.18)",
+
+      taskLateColor:   dark ? "rgba(239,68,68,0.35)"  : "rgba(239,68,68,0.2)",
+
+      taskCriticalColor: dark ? "rgba(245,158,11,0.35)" : "rgba(245,158,11,0.22)"
+
+    },
+
+    securityLevel: "loose"
+
+  });
+
+})();
+
+
+
+(Optional) 3) 
+
+docs/assets/styles/extra.css
+
+ – minimal “card” wrapper
+
+
+
+/* Minimal rounded card for Mermaid blocks */
+
+.mermaid{
+
+  background: #fff;
+
+  border: 1px solid rgba(0,0,0,.06);
+
+  border-radius: 14px;
+
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+
+  padding: 12px;
+
+  overflow: auto;
+
+  margin: 1rem 0;
+
+}
+
+[data-md-color-scheme="slate"] .mermaid{
+
+  background: rgba(17,24,39,0.7);
+
+  border: 1px solid rgba(255,255,255,.10);
+
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+
+}
+
+That’s it. No other changes to your Markdown—your existing:
+
+```mermaid
+
+gantt
+
+  title Product Milestones (Q4 2025)
+
+  dateFormat  YYYY-MM-DD
+
+  axisFormat  %d %b
+
+  section Core
+
+  Kickoff :milestone, m1, 2025-10-03, 0d
+
+  Architecture :active, a1, 2025-10-01, 2025-10-20
+
+…will render with the new theme and rounded-card look. If you want dark-mode to re-theme on toggle later, we can add a 5-line observer—but this is the **minimum** to get the style.

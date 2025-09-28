@@ -1340,3 +1340,28 @@ gantt
 Just these three files and your current Gantt blocks will render with a clean, Azure-ish professional look (rounded card, indigo accents, dark-mode aware). If you want badges, per-section tints, or inline links on bars, say the word and I’ll add the minimal snippets.
 
 
+##########################################
+
+
+
+.mermaid{
+
+  background:#fff; border:1px solid rgba(0,0,0,.06); border-radius:14px;
+
+  box-shadow:0 8px 24px rgba(0,0,0,.08); padding:12px; margin:1rem 0; overflow:auto;
+
+}
+
+[data-md-color-scheme="slate"] .mermaid{
+
+  background:rgba(17,24,39,.7); border:1px solid rgba(255,255,255,.10); box-shadow:0 10px 30px rgba(0,0,0,.35);
+
+}
+
+.mermaid .today{ stroke-width:2.5; }
+
+.mermaid .task{ rx:7px; ry:7px; }
+
+.mermaid .sectionTitle, .mermaid .grid .tick text{ font-weight:600; letter-spacing:.01em; }
+
+

@@ -1,0 +1,248 @@
+A) Keep Mermaid simple (no theme vars needed)
+
+
+
+# mkdocs.yml
+
+extra_javascript:
+
+  - https://unpkg.com/mermaid@8.14.0/dist/mermaid.min.js   # works with the CSS below
+
+  - assets/js/mermaid-init-v8.js
+
+
+
+extra_css:
+
+  - assets/styles/mermaid-azure.css
+
+assets/js/mermaid-init-v8.js
+
+(function(){
+
+  // Minimal init (v8 & v10 compatible); no themeVariables
+
+  mermaid.initialize({
+
+    startOnLoad: true,
+
+    securityLevel: "loose",
+
+    theme: "default",
+
+    gantt: { topPadding: 52, leftPadding: 90, rightPadding: 24, barGap: 6 }
+
+  });
+
+})();
+
+
+
+B) CSS-only “ai.azure” look (works on v8 
+
+and
+
+ v10)
+
+
+
+
+
+Paste all of this into assets/styles/mermaid-azure.css:
+
+/* Card wrapper */
+
+.mermaid{
+
+  background:#fff; border:1px solid rgba(0,0,0,.06); border-radius:14px;
+
+  box-shadow:0 8px 24px rgba(0,0,0,.08); padding:12px; margin:1rem 0; overflow:auto;
+
+}
+
+[data-md-color-scheme="slate"] .mermaid{
+
+  background:rgba(17,24,39,.7); border:1px solid rgba(255,255,255,.10); box-shadow:0 10px 30px rgba(0,0,0,.35);
+
+}
+
+
+
+/* Axis labels readable (v8/v10) */
+
+.mermaid .grid .tick text{ fill: rgba(15,23,42,.85) !important; font-size:12px !important; }
+
+[data-md-color-scheme="slate"] .mermaid .grid .tick text{ fill: rgba(255,255,255,.9) !important; }
+
+
+
+/* Subtle vertical date lines */
+
+.mermaid .grid .tick line{ stroke: rgba(2,6,23,.10) !important; }
+
+[data-md-color-scheme="slate"] .mermaid .grid .tick line{ stroke: rgba(255,255,255,.12) !important; }
+
+
+
+/* Today marker: thin line */
+
+.mermaid .today{ stroke:#2563eb !important; stroke-width:3px !important; }
+
+/* Or: uncomment to simulate a vertical 'band' */
+
+/* .mermaid .today{ stroke:#2563eb !important; stroke-opacity:.22; stroke-width:10px !important; } */
+
+
+
+/* Task bars (rounded) */
+
+.mermaid .task rect{ rx:7px; ry:7px; }
+
+
+
+/* Default task color tweak */
+
+.mermaid .task rect{
+
+  fill: rgba(99,102,241,.18) !important;           /* indigo wash */
+
+  stroke: rgba(99,102,241,.55) !important;
+
+}
+
+.mermaid .taskText{ fill: rgba(15,23,42,.92) !important; }
+
+[data-md-color-scheme="slate"] .mermaid .taskText{ fill: rgba(255,255,255,.92) !important; }
+
+
+
+/* Done / critical / late hints (optional) */
+
+.mermaid .done rect{ fill: rgba(16,185,129,.20) !important; stroke: rgba(16,185,129,.55) !important; }
+
+.mermaid .crit rect{ fill: rgba(245,158,11,.22) !important; stroke: rgba(245,158,11,.55) !important; }
+
+.mermaid .active rect{ stroke-width:2px !important; }
+
+
+
+/* Milestones = indigo diamonds */
+
+.mermaid .milestone,
+
+.mermaid .milestone rect,
+
+.mermaid .milestone polygon{ fill:#4f46e5 !important; stroke:#4f46e5 !important; }
+
+.mermaid .milestoneText{ fill:#ffffff !important; }
+
+
+
+/* Prevent header clipping */
+
+.mermaid svg{ overflow:visible; }
+
+
+
+/* Optional: pale sidebar behind section titles (adjust width as you like) */
+
+.mermaid{ position:relative; }
+
+.mermaid::before{
+
+  content:""; position:absolute; left:0; top:0; bottom:0; width:150px;
+
+  background:rgba(99,102,241,.06); border-right:1px solid rgba(0,0,0,.06); pointer-events:none;
+
+}
+
+[data-md-color-scheme="slate"] .mermaid::before{
+
+  background:rgba(99,102,241,.16); border-right:1px solid rgba(255,255,255,.10);
+
+}
+
+
+
+C) Mermaid block (no theme vars; links + today band)
+
+
+
+gantt
+
+    title Product Milestones (Q4 2025)
+
+    dateFormat  YYYY-MM-DD
+
+    tickInterval 1 week                 %% keep the space!
+
+    todayMarker stroke-width:10,stroke:#2563eb,stroke-opacity:0.22
+
+
+
+    section Core
+
+    Kickoff       :milestone, m1, 2025-10-03, 0d
+
+    Architecture  :active,    a1, 2025-10-06, 2025-11-12
+
+
+
+    section Delivery
+
+    Feature A     :done,      f1, 2025-10-05, 2025-10-25
+
+    Feature B     :           f2, 2025-10-15, 2025-11-15
+
+    Hardening     :crit,      h1, 2025-11-16, 2025-12-10
+
+
+
+    %% Clickable items (requires securityLevel: "loose" in init)
+
+    click m1 href "https://example.com/kickoff" "Kickoff notes"
+
+
+
+
+
+
+
+
+
+If you prefer to stay on Mermaid v10 later
+
+
+
+
+
+Swap the script to @10 and keep the same CSS; it will still apply.
+If you do upgrade and want to go back to theme vars, we can trim the CSS and move colors into theme: "base" again.
+
+
+
+
+
+
+Quick sanity checks
+
+
+
+
+
+Only one Mermaid script loaded.
+Code fences are exactly:
+
+
+```mermaid
+
+gantt
+
+  ...
+
+
+
+
+
+
+Hard refresh (cache!) after changing JS/CSS.

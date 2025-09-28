@@ -1539,3 +1539,149 @@ If you paste your current mkdocs.yml (theme + extra_javascript) and one Gantt bl
 <a href="https://example.com/kickoff" target="_blank">↗</a>
 
 
+1) Fix the Gantt block (two tweaks)
+
+
+
+
+
+Use the correct spacing for tick interval.
+Temporarily remove axisFormat so Mermaid draws the default month (top) + day (bottom) rows. Re-add later if you want a single row like 03 Oct.
+
+
+gantt
+
+    title Detailed Milestones
+
+    dateFormat  YYYY-MM-DD
+
+    tickInterval 1 week        %% <-- space matters
+
+
+
+    %% Optional: force a visible time window if you only have 0-day milestones
+
+    %% (replace the dates with your min/max)
+
+    __range__ : r0, 2025-09-28, 2025-10-10
+
+
+
+    section Due Dates
+
+    Sub-Submit for Change Request Approval :milestone, m1, 2025-09-29, 0d
+
+    Sub-Regression Test start              :milestone, m2, 2025-09-29, 0d
+
+If you must keep axisFormat, make sure it’s valid:
+
+axisFormat %d %b (e.g., “29 Sep”). But note: custom axisFormat collapses the two-row header into a single row.
+
+
+
+
+
+2) Ensure your Mermaid version/init is applied
+
+
+
+
+
+Load Mermaid then your init (v10 recommended):
+
+extra_javascript:
+
+  - https://unpkg.com/mermaid@10/dist/mermaid.min.js
+
+  - assets/js/mermaid-init.js
+
+Minimal mermaid-init.js:
+
+(function () {
+
+  mermaid.initialize({
+
+    startOnLoad: true,
+
+    securityLevel: "loose",
+
+    theme: "base",
+
+    gantt: { topPadding: 50 }  // give header room for month/day rows
+
+  });
+
+})();
+
+On older Material that bundles Mermaid v8, you can still use the same init (theme vars won’t apply, but labels render).
+
+
+
+
+
+3) Add a tiny CSS safeguard for labels (both light/dark, v8/v10)
+
+
+
+
+
+Paste at the end of your extra.css:
+
+/* Make sure axis labels are visible and large enough */
+
+.mermaid .grid .tick text {
+
+  fill: rgba(15,23,42,.85) !important;
+
+  font-size: 12px !important;
+
+}
+
+[data-md-color-scheme="slate"] .mermaid .grid .tick text {
+
+  fill: rgba(255,255,255,.90) !important;
+
+}
+
+
+
+/* If a wrapper is clipping the top row, let it overflow */
+
+.mermaid svg { overflow: visible; }
+
+
+
+/* (Optional) if you added a ::before sidebar, keep it behind the SVG */
+
+.mermaid { position: relative; }
+
+.mermaid::before { z-index: 0; }
+
+.mermaid svg { position: relative; z-index: 1; }
+
+
+
+4) Quick checklist
+
+
+
+
+
+Your generator outputs a fence exactly like:
+
+
+```mermaid
+
+gantt
+
+  ...
+
+
+
+
+
+
+You have at least some span on the timeline (use the __range__ row if you only have 0-day milestones).
+Hard refresh the page (or bump the asset URL) to avoid cached JS/CSS.
+
+

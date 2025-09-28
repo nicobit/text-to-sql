@@ -907,3 +907,53 @@ E nel CSS aggiungi (riusa quello sopra, opzionale):
 
 
 Con l’opzione A ottieni subito lo stile “ai.azure” su tutti i Gantt; con l’opzione B puoi “incardare” solo quelli che vuoi—sempre senza <div> scritto a mano.
+
+
+###############################
+
+
+/* LIGHT THEME (MkDocs Material) */
+
+:root [data-md-color-scheme="default"] .md-typeset :is(div.mermaid, pre.mermaid) text,
+
+:root [data-md-color-scheme="default"] .md-typeset :is(div.mermaid, pre.mermaid) .tick text,
+
+:root [data-md-color-scheme="default"] .md-typeset :is(div.mermaid, pre.mermaid) .taskText,
+
+:root [data-md-color-scheme="default"] .md-typeset :is(div.mermaid, pre.mermaid) .titleText,
+
+:root [data-md-color-scheme="default"] .md-typeset :is(div.mermaid, pre.mermaid) .milestoneText {
+
+  fill: #111827 !important;   /* dark gray on white */
+
+}
+
+
+
+/* DARK THEME (MkDocs Material “slate”) */
+
+:root [data-md-color-scheme="slate"] .md-typeset :is(div.mermaid, pre.mermaid) text,
+
+:root [data-md-color-scheme="slate"] .md-typeset :is(div.mermaid, pre.mermaid) .tick text,
+
+:root [data-md-color-scheme="slate"] .md-typeset :is(div.mermaid, pre.mermaid) .taskText,
+
+:root [data-md-color-scheme="slate"] .md-typeset :is(div.mermaid, pre.mermaid) .titleText,
+
+:root [data-md-color-scheme="slate"] .md-typeset :is(div.mermaid, pre.mermaid) .milestoneText {
+
+  fill: #E5E7EB !important;   /* light gray on dark */
+
+}
+
+
+
+/* If milestone text should always be white on purple diamonds */
+
+.md-typeset :is(div.mermaid, pre.mermaid) .milestoneText { fill: #ffffff !important; }
+
+
+
+/* Optional: hide the bottom axis so only the top dates remain */
+
+.md-typeset :is(div.mermaid, pre.mermaid) g.axis.x:nth-of-type(1) { display: none; }

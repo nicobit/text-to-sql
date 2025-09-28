@@ -1365,3 +1365,171 @@ Just these three files and your current Gantt blocks will render with a clean, A
 .mermaid .sectionTitle, .mermaid .grid .tick text{ font-weight:600; letter-spacing:.01em; }
 
 
+#######################################
+
+
+
+
+1) Add a faux sidebar tint (the “ai.azure” look)
+
+
+
+
+
+This paints a pale indigo strip behind the section titles without relying on Mermaid internals.
+
+/* ---- Azure-style sidebar strip for Mermaid Gantt ---- */
+
+.mermaid {
+
+  position: relative;
+
+  background: #fff;
+
+  border: 1px solid rgba(0,0,0,.06);
+
+  border-radius: 14px;
+
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+
+  padding: 12px;
+
+  margin: 1rem 0;
+
+  overflow: auto;
+
+}
+
+
+
+/* width of the label column (tweak 140–170px to taste) */
+
+.mermaid::before {
+
+  content: "";
+
+  position: absolute;
+
+  left: 0; top: 0; bottom: 0;
+
+  width: 150px;
+
+  background: rgba(99,102,241,.06);
+
+  border-right: 1px solid rgba(0,0,0,.06);
+
+  pointer-events: none; /* don’t block clicks/scroll */
+
+}
+
+
+
+[data-md-color-scheme="slate"] .mermaid {
+
+  background: rgba(17,24,39,.70);
+
+  border: 1px solid rgba(255,255,255,.10);
+
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+
+}
+
+[data-md-color-scheme="slate"] .mermaid::before {
+
+  background: rgba(99,102,241,.16);
+
+  border-right: 1px solid rgba(255,255,255,.10);
+
+}
+
+
+
+/* make section titles + axis easier to read */
+
+.mermaid .sectionTitle { font-weight: 600; fill: rgba(15,23,42,.9); }
+
+.mermaid .grid .tick text { fill: rgba(15,23,42,.7); }
+
+[data-md-color-scheme="slate"] .mermaid .sectionTitle { fill: rgba(255,255,255,.92); }
+
+[data-md-color-scheme="slate"] .mermaid .grid .tick text { fill: rgba(255,255,255,.75); }
+
+
+
+/* nicer bars/milestones regardless of Mermaid version */
+
+.mermaid .task rect { rx: 7px; ry: 7px; }
+
+.mermaid .today { stroke: #2563eb; stroke-width: 2.5; }
+
+If the sidebar width doesn’t align with your labels, adjust width: 150px; until it hugs the text nicely.
+
+
+
+
+
+
+
+
+
+2) Make sure months/days render at the top
+
+
+
+
+
+Use Mermaid v10 if you can, and keep the basic directives in your code block:
+
+```mermaid
+
+gantt
+
+    title Product Milestones (Q4 2025)
+
+    dateFormat  YYYY-MM-DD
+
+    axisFormat  %d %b
+
+    %% Optional: force clearer ticks
+
+    %% tickInterval 1 week
+
+
+
+    section Core
+
+    Kickoff      :milestone, m1, 2025-10-03, 0d
+
+    Architecture :active,    a1, 2025-10-01, 2025-10-20
+
+
+
+    section Delivery
+
+    Feature A    :done,      f1, 2025-10-05, 2025-10-25
+
+**If months/days still don’t show:**
+
+- You’re likely on **Mermaid v8** (older Material bundle). Load v10 explicitly in `mkdocs.yml`:
+
+  ```yaml
+
+  extra_javascript:
+
+    - https://unpkg.com/mermaid@10/dist/mermaid.min.js
+
+
+
+Or your CSS was making axis labels invisible; the rules above set their fill color.
+Very narrow charts may hide some ticks—try tickInterval 1 week.
+
+
+
+
+
+
+
+
+If you paste your current mkdocs.yml (theme + extra_javascript) and one Gantt block, I’ll tailor the exact 2–3 lines you need (and set the perfect sidebar width) so it matches your screenshot precisely.
+
+

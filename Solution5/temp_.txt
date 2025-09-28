@@ -1533,3 +1533,9 @@ Very narrow charts may hide some ticks—try tickInterval 1 week.
 If you paste your current mkdocs.yml (theme + extra_javascript) and one Gantt block, I’ll tailor the exact 2–3 lines you need (and set the perfect sidebar width) so it matches your screenshot precisely.
 
 
+#####################
+
+
+<a href="https://example.com/kickoff" target="_blank">↗</a>
+
+

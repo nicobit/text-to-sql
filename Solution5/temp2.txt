@@ -1,0 +1,527 @@
+1) CSS (aggiungilo a 
+
+docs/assets/progress.css
+
+)
+
+
+
+/* Contenitore della barra */
+
+.az-bar {
+
+  --p: 0.0;                    /* percentuale 0..1 (impostata inline) */
+
+  --bg: rgba(120,120,120,0.25);/* colore sfondo (fallback neutro) */
+
+  --fg: #2563eb;               /* blu accessibile stile ai.azure (fallback) */
+
+  --txt: #fff;                 /* colore testo sulla barra */
+
+
+
+  position: relative;
+
+  width: clamp(90px, 12vw, 160px);
+
+  height: 10px;                /* versione “table-friendly” */
+
+  background: var(--bg);
+
+  border-radius: 999px;
+
+  overflow: hidden;
+
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
+
+}
+
+
+
+/* Riempimento */
+
+.az-bar__fg {
+
+  position: absolute;
+
+  inset: 0;
+
+  width: calc(var(--p) * 100%);
+
+  background: linear-gradient(90deg, var(--fg), var(--fg));
+
+  border-radius: inherit;
+
+  transition: width .35s ease;
+
+}
+
+
+
+/* Etichetta percentuale (compatta) */
+
+.az-bar__label {
+
+  position: absolute;
+
+  top: 50%;
+
+  right: 6px;
+
+  transform: translateY(-50%);
+
+  font: 600 10px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+
+  color: var(--txt);
+
+  text-shadow: 0 1px 2px rgba(0,0,0,.25);
+
+  pointer-events: none;
+
+}
+
+
+
+/* Versione “mini” (ancora più sottile) */
+
+.az-bar.az-mini { height: 8px; }
+
+
+
+/* Accessibilità: meno animazioni se preferito */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .az-bar__fg { transition: none; }
+
+}
+
+
+
+/* Supporto dark mode: sfondo più chiaro, foreground mantiene contrasto */
+
+@media (prefers-color-scheme: dark) {
+
+  .az-bar { --bg: rgba(255,255,255,0.18); }
+
+}
+
+Se vuoi usare un blu diverso, cambia --fg a livello di singola barra inline (vedi sotto) o nel CSS.
+
+
+
+
+
+2) Attiva il CSS in 
+
+mkdocs.yml
+
+
+
+theme:
+
+  name: material
+
+
+
+extra_css:
+
+  - assets/progress.css
+
+
+
+3) Uso dentro una tabella Markdown
+
+
+
+
+
+Puoi mettere HTML inline nella cella. Imposti la percentuale con la custom property --p (0..1) e, opzionalmente, --fg per il colore.
+
+| Attività         | Avanzamento            | Note            |
+
+|------------------|------------------------|-----------------|
+
+| Data Ingestion   | <div class="az-bar" style="--p:.8"><div class="az-bar__fg"></div><div class="az-bar__label">80%</div></div> | Pipeline v2     |
+
+| Feature Store    | <div class="az-bar" style="--p:.4;--fg:#059669"><div class="az-bar__fg"></div><div class="az-bar__label">40%</div></div> | Green variant   |
+
+| Model Training   | <div class="az-bar az-mini" style="--p:1"><div class="az-bar__fg"></div><div class="az-bar__label">100%</div></div> | Done            |
+
+Note:
+
+
+
+--p:.8 ⇒ 80%.
+Cambia colore per singola riga con --fg:#059669 (verde elegante) o lascialo al default blu ai.azure.
+La classe az-mini rende la barra ancora più discreta (utile in tabelle dense).
+
+
+
+
+
+
+4) Variante “solo barra” (senza etichetta dentro)
+
+
+
+
+
+Se preferisci il valore testuale fuori dalla barra:
+
+| Task    | Progress | %
+
+|---------|----------|----|
+
+| API     | <div class="az-bar" style="--p:.65"><div class="az-bar__fg"></div></div> | 65% |
+
+
+
+5) Suggerimenti di stile “ai.azure”
+
+
+
+
+
+Mantieni spaziature verticali leggere nella tabella (non più di 10–12px).
+Usa tipografia sobria (la font stack in CSS è già coerente con UI moderne).
+Limita la palette a 1 colore primario (blu) + 1 secondario (verde) per stati specifici.
+Evita gradienti vistosi; la finitura qui è intenzionalmente neutra e professionale.
+
+
+
+##################################################
+
+
+When to split vs. keep together
+
+
+
+
+
+Create a separate repo (per project) if…
+
+
+
+It has its own lifecycle (versioning, releases, deployments).
+Different owners/security are needed.
+CI/CD, infra, or tech stack diverge.
+You expect the project to live beyond a quick prototype.
+
+
+
+
+Keep a common repo (monorepo) if…
+
+
+
+You’re managing idea intake, templates, shared libs, and many short-lived prototypes.
+You want one place for governance, documentation (MkDocs), scoring, and dashboards.
+You want to reuse pipeline logic with child pipelines and rules:changes.
+
+
+
+
+
+
+Recommended hybrid for your program
+
+
+
+
+
+innovation-hub (monorepo) — the “source of truth”
+
+
+
+
+
+
+Purpose: governance, docs, templates, shared libs, metrics.
+Also contains: very early prototypes (Stage 1–2) as folders.
+When a prototype is promoted (Stage ≥3): graduate it to its own repo under the group.
+
+
+
+
+
+
+innovation/ (multi-repos) — for promoted projects
+
+
+
+
+
+
+Own CI/CD, permissions, releases, issues/boards.
+Links back to the hub (and optionally a submodule or mirrored folder removed from hub).
+
+
+
+
+
+
+Suggested structure for the hub
+
+
+
+innovation-hub/
+
+├─ docs/                      # MkDocs Material site (playbooks, process, dashboards)
+
+├─ governance/
+
+│  ├─ stage-gates.md
+
+│  ├─ roles-rasci.md
+
+│  └─ scoring-rubric.md
+
+├─ templates/
+
+│  ├─ project-template/       # “Use this template” to bootstrap new repos
+
+│  ├─ issue_templates/
+
+│  └─ mr_templates/
+
+├─ shared/
+
+│  ├─ python/                 # shared utilities (cost, telemetry, auth)
+
+│  └─ ui/                     # shared React components (cards, charts)
+
+├─ prototypes/                # Stage 1–2 experiments live here
+
+│  ├─ cost-saver-poc/
+
+│  ├─ kusto-chat-agent/
+
+│  └─ diagramming-agent/
+
+├─ .gitlab/
+
+│  ├─ issue_templates/
+
+│  ├─ merge_request_templates/
+
+│  └─ ci/
+
+│     ├─ pipeline-common.yml
+
+│     └─ mkdocs-pages.yml
+
+├─ .gitlab-ci.yml
+
+├─ CODEOWNERS
+
+└─ mkdocs.yml
+
+
+
+GitLab CI/CD pattern (hub)
+
+
+
+
+
+Child pipelines: one per prototype folder.
+rules:changes: only build/test a prototype when its files change.
+Pages: build a single MkDocs site from docs/ (links to prototypes and promoted repos).
+
+
+# innovation-hub/.gitlab-ci.yml
+
+stages: [lint, test, build, pages]
+
+
+
+include:
+
+  - local: .gitlab/ci/pipeline-common.yml
+
+
+
+variables:
+
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+
+
+lint:hub:
+
+  stage: lint
+
+  image: python:3.12
+
+  rules:
+
+    - changes: ["**/*.py", "docs/**", "mkdocs.yml"]
+
+  script:
+
+    - pip install ruff
+
+    - ruff check .
+
+
+
+prototypes:child:
+
+  stage: test
+
+  trigger:
+
+    include:
+
+      - local: .gitlab/ci/pipeline-common.yml
+
+    strategy: depend
+
+  rules:
+
+    - changes:
+
+        - prototypes/**/*
+
+        - shared/**/*
+
+  variables:
+
+    PROTO_ROOT: "prototypes"
+
+
+
+pages:
+
+  stage: pages
+
+  image: python:3.12
+
+  rules:
+
+    - changes: ["docs/**/*", "mkdocs.yml"]
+
+  script:
+
+    - pip install mkdocs-material mkdocs-mermaid2-plugin
+
+    - mkdocs build -d public
+
+  artifacts:
+
+    paths: [public]
+
+.gitlab/ci/pipeline-common.yml (child logic per prototype):
+
+.test-prototype:
+
+  image: python:3.12
+
+  script:
+
+    - pip install -r requirements.txt || true
+
+    - pytest || true
+
+
+
+.prototypes-matrix:
+
+  stage: test
+
+  parallel:
+
+    matrix:
+
+      - PROTOTYPE: ["cost-saver-poc", "kusto-chat-agent", "diagramming-agent"]
+
+  rules:
+
+    - if: $CI_PIPELINE_SOURCE == "push"
+
+  script:
+
+    - cd prototypes/$PROTOTYPE
+
+    - !reference [.test-prototype, script]
+
+
+
+Graduation path (from hub → own repo)
+
+
+
+
+
+Criteria: passes Stage 2, has sponsor & roadmap.
+Create new repo: innovation/<project-name> using templates/project-template.
+Move code from prototypes/<name>/ → new repo.
+Wire CI/CD, environments, package registry, and CODEOWNERS.
+In the hub: replace the folder with a link (README + repo URL) or a submodule if you need pinned refs.
+
+
+
+
+
+
+Governance/permissions tips
+
+
+
+
+
+Groups & subgroups: innovation/ (board maintainers), subgroups per domain (Data, Platform, Frontend).
+CODEOWNERS: route MRs by domain:
+
+
+/shared/python/ @platform-team
+
+/prototypes/kusto-chat-agent/ @data-team
+
+/docs/ @innovation-board
+
+
+
+
+Issue/MR templates: Idea Intake, Stage-Gate Check, Experiment Plan, Post-Mortem.
+Labels/boards: stage::1-idea, stage::2-triage, stage::3-prototype, stage::4-scale, status::blocked, impact::high.
+
+
+
+
+
+
+Documentation & visibility
+
+
+
+
+
+One MkDocs site in the hub: process, dashboards, and an index of all projects (promoted ones link to their own GitLab Pages).
+For each promoted repo: optional project-level Pages for tech docs and API references.
+
+
+
+
+
+
+Practical rule of thumb
+
+
+
+
+
+Early/short-lived → hub monorepo (fast, cheap, shared CI).
+Validated/long-lived → own repo (clear ownership, security, releases).
+
+
+
+
+If you want, I can generate:
+
+
+
+the project template (README, CI, skeleton code, Makefile),
+Issue/MR templates,
+a ready-to-drop MkDocs config with a professional theme and your Innovation sections.

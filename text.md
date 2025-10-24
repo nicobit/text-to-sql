@@ -129,3 +129,210 @@ This dual-line approach enables:
 - Long-running validation for major changes.
 - Separate testing tracks, shared production.
 - Lower risk, higher speed, clear governance.
+
+  #######################
+
+
+  ---
+title: "Operational Release Management Strategy"
+description: "Comprehensive guide for managing weekly minor and quarterly major releases with dual environment lines and structured branching strategy."
+---
+
+# Operational Release Management Strategy
+
+This document provides a complete operational framework for managing software releases across multiple environments using two parallel release lines: **Major** and **Minor**. It defines cadence, environment flow, branching model, testing stages, governance, rollback, and communication procedures.
+
+---
+
+## 1. Release Cadence and Definition
+
+| Release Type | Frequency | Purpose | Example Version |
+|---------------|------------|----------|------------------|
+| **Minor Release** | Weekly | Delivery of incremental features, fixes, and patches | `v2.4.1` |
+| **Major Release** | Quarterly | Delivery of structural changes, new modules, architecture upgrades | `v3.0.0` |
+
+### 1.1 Objectives
+
+- Ensure stability in production through predictable, tested deployments.
+- Allow continuous delivery without blocking long-term development.
+- Maintain quality assurance gates for each line independently.
+
+---
+
+## 2. Environment Model — Two Parallel Lines
+
+To support stability and innovation simultaneously, two environment lines are maintained:
+
+- **Line A (Major Release Line):** used for large-scale changes, long QA cycles, and architecture upgrades.  
+- **Line B (Minor Release Line):** used for weekly feature releases and fixes.
+
+### 2.1 Environment Flow Diagram
+
+```mermaid
+flowchart TB
+    subgraph Major_Line ["Major Release Line"]
+        DEV_M[Dev - Major] --> TEST_M[Test - Major]
+        TEST_M --> PREPROD_M[PreProd - Major]
+        PREPROD_M --> PROD_M[Prod - Major]
+    end
+
+    subgraph Minor_Line ["Minor Release Line"]
+        DEV_m[Dev - Minor] --> TEST_m[Test - Minor]
+        TEST_m --> PREPROD_m[PreProd - Minor]
+        PREPROD_m --> PROD_m[Prod - Minor]
+    end
+
+    PROD_M -.->|Merge alignment| DEV_m
+```
+
+### 2.2 Environment Responsibilities
+
+| Environment | Purpose | Owner | Notes |
+|--------------|----------|--------|--------|
+| **Dev** | Early integration, developer testing | Development Team | CI build validation |
+| **Test** | QA functional and regression testing | QA Team | Automated + manual tests |
+| **PreProd** | Final validation with production-like data | Release Management | Sanity, performance, UAT |
+| **Prod** | Live environment | Ops / SRE | Final monitored deployment |
+
+---
+
+## 3. Branching Strategy
+
+The branching model ensures clear isolation between feature development, minor updates, and major releases.
+
+```mermaid
+gitGraph
+    commit id: "main"
+    branch develop
+    commit id: "Initial setup"
+    branch release/v3.0.0
+    commit id: "Major work"
+    checkout develop
+    branch release/v2.5.x
+    commit id: "Minor work"
+    checkout develop
+    branch feature/abc
+    commit id: "Feature"
+    checkout release/v2.5.x
+    merge feature/abc
+    checkout main
+    merge release/v2.5.x
+    merge release/v3.0.0
+```
+
+### 3.1 Branch Types
+
+| Branch | Purpose | Merge Target |
+|---------|----------|--------------|
+| **main** | Production-ready code | — |
+| **develop** | Active development for upcoming minor releases | `release/vX.Y.x` |
+| **release/vX.Y.x** | Stabilization branch for a specific release | `main` |
+| **feature/** | New features or fixes | `develop` |
+| **hotfix/** | Urgent fixes for production | `main` and back-merged to `develop` |
+| **major/** | Structural changes for next quarterly release | `release/vX+1.0.0` |
+
+### 3.2 Rules
+
+- Feature branches must merge into `develop` only after successful pipeline checks.  
+- Minor releases are tagged weekly from the latest stable release branch.  
+- Major releases are branched from `main` quarterly.  
+- Merge conflicts between major and minor lines are resolved during synchronization windows.  
+
+---
+
+## 4. Testing and Quality Assurance
+
+| Stage | Responsibility | Test Type | Automation |
+|--------|----------------|------------|-------------|
+| **Dev** | Developers | Unit Tests | ✅ |
+| **Test** | QA Team | Integration, Regression | ✅ |
+| **PreProd** | Release Team | UAT, Performance | ⚙️ Partial |
+| **Prod** | Ops/SRE | Smoke, Monitoring Validation | ✅ |
+
+### 4.1 Quality Gates
+
+- Static code analysis (SonarQube, linting)
+- Vulnerability scanning (Snyk, Trivy)
+- Automated test pass ≥ 90%
+- Performance threshold deviation < 10%
+- Security approval prior to promotion
+
+---
+
+## 5. Promotion and Deployment Flow
+
+```mermaid
+sequenceDiagram
+    participant Dev
+    participant QA
+    participant RM as Release Manager
+    participant OPS
+
+    Dev->>QA: Push build to Test (weekly minor)
+    QA->>RM: Validate test results
+    RM->>OPS: Approve for PreProd
+    OPS->>OPS: Deploy to PreProd
+    OPS->>RM: Confirm validation
+    RM->>OPS: Deploy to Prod
+```
+
+- All deployments follow automated pipelines (CI/CD).  
+- Approvals required for promotion between stages.  
+- Deployment artifacts versioned and immutable.  
+
+---
+
+## 6. Rollback and Contingency
+
+- **Automated rollback:** via deployment history (e.g., Helm rollback, GitLab environments).  
+- **Manual rollback:** follow change management procedure.  
+- **Root cause analysis:** mandatory for all failed deployments.  
+- **Rollback testing:** quarterly simulation to ensure process readiness.
+
+---
+
+## 7. Governance and Communication
+
+| Phase | Communication Channel | Owner | Artifacts |
+|--------|------------------------|--------|------------|
+| Pre-Release | Confluence / Teams | Release Manager | Release Notes |
+| Post-Deployment | Email / ChatOps | Ops Team | Incident Summary |
+| Quarterly Planning | Management Review | PMO | Roadmap, KPIs |
+
+---
+
+## 8. Timeline Overview
+
+```mermaid
+gantt
+    title Release Calendar (Major vs Minor)
+    dateFormat  YYYY-MM-DD
+    section Minor Releases (Weekly)
+    Week_1 :done, 2025-01-06, 7d
+    Week_2 :done, 2025-01-13, 7d
+    Week_3 :active, 2025-01-20, 7d
+    Week_4 : 2025-01-27, 7d
+
+    section Major Releases (Quarterly)
+    Q1_Release :done, 2025-03-31, 14d
+    Q2_Release :active, 2025-06-30, 14d
+    Q3_Release : 2025-09-30, 14d
+    Q4_Release : 2025-12-31, 14d
+```
+
+---
+
+## 9. Continuous Improvement
+
+- Conduct release retrospectives after every major deployment.  
+- Review and update branching rules quarterly.  
+- Automate regression tests and performance benchmarks continuously.  
+- Maintain feedback loop from users to prioritize post-release fixes.
+
+---
+
+## 10. Summary
+
+This strategy balances **speed and stability** by separating release lines, enforcing structured branching, and ensuring strong QA governance. It supports continuous delivery for weekly improvements while enabling predictable quarterly milestones for major evolution.
+
+
